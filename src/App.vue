@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Login from './views/login/index.vue';
+// 主应用入口
 </script>
 
 <template>
-  <Login />
+  <router-view />
 </template>
 
 <style lang="scss" scoped>
