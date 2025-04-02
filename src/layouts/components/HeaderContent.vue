@@ -115,8 +115,8 @@
             <a-list-item>
               <template #actions>
                 <a-switch 
-                  :checked="layoutStore.fixedHeader" 
-                  @change="(checked) => layoutStore.$patch({ fixedHeader: checked })"
+                  :model-value="layoutStore.fixedHeader" 
+                  @update:model-value="(checked) => layoutStore.$patch({ fixedHeader: checked })"
                 />
               </template>
               <a-list-item-meta title="固定头部" />
@@ -124,8 +124,8 @@
             <a-list-item>
               <template #actions>
                 <a-switch 
-                  :checked="layoutStore.showTabs" 
-                  @change="(checked) => layoutStore.$patch({ showTabs: checked })"
+                  :model-value="layoutStore.showTabs"
+                  @update:model-value="(checked) => layoutStore.$patch({ showTabs: checked })"
                 />
               </template>
               <a-list-item-meta title="显示标签栏" />
