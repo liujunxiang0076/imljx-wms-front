@@ -10,7 +10,24 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      'vue-router': 'vue-router/dist/vue-router.esm-bundler.js',
     },
+    dedupe: ['vue', 'vue-router']
+  },
+  server: {
+    hmr: {
+      overlay: false, // 禁用HMR错误覆盖
+    },
+  },
+  optimizeDeps: {
+    include: [
+      'vue',
+      'vue-router',
+      'pinia',
+      'axios',
+      'ant-design-vue',
+      '@ant-design/icons-vue'
+    ]
   },
   plugins: [
     vue(),
