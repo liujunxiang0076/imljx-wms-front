@@ -7,11 +7,6 @@
 import authConfig from './auth';
 import systemConfig from './system';
 
-export { authConfig, systemConfig };
-
-/**
- * 整合所有配置
- */
 const config = {
   auth: authConfig,
   system: systemConfig

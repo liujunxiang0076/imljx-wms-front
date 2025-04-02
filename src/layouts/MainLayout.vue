@@ -1,169 +1,212 @@
 <template>
-  <div class="main-layout">
-    <a-layout style="min-height: 100vh">
-      <a-layout-sider v-model:collapsed="collapsed" collapsible>
-        <div class="logo">
-          <img src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg" alt="Logo" />
-          <h1 v-show="!collapsed">IMLJX WMS</h1>
+  <a-layout class="main-layout">
+    <!-- 侧边栏 -->
+    <a-layout-sider
+      v-model:collapsed="collapsed"
+      :theme="layoutStore.siderTheme"
+      :trigger="null"
+      collapsible
+      class="main-layout-sider"
+      width="256"
+    >
+      <!-- Logo -->
+      <AppLogo :collapsed="collapsed" :theme="layoutStore.siderTheme" />
+      
+      <!-- 侧边菜单 -->
+      <SideMenu :collapsed="collapsed" :theme="layoutStore.siderTheme" />
+    </a-layout-sider>
+
+    <a-layout>
+      <!-- 顶部导航 -->
+      <a-layout-header class="main-layout-header" :class="{ 'fixed': layoutStore.fixedHeader }">
+        <HeaderContent v-model:collapsed="collapsed" />
+      </a-layout-header>
+
+      <!-- 标签页 -->
+      <a-layout-content v-if="layoutStore.showTabs" class="tags-nav-container">
+        <TabsNav />
+      </a-layout-content>
+
+      <!-- 主内容区 -->
+      <a-layout-content 
+        class="main-layout-content"
+        :class="{ 
+          'fixed-header': layoutStore.fixedHeader,
+          'show-tabs': layoutStore.showTabs 
+        }"
+      >
+        <div class="main-content-container">
+          <router-view v-slot="{ Component }">
+            <transition name="fade-transform" mode="out-in">
+              <keep-alive>
+                <component :is="Component" />
+              </keep-alive>
+            </transition>
+          </router-view>
         </div>
-        <a-menu
-          v-model:selectedKeys="selectedKeys"
-          theme="dark"
-          mode="inline"
-        >
-          <a-menu-item key="1">
-            <template #icon>
-              <DashboardOutlined />
-            </template>
-            <span>仪表盘</span>
-          </a-menu-item>
-          <a-sub-menu key="sub1">
-            <template #icon>
-              <InboxOutlined />
-            </template>
-            <template #title>仓库管理</template>
-            <a-menu-item key="3">入库管理</a-menu-item>
-            <a-menu-item key="4">出库管理</a-menu-item>
-            <a-menu-item key="5">库存管理</a-menu-item>
-          </a-sub-menu>
-        </a-menu>
-      </a-layout-sider>
-      <a-layout>
-        <a-layout-header style="background: #fff; padding: 0">
-          <div class="header-container">
-            <span class="trigger" @click="collapsed = !collapsed">
-              <MenuFoldOutlined v-if="!collapsed" />
-              <MenuUnfoldOutlined v-else />
-            </span>
-            <div class="header-right">
-              <a-dropdown>
-                <a class="user-dropdown">
-                  管理员 <DownOutlined />
-                </a>
-                <template #overlay>
-                  <a-menu>
-                    <a-menu-item key="0">
-                      <UserOutlined />
-                      个人中心
-                    </a-menu-item>
-                    <a-menu-item key="1">
-                      <SettingOutlined />
-                      系统设置
-                    </a-menu-item>
-                    <a-menu-divider />
-                    <a-menu-item key="3">
-                      <LogoutOutlined />
-                      退出登录
-                    </a-menu-item>
-                  </a-menu>
-                </template>
-              </a-dropdown>
-            </div>
-          </div>
-        </a-layout-header>
-        <a-layout-content style="margin: 16px">
-          <div style="padding: 24px; background: #fff; min-height: 360px">
-            <router-view></router-view>
-          </div>
-        </a-layout-content>
-        <a-layout-footer style="text-align: center">
-          IMLJX WMS ©2024 Created by IMLJX Team
-        </a-layout-footer>
-      </a-layout>
+      </a-layout-content>
+
+      <!-- 页脚 -->
+      <a-layout-footer class="main-layout-footer">
+        IMLJX-WMS 仓储管理系统 ©2024 Created by IMLJX
+      </a-layout-footer>
     </a-layout>
-  </div>
+  </a-layout>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue';
-import {
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  DashboardOutlined,
-  InboxOutlined,
-  UserOutlined,
-  SettingOutlined,
-  LogoutOutlined,
-  DownOutlined
-} from '@ant-design/icons-vue';
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useLayoutStore } from '../store/layout';
+// 使用默认导入
+import AppLogo from './components/AppLogo.vue';
+import SideMenu from './components/SideMenu.vue';
+import HeaderContent from './components/HeaderContent.vue';
+import TabsNav from './components/TabsNav.vue';
 
-export default defineComponent({
-  name: 'MainLayout',
-  components: {
-    MenuFoldOutlined,
-    MenuUnfoldOutlined,
-    DashboardOutlined,
-    InboxOutlined,
-    UserOutlined,
-    SettingOutlined,
-    LogoutOutlined,
-    DownOutlined
-  },
-  setup() {
-    const collapsed = ref(false);
-    const selectedKeys = ref(['1']);
+// 布局状态管理
+const layoutStore = useLayoutStore();
 
-    return {
-      collapsed,
-      selectedKeys
-    };
+// 侧边栏折叠状态
+const collapsed = ref(false);
+
+// 响应式布局 - 窗口大小变化时自动调整布局
+const handleResize = () => {
+  if (document.documentElement.clientWidth < 992 && !collapsed.value) {
+    collapsed.value = true;
+  } else if (document.documentElement.clientWidth > 1200 && collapsed.value) {
+    collapsed.value = false;
   }
+};
+
+// 监听窗口大小变化
+onMounted(() => {
+  handleResize();
+  window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
 });
 </script>
 
 <style lang="scss" scoped>
 .main-layout {
-  .logo {
-    height: 32px;
-    margin: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-
-    img {
-      height: 32px;
-      margin-right: 8px;
+  min-height: 100vh;
+  
+  &-sider {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow: auto;
+    z-index: 10;
+    
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
     }
-
-    h1 {
-      color: white;
-      font-size: 18px;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      white-space: nowrap;
+    
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 3px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
     }
   }
-
-  .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 24px;
-    height: 100%;
-
-    .trigger {
-      font-size: 18px;
-      cursor: pointer;
-      transition: color 0.3s;
-
-      &:hover {
-        color: #1890ff;
-      }
-    }
-
-    .header-right {
-      .user-dropdown {
-        color: rgba(0, 0, 0, 0.65);
-        padding: 0 12px;
-        display: inline-block;
-        
-        &:hover {
-          color: #1890ff;
-        }
+  
+  &-header {
+    background: #fff;
+    padding: 0;
+    height: 64px;
+    line-height: 64px;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    position: relative;
+    z-index: 9;
+    
+    &.fixed {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: calc(100% - 256px);
+      transition: width 0.2s;
+      
+      .collapsed & {
+        width: calc(100% - 80px);
       }
     }
   }
+  
+  .tags-nav-container {
+    background: #fff;
+    margin: 0;
+    padding: 0;
+    height: 46px;
+    line-height: 46px;
+    border-bottom: 1px solid #f0f0f0;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+    position: fixed;
+    top: 64px;
+    width: calc(100% - 256px);
+    z-index: 8;
+    transition: width 0.2s;
+    
+    .collapsed & {
+      width: calc(100% - 80px);
+    }
+  }
+  
+  &-content {
+    margin: 24px;
+    padding: 24px;
+    background: #fff;
+    border-radius: 2px;
+    margin-left: 256px;
+    transition: all 0.2s;
+    
+    &.fixed-header {
+      margin-top: 88px;
+      
+      &.show-tabs {
+        margin-top: 134px;
+      }
+    }
+    
+    .collapsed & {
+      margin-left: 80px;
+    }
+  }
+  
+  .main-content-container {
+    min-height: calc(100vh - 64px - 48px - 70px);
+  }
+  
+  &-footer {
+    text-align: center;
+    padding: 14px 50px;
+    margin-left: 256px;
+    transition: margin-left 0.2s;
+    
+    .collapsed & {
+      margin-left: 80px;
+    }
+  }
+}
+
+// 页面切换动画
+.fade-transform-enter-active,
+.fade-transform-leave-active {
+  transition: all 0.3s;
+}
+
+.fade-transform-enter-from {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.fade-transform-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
 }
 </style> 

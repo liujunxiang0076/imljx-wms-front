@@ -78,11 +78,43 @@ interface LoginForm {
 
 const loginLoading = ref(false);
 const loginForm = reactive<LoginForm>({
-  username: '',
-  password: '',
+  username: 'admin', // 默认用户名
+  password: 'admin', // 默认密码
   captcha: '',
   remember: config.auth.rememberLoginStatus
 });
+
+// 模拟登录API调用
+const mockLogin = (username: string, password: string): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    // 模拟网络延迟
+    setTimeout(() => {
+      // 检查用户名和密码是否匹配
+      if (username === 'admin' && password === 'admin') {
+        resolve({
+          code: 0,
+          message: '登录成功',
+          data: {
+            token: 'mock_token_' + Date.now(),
+            userInfo: {
+              id: 1,
+              username: 'admin',
+              name: '管理员',
+              avatar: 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
+              roles: ['admin'],
+              permissions: ['*']
+            }
+          }
+        });
+      } else {
+        reject({
+          code: 401,
+          message: '用户名或密码错误'
+        });
+      }
+    }, 1000); // 延迟1秒，模拟网络请求
+  });
+};
 
 const handleLogin = async () => {
   loginLoading.value = true;
@@ -93,12 +125,13 @@ const handleLogin = async () => {
       throw new Error('请输入验证码');
     }
     
-    // 调用store登录方法
-    await userStore.login({
-      username: loginForm.username,
-      password: loginForm.password,
-      captcha: config.auth.enableCaptcha ? loginForm.captcha : undefined
-    });
+    // 模拟登录调用
+    const loginResult = await mockLogin(loginForm.username, loginForm.password);
+    
+    // 手动设置token和用户信息
+    userStore.token = loginResult.data.token;
+    userStore.userInfo = loginResult.data.userInfo;
+    localStorage.setItem('token', loginResult.data.token);
     
     message.success('登录成功，欢迎回来！');
     
