@@ -4,6 +4,7 @@ import { UserOutlined, LockOutlined, SafetyCertificateOutlined, LeftOutlined, Ri
 import { message } from 'ant-design-vue';
 import router from '@/router';
 import { useUserStore } from '@/store/user';
+import config from '@/config';
 
 // 添加默认导出
 defineComponent({
@@ -14,22 +15,22 @@ defineComponent({
 const userStore = useUserStore();
 const route = router.currentRoute.value;
 
+// 使用配置文件中的系统设置
+const { systemName, systemLogo, companyName, copyrightYear, loginCarousel } = config.system;
+
 // 背景图片轮播数据
-const backgroundImages = [
-  'https://img.freepik.com/free-photo/automated-guided-vehicles-agv-robots-sorting-parcels-modern-intelligent-warehouse_93675-134573.jpg',
-  'https://img.freepik.com/free-photo/modern-factory-workshop-with-robotic-arms-automation-manufacturing-line_667260-164.jpg',
-  'https://img.freepik.com/free-photo/smart-factory-management-dashboard-with-icons-statistics-worker-using-tablet-control-automation-production-line_93675-134806.jpg',
-  'https://img.freepik.com/free-photo/industry-4-0-iot-smart-manufacturing-concept-wireless-network-physical-cyber-system-autonomous-robots-monitoring-digital-twin-simulation-remote-engineer-control-future-factory-innovation_43780-5583.jpg'
-];
+const backgroundImages = loginCarousel.images;
 const currentImageIndex = ref(0);
 let autoPlayTimer: number | null = null;
 
 // 自动切换背景图
 const startAutoPlay = () => {
+  if (!loginCarousel.enable) return;
+  
   stopAutoPlay();
   autoPlayTimer = window.setInterval(() => {
     nextImage();
-  }, 5000); // 每5秒切换一次
+  }, loginCarousel.interval); // 使用配置的间隔时间
 };
 
 // 停止自动切换
@@ -58,7 +59,9 @@ const goToImage = (index: number) => {
 // 组件挂载时启动自动播放
 onMounted(() => {
   startAutoPlay();
-  generateCaptcha(); // 初始化生成验证码
+  if (config.auth.enableCaptcha) {
+    generateCaptcha(); // 仅在启用验证码时初始化
+  }
 });
 
 // 组件卸载时清除定时器
@@ -78,18 +81,23 @@ const loginForm = reactive<LoginForm>({
   username: '',
   password: '',
   captcha: '',
-  remember: true
+  remember: config.auth.rememberLoginStatus
 });
 
 const handleLogin = async () => {
   loginLoading.value = true;
   
   try {
+    // 验证码验证
+    if (config.auth.enableCaptcha && (!loginForm.captcha || loginForm.captcha.trim() === '')) {
+      throw new Error('请输入验证码');
+    }
+    
     // 调用store登录方法
     await userStore.login({
       username: loginForm.username,
       password: loginForm.password,
-      captcha: loginForm.captcha
+      captcha: config.auth.enableCaptcha ? loginForm.captcha : undefined
     });
     
     message.success('登录成功，欢迎回来！');
@@ -113,7 +121,7 @@ const generateCaptcha = () => {
   captchaLoading.value = true;
   const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
   let result = '';
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < config.auth.captchaLength; i++) {
     result += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   setTimeout(() => {
@@ -137,13 +145,13 @@ const refreshCaptcha = () => {
          @mouseleave="startAutoPlay">
       <div class="logo-header">
         <div class="logo-container">
-          <img src="https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg" alt="Logo" class="logo" />
-          <span class="logo-text">数字工厂管理系统</span>
+          <img :src="systemLogo" alt="Logo" class="logo" />
+          <span class="logo-text">{{ systemName }}</span>
         </div>
       </div>
       
       <!-- 轮播控制按钮 -->
-      <div class="carousel-controls">
+      <div v-if="loginCarousel.enable && backgroundImages.length > 1" class="carousel-controls">
         <div class="carousel-arrow carousel-arrow-left" @click="prevImage">
           <LeftOutlined />
         </div>
@@ -153,7 +161,7 @@ const refreshCaptcha = () => {
       </div>
       
       <!-- 指示器 -->
-      <div class="carousel-indicators">
+      <div v-if="loginCarousel.enable && backgroundImages.length > 1" class="carousel-indicators">
         <span 
           v-for="(_, index) in backgroundImages" 
           :key="index" 
@@ -207,6 +215,7 @@ const refreshCaptcha = () => {
           </a-form-item>
           
           <a-form-item
+            v-if="config.auth.enableCaptcha"
             name="captcha"
             :rules="[{ required: true, message: '请输入验证码' }]"
           >
@@ -249,8 +258,8 @@ const refreshCaptcha = () => {
           </a-form-item>
         </a-form>
         
-        <div class="login-footer">
-          <p>Copyright © 2025 Jason‌ Liu All Rights Reserved</p>
+        <div v-if="config.system.showFooter" class="login-footer">
+          <p>Copyright © {{ copyrightYear }} {{ companyName }} All Rights Reserved</p>
         </div>
       </div>
     </div>
