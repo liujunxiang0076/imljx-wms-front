@@ -7,9 +7,17 @@
 import authConfig from './auth';
 import systemConfig from './system';
 
-const config = {
+// 全局配置
+export default {
+  system: systemConfig,
   auth: authConfig,
-  system: systemConfig
-};
-
-export default config; 
+  
+  // 功能开关
+  features: {
+    // 是否启用标签页导航
+    enableTabs: true,
+    
+    // 是否启用搜索框
+    enableSearch: true
+  }
+}; 
