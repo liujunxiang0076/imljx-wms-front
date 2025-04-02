@@ -127,9 +127,28 @@ export default defineComponent({
       activeTabKey.value = key;
     };
 
+    // 刷新当前页面
+    const refreshCurrentPage = () => {
+      const { fullPath } = route;
+      router.replace({
+        path: '/redirect',
+        query: { path: fullPath }
+      }).catch(() => {
+        // 如果重定向失败，直接重新加载当前路由
+        router.replace(fullPath);
+      });
+    };
+
     // 监听路由变化，更新标签页
     watch(() => route.path, (newPath) => {
-      if (newPath === '/login') return;
+      // 忽略登录页和重定向页面
+      if (newPath === '/login' || newPath === '/redirect') return;
+      
+      // 处理仪表盘路由的特殊情况
+      if (newPath === '/dashboard') {
+        activeTabKey.value = defaultTab;
+        return;
+      }
       
       const key = newPath.substring(1).replace(/\//g, '-') || defaultTab;
       addTab(newPath);
@@ -167,12 +186,6 @@ export default defineComponent({
       
       // 从数组中移除关闭的标签
       tabList.value = tabList.value.filter(tab => tab.key !== key);
-    };
-
-    // 刷新当前页面
-    const refreshCurrentPage = () => {
-      const currentPath = route.fullPath;
-      router.replace('/redirect' + currentPath);
     };
 
     // 关闭其他标签
