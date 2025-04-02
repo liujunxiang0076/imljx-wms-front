@@ -25,14 +25,20 @@
             </a-menu-item>
             <a-menu-item key="inventory">
               <router-link to="/inventory">
-                <AppstoreOutlined />
+                <InboxOutlined />
                 <span>库存管理</span>
               </router-link>
             </a-menu-item>
-            <a-menu-item key="operations">
-              <router-link to="/operations">
-                <ClusterOutlined />
-                <span>作业管理</span>
+            <a-menu-item key="inbound">
+              <router-link to="/inbound">
+                <ImportOutlined />
+                <span>入库管理</span>
+              </router-link>
+            </a-menu-item>
+            <a-menu-item key="outbound">
+              <router-link to="/outbound">
+                <ExportOutlined />
+                <span>出库管理</span>
               </router-link>
             </a-menu-item>
             <a-menu-item key="reports">
@@ -62,10 +68,7 @@
       <!-- 侧边栏子菜单 -->
       <a-layout-sider
         v-if="showSider"
-        v-model:collapsed="collapsed"
         :theme="layoutStore.siderTheme"
-        :trigger="null"
-        collapsible
         class="mix-layout-sider"
         width="256"
       >
@@ -75,7 +78,6 @@
           mode="inline"
           :selectedKeys="selectedKeys"
           :openKeys="openKeys"
-          :inlineCollapsed="collapsed"
         >
           <!-- 根据选中的顶部菜单显示对应的子菜单 -->
           <template v-for="item in currentSubmenu" :key="item.key">
@@ -108,12 +110,6 @@
         </a-menu>
       </a-layout-sider>
 
-      <!-- 折叠按钮 -->
-      <div v-if="showSider" class="sidebar-trigger" @click="toggleCollapsed">
-        <MenuUnfoldOutlined v-if="collapsed" />
-        <MenuFoldOutlined v-else />
-      </div>
-    
       <a-layout class="mix-layout-right">
         <!-- 标签页 -->
         <a-layout-content v-if="layoutStore.showTabs" class="tags-nav-container">
@@ -320,9 +316,6 @@ export default defineComponent({
     const layoutStore = useLayoutStore();
     const route = useRoute();
 
-    // 侧边栏折叠状态
-    const collapsed = ref(false);
-
     // 当前顶部菜单选中项
     const selectedTopMenu = computed(() => {
       const path = route.path;
@@ -353,9 +346,6 @@ export default defineComponent({
     // 是否显示侧边栏
     const showSider = computed(() => {
       const topMenu = selectedTopMenu.value[0];
-      // 只有dashboard和没有子菜单的一级菜单不显示侧边栏
-      if (topMenu === 'dashboard') return false;
-      
       const menuItem = menuConfig.find(item => item.key === topMenu);
       return menuItem && menuItem.children && menuItem.children.length > 0;
     });
@@ -364,12 +354,7 @@ export default defineComponent({
     const currentSubmenu = computed(() => {
       const topMenuKey = selectedTopMenu.value[0];
       const menuItem = menuConfig.find(item => item.key === topMenuKey);
-      
-      if (menuItem && menuItem.children && menuItem.children.length > 0) {
-        return menuItem.children;
-      }
-      
-      return [];
+      return menuItem?.children || [];
     });
 
     // 根据图标名称获取对应的图标组件
@@ -397,22 +382,16 @@ export default defineComponent({
       }
     }, { immediate: true });
 
-    const toggleCollapsed = () => {
-      collapsed.value = !collapsed.value;
-    };
-
     return {
       layoutStore,
       route,
-      collapsed,
       selectedTopMenu,
       selectedKeys,
       openKeys,
       showSider,
       currentSubmenu,
       getIconComponent,
-      menuConfig,
-      toggleCollapsed
+      menuConfig
     };
   }
 });
@@ -423,6 +402,7 @@ export default defineComponent({
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f0f2f5;
   
   &-header {
     background: #fff;
@@ -431,8 +411,7 @@ export default defineComponent({
     line-height: 64px;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
     position: relative;
-    z-index: 9;
-    color: inherit;
+    z-index: 11;
     
     &.fixed {
       position: fixed;
@@ -446,65 +425,53 @@ export default defineComponent({
       align-items: center;
       padding: 0 24px;
       height: 100%;
-    }
-    
-    .logo-container {
-      display: flex;
-      align-items: center;
-      padding-right: 24px;
       
-      .logo-img {
-        height: 32px;
-        width: auto;
-      }
-      
-      .logo-title {
-        margin: 0 0 0 12px;
-        color: rgba(0, 0, 0, 0.85);
-        font-weight: 600;
-        font-size: 18px;
-        white-space: nowrap;
-      }
-    }
-    
-    .top-menu-container {
-      flex: 1;
-      overflow-x: auto;
-      
-      &::-webkit-scrollbar {
-        display: none;
-      }
-      
-      .top-menu {
-        line-height: 64px;
-        border-bottom: none;
-        background: transparent;
-      }
-    }
-    
-    .header-right {
-      display: flex;
-      align-items: center;
-      
-      .notification-wrapper {
-        padding: 0 12px;
-        cursor: pointer;
-        height: 100%;
+      .logo-container {
         display: flex;
         align-items: center;
-        position: relative;
+        padding-right: 48px;
         
-        &:hover {
-          background: rgba(0, 0, 0, 0.025);
+        .logo-img {
+          height: 32px;
+          width: auto;
         }
         
-        :deep(.ant-badge-dot) {
-          position: absolute;
-          top: 16px;
-          right: 6px;
-          height: 8px;
-          width: 8px;
-          box-shadow: 0 0 0 1px #fff;
+        .logo-title {
+          margin: 0 0 0 12px;
+          color: rgba(0, 0, 0, 0.85);
+          font-weight: 600;
+          font-size: 18px;
+          white-space: nowrap;
+        }
+      }
+      
+      .top-menu-container {
+        flex: 1;
+        overflow-x: auto;
+        
+        &::-webkit-scrollbar {
+          display: none;
+        }
+        
+        .top-menu {
+          line-height: 64px;
+          border-bottom: none;
+          background: transparent;
+          
+          :deep(.ant-menu-item) {
+            padding: 0 20px;
+            margin: 0 4px;
+            
+            &::after {
+              left: 20px;
+              right: 20px;
+            }
+            
+            &:hover {
+              color: var(--ant-primary-color);
+              background: rgba(0, 0, 0, 0.015);
+            }
+          }
         }
       }
     }
@@ -513,30 +480,171 @@ export default defineComponent({
   &-container {
     flex: 1;
     margin-top: 64px;
+    display: flex;
+    
+    .mix-layout-sider {
+      position: fixed;
+      top: 64px;
+      left: 0;
+      width: 256px !important;
+      height: calc(100vh - 64px);
+      overflow: auto;
+      z-index: 10;
+      transition: all 0.3s;
+      box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
+      background-color: #001529;
+      
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.12);
+        border-radius: 3px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.06);
+      }
+      
+      :deep(.ant-menu) {
+        border-right: none;
+        
+        .ant-menu-item {
+          margin: 4px 12px;
+          padding: 0 12px 0 16px;
+          border-radius: 6px;
+          height: 40px;
+          line-height: 40px;
+          
+          &:hover {
+            color: var(--ant-primary-color);
+            background: rgba(0, 0, 0, 0.015);
+          }
+          
+          &.ant-menu-item-selected {
+            background: var(--ant-primary-1);
+            color: var(--ant-primary-color);
+            font-weight: 500;
+            
+            &::after {
+              opacity: 1;
+              transform: scaleY(1);
+              transition: transform 0.15s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+            }
+          }
+          
+          .anticon {
+            font-size: 16px;
+            min-width: 16px;
+            transition: all 0.3s;
+          }
+          
+          span {
+            margin-left: 10px;
+            transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+          }
+        }
+        
+        .ant-menu-submenu {
+          &-title {
+            margin: 4px 12px;
+            padding: 0 12px 0 16px;
+            border-radius: 6px;
+            height: 40px;
+            line-height: 40px;
+            
+            &:hover {
+              color: var(--ant-primary-color);
+              background: rgba(0, 0, 0, 0.015);
+            }
+            
+            .anticon {
+              font-size: 16px;
+              min-width: 16px;
+              transition: all 0.3s;
+            }
+            
+            span {
+              margin-left: 10px;
+              transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+            }
+          }
+          
+          &-arrow {
+            right: 12px;
+            color: rgba(0, 0, 0, 0.45);
+            transition: all 0.3s;
+          }
+          
+          &-open {
+            > .ant-menu-submenu-title {
+              color: var(--ant-primary-color);
+              
+              .ant-menu-submenu-arrow {
+                color: var(--ant-primary-color);
+                transform: translateY(-2px);
+              }
+            }
+          }
+        }
+        
+        // 暗色主题适配
+        &.ant-menu-dark {
+          .ant-menu-item {
+            &:hover {
+              background: rgba(255, 255, 255, 0.08);
+            }
+            
+            &.ant-menu-item-selected {
+              background: var(--ant-primary-color);
+              color: #fff;
+            }
+          }
+          
+          .ant-menu-submenu {
+            &-title:hover {
+              background: rgba(255, 255, 255, 0.08);
+            }
+            
+            &-open > .ant-menu-submenu-title {
+              color: #fff;
+              
+              .ant-menu-submenu-arrow {
+                color: #fff;
+              }
+            }
+          }
+        }
+      }
+    }
   }
   
-  &-sider {
-    position: fixed;
-    top: 64px;
-    left: 0;
-    height: calc(100vh - 64px);
-    overflow: auto;
-    z-index: 10;
+  &-right {
+    flex: 1;
     transition: all 0.3s;
+    margin-left: 256px;
     
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+    .mix-layout-content {
+      margin: 24px;
+      padding: 24px;
+      background: #fff;
+      border-radius: 2px;
+      box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+      
+      &.fixed-header {
+        margin-top: 88px;
+        
+        &.show-tabs {
+          margin-top: 128px;
+        }
+      }
     }
-    
-    &::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 3px;
-    }
-    
-    &::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
-    }
+  }
+  
+  .content-container {
+    min-height: calc(100vh - 64px - 48px - 70px);
   }
   
   .tags-nav-container {
@@ -549,99 +657,20 @@ export default defineComponent({
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
     position: fixed;
     top: 64px;
-    width: 100%;
-    left: 0;
-    z-index: 8;
-    transition: all 0.3s;
-  }
-  
-  .mix-layout-container .tags-nav-container {
     width: calc(100% - 256px);
     left: 256px;
-  }
-  
-  .mix-layout-sider.ant-layout-sider-collapsed ~ .mix-layout-right .tags-nav-container {
-    width: calc(100% - 80px);
-    left: 80px;
-  }
-  
-  &-content {
-    margin: 0;
-    padding: 16px;
-    background: #f0f2f5;
+    z-index: 9;
     transition: all 0.3s;
-    
-    &.fixed-header {
-      margin-top: 24px;
-      
-      &.show-tabs {
-        margin-top: 64px;
-      }
-    }
-    
-    &.has-sider {
-      margin-left: 256px;
-      
-      .mix-layout-sider.ant-layout-sider-collapsed ~ .mix-layout-right & {
-        margin-left: 80px;
-      }
-    }
-  }
-  
-  .content-container {
-    background: #fff;
-    padding: 24px;
-    border-radius: 2px;
-    min-height: calc(100vh - 64px - 48px - 70px);
   }
   
   &-footer {
     text-align: center;
     padding: 14px 50px;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 14px;
     background: #f0f2f5;
     margin-left: 256px;
     transition: all 0.3s;
-    
-    &.has-sider {
-      .mix-layout-sider.ant-layout-sider-collapsed ~ & {
-        margin-left: 80px;
-      }
-    }
-  }
-  
-  &-right {
-    transition: all 0.3s;
-  }
-
-  // 内容区域根据侧边栏是否存在调整位置
-  .mix-layout-right .mix-layout-content:not(.has-sider) {
-    margin-left: 24px;
-  }
-
-  .sidebar-trigger {
-    position: fixed;
-    top: 72px;
-    left: 256px;
-    width: 32px;
-    height: 32px;
-    font-size: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #fff;
-    border-radius: 0 4px 4px 0;
-    cursor: pointer;
-    z-index: 11;
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s;
-    
-    &:hover {
-      background: #f0f2f5;
-    }
-  }
-  
-  .ant-layout-sider-collapsed ~ .sidebar-trigger {
-    left: 80px;
   }
 }
 </style> 
