@@ -29,10 +29,32 @@ export interface MenuItem {
 const menuConfig: MenuItem[] = [
   {
     key: 'dashboard',
-    path: '/dashboard',
     title: '仪表盘',
     icon: 'DashboardOutlined',
     permissions: [],
+    children: [
+      {
+        key: 'dashboard-overview',
+        path: '/dashboard',
+        title: '总览',
+        icon: 'FundOutlined',
+        permissions: [],
+      },
+      {
+        key: 'dashboard-analysis',
+        path: '/dashboard/analysis',
+        title: '分析页',
+        icon: 'AreaChartOutlined',
+        permissions: [],
+      },
+      {
+        key: 'dashboard-monitor',
+        path: '/dashboard/monitor',
+        title: '监控页',
+        icon: 'MonitorOutlined',
+        permissions: [],
+      }
+    ]
   },
   {
     key: 'inventory',
