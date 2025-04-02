@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+import config from '@/config';
+import { useUserStore } from '@/store/user';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -57,12 +59,20 @@ const router = createRouter({
 // 全局前置守卫
 router.beforeEach((to, from, next) => {
   // 设置页面标题
-  document.title = to.meta.title ? `${to.meta.title} - IMLJX WMS` : 'IMLJX WMS';
+  document.title = to.meta.title ? `${to.meta.title} - ${config.system.systemName}` : config.system.systemName;
   
-  // 权限控制 (示例)
+  // 权限控制
   if (to.meta.requiresAuth) {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    // 使用pinia store可能会在路由守卫中过早访问，使用函数形式获取store
+    const userStore = useUserStore();
+    
+    // 检查登录状态和会话是否有效
+    if (!userStore.isLogin || !userStore.checkSession()) {
+      // 清除失效的登录状态
+      if (userStore.isLogin && !userStore.checkSession()) {
+        userStore.logout();
+      }
+      
       next({ path: '/login', query: { redirect: to.fullPath } });
       return;
     }
