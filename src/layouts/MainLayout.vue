@@ -57,7 +57,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useLayoutStore } from '../store/layout';
-// 使用默认导入
+// 确保组件使用相对路径导入
 import AppLogo from './components/AppLogo.vue';
 import SideMenu from './components/SideMenu.vue';
 import HeaderContent from './components/HeaderContent.vue';
