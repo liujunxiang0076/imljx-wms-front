@@ -1,97 +1,37 @@
 <template>
-  <a-layout class="main-layout">
-    <!-- 侧边栏 -->
-    <a-layout-sider
-      v-model:collapsed="collapsed"
-      :theme="layoutStore.siderTheme"
-      :trigger="null"
-      collapsible
-      class="main-layout-sider"
-      width="256"
-    >
-      <!-- Logo -->
-      <AppLogo :collapsed="collapsed" :theme="layoutStore.siderTheme" />
-      
-      <!-- 侧边菜单 -->
-      <SideMenu :collapsed="collapsed" :theme="layoutStore.siderTheme" />
-    </a-layout-sider>
-
-    <a-layout>
-      <!-- 顶部导航 -->
-      <a-layout-header class="main-layout-header" :class="{ 'fixed': layoutStore.fixedHeader }">
-        <HeaderContent v-model:collapsed="collapsed" />
-      </a-layout-header>
-
-      <!-- 标签页 -->
-      <a-layout-content v-if="layoutStore.showTabs" class="tags-nav-container">
-        <TabsNav />
-      </a-layout-content>
-
-      <!-- 主内容区 -->
-      <a-layout-content 
-        class="main-layout-content"
-        :class="{ 
-          'fixed-header': layoutStore.fixedHeader,
-          'show-tabs': layoutStore.showTabs 
-        }"
-      >
-        <div class="main-content-container">
-          <router-view v-slot="{ Component }">
-            <transition name="fade-transform" mode="out-in">
-              <keep-alive>
-                <component :is="Component" />
-              </keep-alive>
-            </transition>
-          </router-view>
-        </div>
-      </a-layout-content>
-
-      <!-- 页脚 -->
-      <a-layout-footer class="main-layout-footer">
-        IMLJX-WMS 仓储管理系统 ©2024 Created by IMLJX
-      </a-layout-footer>
-    </a-layout>
-  </a-layout>
+  <component :is="layoutComponent" />
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { computed } from 'vue';
 import { useLayoutStore } from '../store/layout';
-// 确保组件使用相对路径导入
-import AppLogo from './components/AppLogo.vue';
-import SideMenu from './components/SideMenu.vue';
-import HeaderContent from './components/HeaderContent.vue';
-import TabsNav from './components/TabsNav.vue';
+
+// 引入布局模板组件
+import SiderLayout from './templates/SiderLayout.vue';
+import TopLayout from './templates/TopLayout.vue';
+import MixLayout from './templates/MixLayout.vue';
 
 // 布局状态管理
 const layoutStore = useLayoutStore();
 
-// 侧边栏折叠状态
-const collapsed = ref(false);
-
-// 响应式布局 - 窗口大小变化时自动调整布局
-const handleResize = () => {
-  if (document.documentElement.clientWidth < 992 && !collapsed.value) {
-    collapsed.value = true;
-  } else if (document.documentElement.clientWidth > 1200 && collapsed.value) {
-    collapsed.value = false;
+// 根据当前布局类型动态选择布局组件
+const layoutComponent = computed(() => {
+  switch (layoutStore.layoutType) {
+    case 'top':
+      return TopLayout;
+    case 'mix':
+      return MixLayout;
+    case 'sider':
+    default:
+      return SiderLayout;
   }
-};
-
-// 监听窗口大小变化
-onMounted(() => {
-  handleResize();
-  window.addEventListener('resize', handleResize);
-});
-
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize);
 });
 </script>
 
 <style lang="scss" scoped>
 .main-layout {
   min-height: 100vh;
+  position: relative;
   
   &-sider {
     position: fixed;
@@ -130,9 +70,9 @@ onBeforeUnmount(() => {
       top: 0;
       right: 0;
       width: calc(100% - 256px);
-      transition: width 0.2s;
+      transition: all 0.3s;
       
-      .collapsed & {
+      .main-layout.collapsed & {
         width: calc(100% - 80px);
       }
     }
@@ -142,18 +82,20 @@ onBeforeUnmount(() => {
     background: #fff;
     margin: 0;
     padding: 0;
-    height: 46px;
-    line-height: 46px;
+    height: 40px;
+    line-height: initial;
     border-bottom: 1px solid #f0f0f0;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12);
     position: fixed;
     top: 64px;
+    left: 256px;
     width: calc(100% - 256px);
     z-index: 8;
-    transition: width 0.2s;
+    transition: all 0.3s;
     
-    .collapsed & {
+    .main-layout.collapsed & {
       width: calc(100% - 80px);
+      left: 80px;
     }
   }
   
@@ -162,19 +104,19 @@ onBeforeUnmount(() => {
     padding: 24px;
     background: #fff;
     border-radius: 2px;
-    margin-left: 256px;
-    transition: all 0.2s;
+    margin-left: 280px;
+    transition: all 0.3s;
     
     &.fixed-header {
       margin-top: 88px;
       
       &.show-tabs {
-        margin-top: 134px;
+        margin-top: 128px;
       }
     }
     
-    .collapsed & {
-      margin-left: 80px;
+    .main-layout.collapsed & {
+      margin-left: 104px;
     }
   }
   
@@ -186,10 +128,16 @@ onBeforeUnmount(() => {
     text-align: center;
     padding: 14px 50px;
     margin-left: 256px;
-    transition: margin-left 0.2s;
+    transition: all 0.3s;
     
-    .collapsed & {
+    .main-layout.collapsed & {
       margin-left: 80px;
+    }
+  }
+  
+  &.collapsed {
+    .main-layout-sider {
+      width: 80px !important;
     }
   }
 }
