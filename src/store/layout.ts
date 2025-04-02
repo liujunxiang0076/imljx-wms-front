@@ -33,7 +33,7 @@ interface LayoutState {
   showTabs: boolean;
   
   /** 内容区域宽度 */
-  contentWidth: 'fluid' | 'fixed';
+  contentWidth: 'fixed' | 'fluid';
   
   /** 自动分割菜单 */
   splitMenus: boolean;
@@ -44,14 +44,14 @@ interface LayoutState {
  */
 export const useLayoutStore = defineStore('layout', {
   state: (): LayoutState => ({
-    layoutType: 'sider', // 默认侧边菜单布局
+    layoutType: 'sider',
     collapsed: false,
     siderTheme: 'dark',
     headerTheme: 'light',
     fixedHeader: true,
     fixedSider: true,
     primaryColor: '#1890ff',
-    showTabs: config.features.enableTabs, // 从配置中读取是否启用标签页
+    showTabs: true,
     contentWidth: 'fluid',
     splitMenus: false
   }),
@@ -67,7 +67,7 @@ export const useLayoutStore = defineStore('layout', {
     /**
      * 切换布局类型
      */
-    changeLayoutType(type: LayoutType): void {
+    setLayoutType(type: LayoutType): void {
       this.layoutType = type;
     },
     
@@ -128,9 +128,16 @@ export const useLayoutStore = defineStore('layout', {
     },
     
     /**
+     * 设置是否显示标签页
+     */
+    setShowTabs(show: boolean): void {
+      this.showTabs = show;
+    },
+    
+    /**
      * 设置内容区域宽度
      */
-    setContentWidth(width: 'fluid' | 'fixed'): void {
+    setContentWidth(width: 'fixed' | 'fluid'): void {
       this.contentWidth = width;
     },
     
@@ -149,23 +156,19 @@ export const useLayoutStore = defineStore('layout', {
         this.collapsed = true;
         this.fixedSider = false;
       }
+    },
+    
+    /**
+     * 更新主题设置
+     */
+    updateTheme(payload: Partial<LayoutState>): void {
+      Object.assign(this, payload);
     }
   },
   
   // 持久化布局设置
   persist: {
-    key: 'layout-preferences',
-    storage: localStorage,
-    paths: [
-      'layoutType',
-      'siderTheme',
-      'headerTheme',
-      'fixedHeader',
-      'fixedSider',
-      'primaryColor',
-      'showTabs',
-      'contentWidth',
-      'splitMenus'
-    ]
+    key: 'layout-settings',
+    storage: localStorage
   }
 }); 
