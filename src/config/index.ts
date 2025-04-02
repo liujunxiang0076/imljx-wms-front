@@ -13,9 +13,7 @@ export { authConfig, systemConfig };
  * 整合所有配置
  */
 const config = {
-  /* 认证配置 */
   auth: authConfig,
-  /* 系统配置 */
   system: systemConfig
 };
 
