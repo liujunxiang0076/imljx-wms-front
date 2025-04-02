@@ -2,18 +2,17 @@
 import { ref, reactive, defineComponent } from 'vue';
 import { UserOutlined, LockOutlined, SafetyCertificateOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useUserStore } from '@/store/user';
+import router from '../../router';
+import { useUserStore } from '../../store/user';
 
 // 添加默认导出
 defineComponent({
   name: 'LoginView'
 });
 
-// 获取路由和store
-const router = useRouter();
-const route = useRoute();
+// 获取store
 const userStore = useUserStore();
+const route = router.currentRoute.value;
 
 interface LoginForm {
   username: string;
