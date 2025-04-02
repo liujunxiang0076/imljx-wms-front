@@ -1,43 +1,45 @@
 <template>
-  <div class="tabs-nav">
-    <a-tabs
-      v-model:activeKey="activeTabKey"
-      type="editable-card"
-      hide-add
-      @edit="onTabEdit"
-    >
-      <a-tab-pane
-        v-for="tab in tabList"
-        :key="tab.key"
-        :closable="tab.key !== defaultTab"
+  <div class="tabs-wrapper">
+    <div class="tabs-nav">
+      <a-tabs
+        v-model:activeKey="activeTabKey"
+        type="editable-card"
+        hide-add
+        @edit="onTabEdit"
       >
-        <template #tab>
-          <span>{{ tab.title }}</span>
-        </template>
-      </a-tab-pane>
-    </a-tabs>
-    
-    <div class="tabs-actions">
-      <a-dropdown placement="bottomRight">
-        <ReloadOutlined class="tabs-action-item" @click="refreshCurrentPage" />
-        <template #overlay>
-          <a-menu>
-            <a-menu-item key="refresh-current" @click="refreshCurrentPage">
-              <span>刷新当前标签页</span>
-            </a-menu-item>
-            <a-menu-item key="close-others" @click="closeOtherTabs">
-              <span>关闭其他标签页</span>
-            </a-menu-item>
-            <a-menu-item key="close-all" @click="closeAllTabs">
-              <span>关闭所有标签页</span>
-            </a-menu-item>
-            <a-menu-divider />
-            <a-menu-item key="fullscreen" @click="toggleFullscreen">
-              <span>{{ isFullscreen ? '退出全屏' : '全屏显示' }}</span>
-            </a-menu-item>
-          </a-menu>
-        </template>
-      </a-dropdown>
+        <a-tab-pane
+          v-for="tab in tabList"
+          :key="tab.key"
+          :closable="tab.key !== defaultTab"
+        >
+          <template #tab>
+            <span>{{ tab.title }}</span>
+          </template>
+        </a-tab-pane>
+      </a-tabs>
+      
+      <div class="tabs-actions">
+        <a-dropdown placement="bottomRight">
+          <ReloadOutlined class="tabs-action-item" @click="refreshCurrentPage" />
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="refresh-current" @click="refreshCurrentPage">
+                <span>刷新当前标签页</span>
+              </a-menu-item>
+              <a-menu-item key="close-others" @click="closeOtherTabs">
+                <span>关闭其他标签页</span>
+              </a-menu-item>
+              <a-menu-item key="close-all" @click="closeAllTabs">
+                <span>关闭所有标签页</span>
+              </a-menu-item>
+              <a-menu-divider />
+              <a-menu-item key="fullscreen" @click="toggleFullscreen">
+                <span>{{ isFullscreen ? '退出全屏' : '全屏显示' }}</span>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </div>
     </div>
   </div>
 </template>
@@ -71,6 +73,12 @@ export default defineComponent({
 
     // 当前激活的标签页
     const activeTabKey = ref(defaultTab);
+
+    // 当前激活标签的标题
+    const activeTabTitle = computed(() => {
+      const activeTab = tabList.value.find(tab => tab.key === activeTabKey.value);
+      return activeTab ? activeTab.title : '';
+    });
 
     // 全屏状态
     const isFullscreen = ref(false);
@@ -211,6 +219,7 @@ export default defineComponent({
       defaultTab,
       tabList,
       activeTabKey,
+      activeTabTitle,
       isFullscreen,
       onTabEdit,
       refreshCurrentPage,
@@ -223,11 +232,20 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.tabs-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .tabs-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 16px;
+  width: 100%;
+  height: 40px;
   
   :deep(.ant-tabs) {
     flex: 1;
@@ -239,6 +257,15 @@ export default defineComponent({
     
     .ant-tabs-nav-wrap {
       padding-left: 0;
+    }
+    
+    .ant-tabs-tab {
+      padding: 8px 16px;
+      margin: 0 4px 0 0;
+    }
+    
+    .ant-tabs-tab-btn {
+      font-size: 14px;
     }
   }
   
