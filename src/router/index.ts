@@ -1,4 +1,5 @@
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router/dist/vue-router';
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -8,7 +9,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/login/index.vue'),
+    component: () => import('../views/login/index.vue'),
     meta: {
       title: '登录',
       hideInMenu: true,
@@ -18,7 +19,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: () => import('@/layouts/MainLayout.vue'),
+    component: () => import('../layouts/MainLayout.vue'),
     meta: {
       title: '仪表盘',
       icon: 'dashboard',
@@ -29,7 +30,7 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: 'index',
         name: 'DashboardIndex',
-        component: () => import('@/views/dashboard/index.vue'),
+        component: () => import('../views/dashboard/index.vue'),
         meta: {
           title: '仪表盘',
           icon: 'dashboard',
@@ -41,7 +42,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
-    component: () => import('@/views/error/404.vue'),
+    component: () => import('../views/error/404.vue'),
     meta: {
       title: '404',
       hideInMenu: true
