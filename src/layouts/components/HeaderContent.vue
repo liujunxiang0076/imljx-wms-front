@@ -44,8 +44,8 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
+<script lang="ts">
+import { computed, ref, onMounted, onBeforeUnmount, defineComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import { 
   MenuFoldOutlined, 
@@ -56,89 +56,102 @@ import {
 } from '@ant-design/icons-vue';
 import UserAvatar from './UserAvatar.vue';
 
-// 定义Props
-const props = defineProps({
-  collapsed: {
-    type: Boolean,
-    default: false
-  }
-});
-
-// 定义事件
-const emit = defineEmits(['update:collapsed']);
-
-// 切换侧边栏
-const toggleCollapsed = () => {
-  emit('update:collapsed', !props.collapsed);
-};
-
-// 全屏控制
-const isFullscreen = ref(false);
-
-const toggleFullscreen = () => {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen().catch((e) => {
-      console.error('无法进入全屏模式:', e);
-    });
-  } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
+export default defineComponent({
+  name: 'HeaderContent',
+  components: {
+    MenuFoldOutlined, 
+    MenuUnfoldOutlined, 
+    BellOutlined,
+    FullscreenOutlined,
+    FullscreenExitOutlined,
+    UserAvatar
+  },
+  props: {
+    collapsed: {
+      type: Boolean,
+      default: false
     }
-  }
-};
+  },
+  emits: ['update:collapsed'],
+  setup(props, { emit }) {
+    // 切换侧边栏
+    const toggleCollapsed = () => {
+      emit('update:collapsed', !props.collapsed);
+    };
 
-// 修复全屏事件监听
-const handleFullscreenChange = () => {
-  isFullscreen.value = !!document.fullscreenElement;
-};
+    // 全屏控制
+    const isFullscreen = ref(false);
 
-onMounted(() => {
-  document.addEventListener('fullscreenchange', handleFullscreenChange);
-});
+    const toggleFullscreen = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch((e) => {
+          console.error('无法进入全屏模式:', e);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    };
 
-onBeforeUnmount(() => {
-  document.removeEventListener('fullscreenchange', handleFullscreenChange);
-});
+    // 全屏事件监听
+    const handleFullscreenChange = () => {
+      isFullscreen.value = !!document.fullscreenElement;
+    };
 
-// 面包屑处理
-const route = useRoute();
+    onMounted(() => {
+      document.addEventListener('fullscreenchange', handleFullscreenChange);
+    });
 
-interface BreadcrumbItem {
-  title: string;
-  path?: string;
-}
+    onBeforeUnmount(() => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    });
 
-const breadcrumbList = computed<BreadcrumbItem[]>(() => {
-  const result: BreadcrumbItem[] = [
-    { title: '首页', path: '/' }
-  ];
-  
-  // 根据当前路由生成面包屑
-  const paths = route.path.split('/').filter(Boolean);
-  
-  if (paths.length) {
-    let currentPath = '';
-    
-    paths.forEach((path, index) => {
-      currentPath += `/${path}`;
+    // 面包屑处理
+    const route = useRoute();
+
+    interface BreadcrumbItem {
+      title: string;
+      path?: string;
+    }
+
+    const breadcrumbList = computed<BreadcrumbItem[]>(() => {
+      const result: BreadcrumbItem[] = [
+        { title: '首页', path: '/' }
+      ];
       
-      // 从route.matched中找到对应的路由信息
-      const matchedRoute = route.matched[index];
+      // 根据当前路由生成面包屑
+      const paths = route.path.split('/').filter(Boolean);
       
-      if (matchedRoute && matchedRoute.meta.title) {
-        result.push({
-          title: matchedRoute.meta.title as string,
-          path: index === paths.length - 1 ? undefined : currentPath
+      if (paths.length) {
+        let currentPath = '';
+        
+        paths.forEach((path, index) => {
+          currentPath += `/${path}`;
+          
+          // 从route.matched中找到对应的路由信息
+          const matchedRoute = route.matched[index];
+          
+          if (matchedRoute && matchedRoute.meta.title) {
+            result.push({
+              title: matchedRoute.meta.title as string,
+              path: index === paths.length - 1 ? undefined : currentPath
+            });
+          }
         });
       }
+      
+      return result;
     });
-  }
-  
-  return result;
-});
 
-// 添加默认导出
-defineExpose({});
+    return {
+      toggleCollapsed,
+      isFullscreen,
+      toggleFullscreen,
+      breadcrumbList
+    };
+  }
+});
 </script>
 
 <style lang="scss" scoped>
