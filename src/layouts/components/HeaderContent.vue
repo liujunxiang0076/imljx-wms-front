@@ -343,14 +343,28 @@ export default defineComponent({
   }
   
   .notification-wrapper {
+    position: relative;
+    
     :deep(.ant-badge-dot) {
       position: absolute;
-      top: 12px;
-      right: 8px;
+      top: -2px;
+      right: 0px;
       height: 6px;
       width: 6px;
-      box-shadow: 0 0 0 1px #fff;
+      box-shadow: 0 0 0 1.5px #fff;
+      animation: badge-breathe 1.2s ease-in-out infinite;
     }
+    
+    &:hover :deep(.ant-badge-dot) {
+      background: #ff4d4f;
+      box-shadow: 0 0 0 1.5px #ff7875;
+    }
+  }
+  
+  @keyframes badge-breathe {
+    0% { transform: scale(0.95); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(0.95); }
   }
   
   :deep(.ant-avatar) {
@@ -513,4 +527,4 @@ export default defineComponent({
     }
   }
 }
-</style> 
+</style>
