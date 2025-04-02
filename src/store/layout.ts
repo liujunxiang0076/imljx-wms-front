@@ -167,8 +167,5 @@ export const useLayoutStore = defineStore('layout', {
   },
   
   // 持久化布局设置
-  persist: {
-    key: 'layout-settings',
-    storage: localStorage
-  }
+  persist: true
 }); 
