@@ -141,7 +141,7 @@ const refreshCaptcha = () => {
   </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .login-container {
   width: 100vw;
   height: 100vh;
@@ -155,39 +155,39 @@ const refreshCaptcha = () => {
   background-size: cover;
   background-position: center;
   position: relative;
-}
 
-.login-background::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));
-}
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));
+  }
 
-.logo-header {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 10;
-}
+  .logo-header {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
 
-.logo-container {
-  display: flex;
-  align-items: center;
-}
+    .logo-container {
+      display: flex;
+      align-items: center;
 
-.logo {
-  height: 28px;
-  margin-right: 10px;
-}
+      .logo {
+        height: 28px;
+        margin-right: 10px;
+      }
 
-.logo-text {
-  font-size: 18px;
-  color: #fff;
-  font-weight: 600;
+      .logo-text {
+        font-size: 18px;
+        color: #fff;
+        font-weight: 600;
+      }
+    }
+  }
 }
 
 .login-form-wrapper {
@@ -196,77 +196,79 @@ const refreshCaptcha = () => {
   justify-content: center;
   align-items: center;
   background-color: #fff;
-}
 
-.login-form-container {
-  width: 400px;
-  padding: 20px;
-}
+  .login-form-container {
+    width: 400px;
+    padding: 20px;
 
-.login-header {
-  margin-bottom: 40px;
-  text-align: center;
-}
+    .login-header {
+      margin-bottom: 40px;
+      text-align: center;
 
-.login-header h2 {
-  font-size: 24px;
-  color: rgba(0, 0, 0, 0.85);
-  margin-bottom: 8px;
-}
+      h2 {
+        font-size: 24px;
+        color: rgba(0, 0, 0, 0.85);
+        margin-bottom: 8px;
+      }
 
-.login-header p {
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 14px;
-}
+      p {
+        color: rgba(0, 0, 0, 0.45);
+        font-size: 14px;
+      }
+    }
 
-.login-form {
-  width: 100%;
-}
+    .login-form {
+      width: 100%;
 
-.login-form-button {
-  height: 44px;
-  font-size: 16px;
-  border-radius: 4px;
-}
+      .login-form-button {
+        height: 44px;
+        font-size: 16px;
+        border-radius: 4px;
+      }
+    }
 
-.captcha-container {
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  background: #f5f5f5;
-  border-radius: 2px;
-  overflow: hidden;
-}
+    .captcha-container {
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      background: #f5f5f5;
+      border-radius: 2px;
+      overflow: hidden;
 
-.captcha-container img {
-  height: 38px;
-  width: 100%;
-  object-fit: cover;
-}
+      img {
+        height: 38px;
+        width: 100%;
+        object-fit: cover;
+      }
+    }
 
-.login-footer {
-  margin-top: 60px;
-  text-align: center;
-  color: rgba(0, 0, 0, 0.45);
-  font-size: 12px;
+    .login-footer {
+      margin-top: 60px;
+      text-align: center;
+      color: rgba(0, 0, 0, 0.45);
+      font-size: 12px;
+    }
+  }
 }
 
 /* 适配移动端 */
 @media (max-width: 992px) {
   .login-container {
     flex-direction: column;
-  }
-  
-  .login-background {
-    flex: 0 0 200px;
-  }
-  
-  .login-form-container {
-    width: 100%;
-    max-width: 400px;
-    padding: 20px;
+
+    .login-background {
+      flex: 0 0 200px;
+    }
+
+    .login-form-wrapper {
+      .login-form-container {
+        width: 100%;
+        max-width: 400px;
+        padding: 20px;
+      }
+    }
   }
 }
 </style> 
