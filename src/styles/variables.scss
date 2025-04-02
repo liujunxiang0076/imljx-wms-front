@@ -1,0 +1,41 @@
+// 颜色变量
+$primary-color: #1890ff;
+$success-color: #52c41a;
+$warning-color: #faad14;
+$error-color: #f5222d;
+$info-color: #1890ff;
+
+// 文字颜色
+$text-color-primary: rgba(0, 0, 0, 0.85);
+$text-color-secondary: rgba(0, 0, 0, 0.45);
+$text-color-disabled: rgba(0, 0, 0, 0.25);
+
+// 背景颜色
+$bg-color-base: #f0f2f5;
+$bg-color-light: #fafafa;
+
+// 边框相关
+$border-color-base: #d9d9d9;
+$border-color-split: #f0f0f0;
+$border-radius-base: 2px;
+$border-radius-sm: 2px;
+
+// 字体大小
+$font-size-base: 14px;
+$font-size-sm: 12px;
+$font-size-lg: 16px;
+
+// 间距
+$spacing-unit: 8px;
+$spacing-sm: $spacing-unit;
+$spacing-md: $spacing-unit * 2;
+$spacing-lg: $spacing-unit * 3;
+$spacing-xl: $spacing-unit * 4;
+
+// 断点
+$screen-xs: 480px;
+$screen-sm: 576px;
+$screen-md: 768px;
+$screen-lg: 992px;
+$screen-xl: 1200px;
+$screen-xxl: 1600px; 
