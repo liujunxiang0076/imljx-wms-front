@@ -1,5 +1,5 @@
 <template>
-  <div class="tabs-wrapper">
+  <div class="tabs-wrapper" v-if="layoutStore.showTabs">
     <div class="tabs-nav">
       <a-tabs
         v-model:activeKey="activeTabKey"
@@ -52,6 +52,7 @@ import { ref, computed, watch, onMounted, onBeforeUnmount, defineComponent } fro
 import { useRouter, useRoute } from 'vue-router';
 import { message } from 'ant-design-vue';
 import { ReloadOutlined } from '@ant-design/icons-vue';
+import { useLayoutStore } from '../../store/layout';
 
 interface TabItem {
   key: string;
@@ -66,6 +67,8 @@ export default defineComponent({
     ReloadOutlined
   },
   setup() {
+    const layoutStore = useLayoutStore();
+    
     // 默认标签页
     const defaultTab = 'dashboard';
 
@@ -240,7 +243,8 @@ export default defineComponent({
       closeOtherTabs,
       closeAllTabs,
       toggleFullscreen,
-      closeTab
+      closeTab,
+      layoutStore
     };
   }
 });
