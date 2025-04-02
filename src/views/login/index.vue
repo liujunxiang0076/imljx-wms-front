@@ -2,11 +2,18 @@
 import { ref, reactive, defineComponent } from 'vue';
 import { UserOutlined, LockOutlined, SafetyCertificateOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useUserStore } from '@/store/user';
 
 // 添加默认导出
 defineComponent({
   name: 'LoginView'
 });
+
+// 获取路由和store
+const router = useRouter();
+const route = useRoute();
+const userStore = useUserStore();
 
 interface LoginForm {
   username: string;
@@ -23,14 +30,27 @@ const loginForm = reactive<LoginForm>({
   remember: true
 });
 
-const handleLogin = () => {
+const handleLogin = async () => {
   loginLoading.value = true;
-  // 模拟登录请求
-  setTimeout(() => {
+  
+  try {
+    // 调用store登录方法
+    await userStore.login({
+      username: loginForm.username,
+      password: loginForm.password,
+      captcha: loginForm.captcha
+    });
+    
     message.success('登录成功，欢迎回来！');
+    
+    // 处理重定向
+    const redirect = route.query.redirect as string;
+    router.push(redirect || '/dashboard');
+  } catch (error: any) {
+    message.error(error.message || '登录失败，请重试');
+  } finally {
     loginLoading.value = false;
-    // 这里可以添加路由跳转逻辑
-  }, 1500);
+  }
 };
 
 // 动态生成验证码的时间戳（实际环境中应从后端获取）
