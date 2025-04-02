@@ -77,92 +77,42 @@
           :openKeys="openKeys"
           :inlineCollapsed="collapsed"
         >
-          <!-- 动态子菜单，根据顶部选中的菜单项显示不同的子菜单 -->
-          <template v-if="selectedTopMenu[0] === 'inventory'">
-            <a-menu-item key="inventory-overview">
-              <router-link to="/inventory/overview">
-                <AppstoreOutlined />
-                <span>库存概览</span>
-              </router-link>
-            </a-menu-item>
-            <a-menu-item key="inventory-list">
-              <router-link to="/inventory/list">
-                <UnorderedListOutlined />
-                <span>库存列表</span>
-              </router-link>
-            </a-menu-item>
-            <a-menu-item key="inventory-check">
-              <router-link to="/inventory/check">
-                <CheckSquareOutlined />
-                <span>库存盘点</span>
-              </router-link>
-            </a-menu-item>
-          </template>
-          
-          <template v-else-if="selectedTopMenu[0] === 'operations'">
-            <a-sub-menu key="inbound">
-              <template #title>
-                <InboxOutlined />
-                <span>入库管理</span>
-              </template>
-              <a-menu-item key="inbound-list">
-                <router-link to="/operations/inbound/list">
-                  <span>入库单列表</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="inbound-create">
-                <router-link to="/operations/inbound/create">
-                  <span>新建入库单</span>
-                </router-link>
-              </a-menu-item>
-            </a-sub-menu>
+          <!-- 根据选中的顶部菜单显示对应的子菜单 -->
+          <template v-for="item in currentSubmenu" :key="item.key">
+            <!-- 有子菜单的项目 -->
+            <template v-if="item.children && item.children.length">
+              <a-sub-menu :key="item.key">
+                <template #title>
+                  <component :is="item.icon" v-if="item.icon" />
+                  <span>{{ item.title }}</span>
+                </template>
+                <a-menu-item v-for="child in item.children" :key="child.key">
+                  <router-link :to="child.path || ''">
+                    <component :is="child.icon" v-if="child.icon" />
+                    <span>{{ child.title }}</span>
+                  </router-link>
+                </a-menu-item>
+              </a-sub-menu>
+            </template>
             
-            <a-sub-menu key="outbound">
-              <template #title>
-                <ExportOutlined />
-                <span>出库管理</span>
-              </template>
-              <a-menu-item key="outbound-list">
-                <router-link to="/operations/outbound/list">
-                  <span>出库单列表</span>
+            <!-- 没有子菜单的项目 -->
+            <template v-else>
+              <a-menu-item :key="item.key">
+                <router-link :to="item.path || ''">
+                  <component :is="item.icon" v-if="item.icon" />
+                  <span>{{ item.title }}</span>
                 </router-link>
               </a-menu-item>
-              <a-menu-item key="outbound-create">
-                <router-link to="/operations/outbound/create">
-                  <span>新建出库单</span>
-                </router-link>
-              </a-menu-item>
-            </a-sub-menu>
-          </template>
-          
-          <template v-else-if="selectedTopMenu[0] === 'system'">
-            <a-menu-item key="system-users">
-              <router-link to="/system/users">
-                <UserOutlined />
-                <span>用户管理</span>
-              </router-link>
-            </a-menu-item>
-            <a-menu-item key="system-roles">
-              <router-link to="/system/roles">
-                <TeamOutlined />
-                <span>角色管理</span>
-              </router-link>
-            </a-menu-item>
-            <a-menu-item key="system-permissions">
-              <router-link to="/system/permissions">
-                <LockOutlined />
-                <span>权限管理</span>
-              </router-link>
-            </a-menu-item>
-            <a-menu-item key="system-settings">
-              <router-link to="/system/settings">
-                <SettingOutlined />
-                <span>系统设置</span>
-              </router-link>
-            </a-menu-item>
+            </template>
           </template>
         </a-menu>
       </a-layout-sider>
+
+      <!-- 折叠按钮 -->
+      <div v-if="showSider" class="sidebar-trigger" @click="toggleCollapsed">
+        <MenuUnfoldOutlined v-if="collapsed" />
+        <MenuFoldOutlined v-else />
+      </div>
     
       <a-layout class="mix-layout-right">
         <!-- 标签页 -->
@@ -216,11 +166,73 @@ import {
   CheckSquareOutlined,
   UserOutlined,
   TeamOutlined,
-  LockOutlined
+  LockOutlined,
+  ShoppingOutlined,
+  ImportOutlined,
+  // 所有可能用到的图标组件
+  AimOutlined,
+  AlertOutlined,
+  ApiOutlined,
+  AppstoreAddOutlined,
+  AuditOutlined,
+  BankOutlined,
+  BookOutlined,
+  BuildOutlined,
+  CalculatorOutlined,
+  CalendarOutlined,
+  CloudOutlined,
+  CodeOutlined,
+  CommentOutlined,
+  CompassOutlined,
+  ContactsOutlined,
+  CreditCardOutlined,
+  CrownOutlined,
+  DatabaseOutlined,
+  DollarOutlined,
+  EnvironmentOutlined,
+  FileOutlined,
+  FolderOutlined,
+  ForkOutlined,
+  FundOutlined,
+  GlobalOutlined,
+  HomeOutlined,
+  IdcardOutlined,
+  InsuranceOutlined,
+  LayoutOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  MonitorOutlined,
+  PayCircleOutlined,
+  PieChartOutlined,
+  PrinterOutlined,
+  ProfileOutlined,
+  ProjectOutlined,
+  PropertySafetyOutlined,
+  ReadOutlined,
+  ReconciliationOutlined,
+  RedEnvelopeOutlined,
+  ScanOutlined,
+  ScheduleOutlined,
+  SearchOutlined,
+  ShopOutlined,
+  SolutionOutlined,
+  SoundOutlined,
+  StarOutlined,
+  SubnodeOutlined,
+  TableOutlined,
+  TagOutlined,
+  ToolOutlined,
+  TrophyOutlined,
+  UsergroupAddOutlined,
+  WalletOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined
 } from '@ant-design/icons-vue';
 import UserAvatar from '../components/UserAvatar.vue';
 import TabsNav from '../components/TabsNav.vue';
 import HeaderContent from '../components/HeaderContent.vue';
+import menuConfig from '../../config/menu';
 
 export default defineComponent({
   name: 'MixLayout',
@@ -238,6 +250,67 @@ export default defineComponent({
     UserOutlined,
     TeamOutlined,
     LockOutlined,
+    ShoppingOutlined,
+    ImportOutlined,
+    // 所有可能用到的图标组件
+    AimOutlined,
+    AlertOutlined,
+    ApiOutlined,
+    AppstoreAddOutlined,
+    AuditOutlined,
+    BankOutlined,
+    BookOutlined,
+    BuildOutlined,
+    CalculatorOutlined,
+    CalendarOutlined,
+    CloudOutlined,
+    CodeOutlined,
+    CommentOutlined,
+    CompassOutlined,
+    ContactsOutlined,
+    CreditCardOutlined,
+    CrownOutlined,
+    DatabaseOutlined,
+    DollarOutlined,
+    EnvironmentOutlined,
+    FileOutlined,
+    FolderOutlined,
+    ForkOutlined,
+    FundOutlined,
+    GlobalOutlined,
+    HomeOutlined,
+    IdcardOutlined,
+    InsuranceOutlined,
+    LayoutOutlined,
+    LoginOutlined,
+    LogoutOutlined,
+    MenuOutlined,
+    MonitorOutlined,
+    PayCircleOutlined,
+    PieChartOutlined,
+    PrinterOutlined,
+    ProfileOutlined,
+    ProjectOutlined,
+    PropertySafetyOutlined,
+    ReadOutlined,
+    ReconciliationOutlined,
+    RedEnvelopeOutlined,
+    ScanOutlined,
+    ScheduleOutlined,
+    SearchOutlined,
+    ShopOutlined,
+    SolutionOutlined,
+    SoundOutlined,
+    StarOutlined,
+    SubnodeOutlined,
+    TableOutlined,
+    TagOutlined,
+    ToolOutlined,
+    TrophyOutlined,
+    UsergroupAddOutlined,
+    WalletOutlined,
+    MenuUnfoldOutlined,
+    MenuFoldOutlined,
     UserAvatar,
     TabsNav,
     HeaderContent
@@ -280,19 +353,53 @@ export default defineComponent({
     // 是否显示侧边栏
     const showSider = computed(() => {
       const topMenu = selectedTopMenu.value[0];
-      return ['inventory', 'operations', 'system'].includes(topMenu);
+      // 只有dashboard和没有子菜单的一级菜单不显示侧边栏
+      if (topMenu === 'dashboard') return false;
+      
+      const menuItem = menuConfig.find(item => item.key === topMenu);
+      return menuItem && menuItem.children && menuItem.children.length > 0;
     });
+
+    // 当前选中的顶部菜单对应的子菜单配置
+    const currentSubmenu = computed(() => {
+      const topMenuKey = selectedTopMenu.value[0];
+      const menuItem = menuConfig.find(item => item.key === topMenuKey);
+      
+      if (menuItem && menuItem.children && menuItem.children.length > 0) {
+        return menuItem.children;
+      }
+      
+      return [];
+    });
+
+    // 根据图标名称获取对应的图标组件
+    const getIconComponent = (iconName: string | undefined) => {
+      if (!iconName) return null;
+      return iconName;
+    };
 
     // 监听顶部菜单变化，更新子菜单展开状态
     watch(selectedTopMenu, (newVal) => {
-      if (newVal[0] === 'operations') {
-        // 根据当前路径决定要展开的子菜单
-        const pathParts = route.path.split('/').filter(Boolean);
-        if (pathParts.length >= 2 && pathParts[0] === 'operations') {
-          openKeys.value = [pathParts[1]]; // 展开当前操作类型的子菜单
+      const topMenuKey = newVal[0];
+      const menuItem = menuConfig.find(item => item.key === topMenuKey);
+      
+      if (menuItem && menuItem.children) {
+        // 更新侧边栏默认展开项
+        const subKeys = menuItem.children
+          .filter(item => item.children && item.children.length > 0)
+          .map(item => item.key);
+        
+        if (subKeys.length > 0) {
+          openKeys.value = [subKeys[0]]; // 默认展开第一个子菜单
+        } else {
+          openKeys.value = [];
         }
       }
     }, { immediate: true });
+
+    const toggleCollapsed = () => {
+      collapsed.value = !collapsed.value;
+    };
 
     return {
       layoutStore,
@@ -301,7 +408,11 @@ export default defineComponent({
       selectedTopMenu,
       selectedKeys,
       openKeys,
-      showSider
+      showSider,
+      currentSubmenu,
+      getIconComponent,
+      menuConfig,
+      toggleCollapsed
     };
   }
 });
@@ -321,6 +432,7 @@ export default defineComponent({
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
     position: relative;
     z-index: 9;
+    color: inherit;
     
     &.fixed {
       position: fixed;
@@ -366,6 +478,7 @@ export default defineComponent({
       .top-menu {
         line-height: 64px;
         border-bottom: none;
+        background: transparent;
       }
     }
     
@@ -431,15 +544,20 @@ export default defineComponent({
     margin: 0;
     padding: 0;
     height: 40px;
-    line-height: initial;
+    line-height: 40px;
     border-bottom: 1px solid #f0f0f0;
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
     position: fixed;
     top: 64px;
-    width: calc(100% - 256px);
-    left: 256px;
+    width: 100%;
+    left: 0;
     z-index: 8;
     transition: all 0.3s;
+  }
+  
+  .mix-layout-container .tags-nav-container {
+    width: calc(100% - 256px);
+    left: 256px;
   }
   
   .mix-layout-sider.ant-layout-sider-collapsed ~ .mix-layout-right .tags-nav-container {
@@ -448,30 +566,32 @@ export default defineComponent({
   }
   
   &-content {
-    margin: 24px;
-    padding: 24px;
-    background: #fff;
-    border-radius: 2px;
+    margin: 0;
+    padding: 16px;
+    background: #f0f2f5;
     transition: all 0.3s;
     
     &.fixed-header {
       margin-top: 24px;
       
       &.show-tabs {
-        margin-top: 84px;
+        margin-top: 64px;
       }
     }
     
     &.has-sider {
-      margin-left: 280px; /* 256px + 24px margin */
+      margin-left: 256px;
       
-      .mix-layout-sider.ant-layout-sider-collapsed ~ & {
-        margin-left: 104px; /* 80px + 24px margin */
+      .mix-layout-sider.ant-layout-sider-collapsed ~ .mix-layout-right & {
+        margin-left: 80px;
       }
     }
   }
   
   .content-container {
+    background: #fff;
+    padding: 24px;
+    border-radius: 2px;
     min-height: calc(100vh - 64px - 48px - 70px);
   }
   
@@ -491,6 +611,37 @@ export default defineComponent({
   
   &-right {
     transition: all 0.3s;
+  }
+
+  // 内容区域根据侧边栏是否存在调整位置
+  .mix-layout-right .mix-layout-content:not(.has-sider) {
+    margin-left: 24px;
+  }
+
+  .sidebar-trigger {
+    position: fixed;
+    top: 72px;
+    left: 256px;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fff;
+    border-radius: 0 4px 4px 0;
+    cursor: pointer;
+    z-index: 11;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+    
+    &:hover {
+      background: #f0f2f5;
+    }
+  }
+  
+  .ant-layout-sider-collapsed ~ .sidebar-trigger {
+    left: 80px;
   }
 }
 </style> 
