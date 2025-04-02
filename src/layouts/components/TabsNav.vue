@@ -5,7 +5,7 @@
         v-model:activeKey="activeTabKey"
         type="editable-card"
         hide-add
-        @edit="onTabEdit"
+        @edit="(e, action) => onTabEdit(e, action)"
       >
         <a-tab-pane
           v-for="tab in tabList"
@@ -137,7 +137,7 @@ export default defineComponent({
     }, { immediate: true });
 
     // 标签编辑事件（关闭标签）
-    const onTabEdit = (targetKey: string | MouseEvent | KeyboardEvent, action: 'add' | 'remove') => {
+    const onTabEdit = (targetKey: any, action: 'add' | 'remove') => {
       if (action === 'remove' && typeof targetKey === 'string') {
         closeTab(targetKey);
       }
