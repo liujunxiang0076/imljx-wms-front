@@ -41,6 +41,24 @@ const routes: Array<RouteRecordRaw> = [
     ]
   },
   {
+    path: '/redirect',
+    component: () => import('@/layouts/MainLayout.vue'),
+    meta: { 
+      hideInMenu: true,
+      requiresAuth: true
+    },
+    children: [
+      {
+        path: ':path(.*)',
+        component: () => import('@/views/redirect/index.vue'),
+        meta: { 
+          hideInMenu: true,
+          requiresAuth: true
+        }
+      }
+    ]
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/error/404.vue'),
