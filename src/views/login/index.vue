@@ -250,7 +250,7 @@ const refreshCaptcha = () => {
         </a-form>
         
         <div class="login-footer">
-          <p>Copyright © 2024 SOOTRY All Rights Reserved</p>
+          <p>Copyright © 2025 Jason‌ Liu All Rights Reserved</p>
         </div>
       </div>
     </div>
