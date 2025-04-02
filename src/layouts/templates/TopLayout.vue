@@ -204,7 +204,7 @@ import {
 import UserAvatar from '../components/UserAvatar.vue';
 import TabsNav from '../components/TabsNav.vue';
 import HeaderContent from '../components/HeaderContent.vue';
-import { menuConfig } from '../../config/menu';
+import menuConfig from '../../config/menu';
 
 export default defineComponent({
   name: 'TopLayout',
