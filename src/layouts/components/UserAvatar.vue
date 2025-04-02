@@ -33,44 +33,57 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue';
+<script lang="ts">
+import { computed, defineComponent } from 'vue';
 import { UserOutlined, SettingOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '@/store/user';
+import { useUserStore } from '../../store/user';
 
-const router = useRouter();
-const userStore = useUserStore();
-
-const props = defineProps({
-  showName: {
-    type: Boolean,
-    default: true
+export default defineComponent({
+  name: 'UserAvatar',
+  components: {
+    UserOutlined, 
+    SettingOutlined, 
+    LogoutOutlined, 
+    DownOutlined
   },
-  showIcon: {
-    type: Boolean,
-    default: true
+  props: {
+    showName: {
+      type: Boolean,
+      default: true
+    },
+    showIcon: {
+      type: Boolean,
+      default: true
+    }
+  },
+  setup() {
+    const router = useRouter();
+    const userStore = useUserStore();
+
+    // 用户信息
+    const name = computed(() => userStore.name || '用户');
+    const avatar = computed(() => userStore.avatar || 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png');
+
+    // 退出登录
+    const handleLogout = async () => {
+      try {
+        await userStore.logout();
+        message.success('退出登录成功');
+        router.push('/login');
+      } catch (error) {
+        message.error('退出失败，请重试');
+      }
+    };
+
+    return {
+      name,
+      avatar,
+      handleLogout
+    };
   }
 });
-
-// 用户信息
-const name = computed(() => userStore.name || '用户');
-const avatar = computed(() => userStore.avatar || 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png');
-
-// 退出登录
-const handleLogout = async () => {
-  try {
-    await userStore.logout();
-    message.success('退出登录成功');
-    router.push('/login');
-  } catch (error) {
-    message.error('退出失败，请重试');
-  }
-};
-
-// 添加默认导出
-defineExpose({});
 </script>
 
 <style lang="scss" scoped>
