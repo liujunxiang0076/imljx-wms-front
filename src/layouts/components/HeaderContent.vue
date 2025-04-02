@@ -124,8 +124,8 @@
             <a-list-item>
               <template #actions>
                 <a-switch 
-                  :model-value="layoutStore.showTabs"
-                  @update:model-value="(checked) => layoutStore.$patch({ showTabs: checked })"
+                  :checked="layoutStore.showTabs" 
+                  @click="() => layoutStore.showTabs = !layoutStore.showTabs"
                 />
               </template>
               <a-list-item-meta title="显示标签栏" />
