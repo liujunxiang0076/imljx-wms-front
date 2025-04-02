@@ -13,32 +13,35 @@
           :closable="tab.key !== defaultTab"
         >
           <template #tab>
-            <span>{{ tab.title }}</span>
+            <a-dropdown :trigger="['contextmenu']">
+              <span>{{ tab.title }}</span>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="refresh" @click="refreshCurrentPage">
+                    <span>刷新当前页面</span>
+                  </a-menu-item>
+                  <a-menu-item 
+                    key="close" 
+                    @click="closeTab(tab.key)"
+                    :disabled="tab.key === defaultTab"
+                  >
+                    <span>关闭当前页面</span>
+                  </a-menu-item>
+                  <a-menu-item key="close-others" @click="closeOtherTabs">
+                    <span>关闭其他页面</span>
+                  </a-menu-item>
+                  <a-menu-item key="close-all" @click="closeAllTabs">
+                    <span>关闭全部页面</span>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
           </template>
         </a-tab-pane>
       </a-tabs>
       
       <div class="tabs-actions">
-        <a-dropdown placement="bottomRight">
-          <ReloadOutlined class="tabs-action-item" @click="refreshCurrentPage" />
-          <template #overlay>
-            <a-menu>
-              <a-menu-item key="refresh-current" @click="refreshCurrentPage">
-                <span>刷新当前标签页</span>
-              </a-menu-item>
-              <a-menu-item key="close-others" @click="closeOtherTabs">
-                <span>关闭其他标签页</span>
-              </a-menu-item>
-              <a-menu-item key="close-all" @click="closeAllTabs">
-                <span>关闭所有标签页</span>
-              </a-menu-item>
-              <a-menu-divider />
-              <a-menu-item key="fullscreen" @click="toggleFullscreen">
-                <span>{{ isFullscreen ? '退出全屏' : '全屏显示' }}</span>
-              </a-menu-item>
-            </a-menu>
-          </template>
-        </a-dropdown>
+        <ReloadOutlined class="tabs-action-item" @click="refreshCurrentPage" />
       </div>
     </div>
   </div>
@@ -111,7 +114,13 @@ export default defineComponent({
         return;
       }
       
-      const key = path.substring(1).replace(/\//g, '-') || defaultTab;
+      // 处理仪表盘路由
+      if (path === '/dashboard' || path === '/dashboard/index') {
+        activeTabKey.value = defaultTab;
+        return;
+      }
+      
+      const key = path.substring(1).replace(/\//g, '-');
       
       // 检查标签是否已存在
       const existTab = tabList.value.find(tab => tab.key === key);
@@ -120,7 +129,7 @@ export default defineComponent({
           key,
           title: getTabTitle(path),
           path,
-          closable: key !== defaultTab
+          closable: true
         });
       }
       
@@ -129,14 +138,8 @@ export default defineComponent({
 
     // 刷新当前页面
     const refreshCurrentPage = () => {
-      const { fullPath } = route;
-      router.replace({
-        path: '/redirect',
-        query: { path: fullPath }
-      }).catch(() => {
-        // 如果重定向失败，直接重新加载当前路由
-        router.replace(fullPath);
-      });
+      const { href } = window.location;
+      window.location.replace(href);
     };
 
     // 监听路由变化，更新标签页
@@ -144,15 +147,13 @@ export default defineComponent({
       // 忽略登录页和重定向页面
       if (newPath === '/login' || newPath === '/redirect') return;
       
-      // 处理仪表盘路由的特殊情况
-      if (newPath === '/dashboard') {
+      // 处理仪表盘路由
+      if (newPath === '/dashboard' || newPath === '/dashboard/index') {
         activeTabKey.value = defaultTab;
         return;
       }
       
-      const key = newPath.substring(1).replace(/\//g, '-') || defaultTab;
       addTab(newPath);
-      activeTabKey.value = key;
     }, { immediate: true });
 
     // 标签编辑事件（关闭标签）
@@ -238,7 +239,8 @@ export default defineComponent({
       refreshCurrentPage,
       closeOtherTabs,
       closeAllTabs,
-      toggleFullscreen
+      toggleFullscreen,
+      closeTab
     };
   }
 });
