@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import router from '../../router';
+import router from '@/router';
 
 const goHome = () => {
   router.push('/');
