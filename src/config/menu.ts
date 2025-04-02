@@ -274,4 +274,4 @@ const menuConfig: MenuItem[] = [
   },
 ];
 
-export default menuConfig; 
+export default menuConfig;
