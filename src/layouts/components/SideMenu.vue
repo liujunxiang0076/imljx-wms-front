@@ -20,14 +20,15 @@
             <component :is="item.icon" />
           </template>
           <template #title>{{ item.title }}</template>
-          <template v-for="child in item.children" :key="child.key">
-            <a-menu-item :key="child.key">
-              <template #icon v-if="child.icon">
-                <component :is="child.icon" />
-              </template>
-              <span>{{ child.title }}</span>
-            </a-menu-item>
-          </template>
+          <a-menu-item 
+            v-for="child in item.children" 
+            :key="child.key"
+          >
+            <template #icon v-if="child.icon">
+              <component :is="child.icon" />
+            </template>
+            <span>{{ child.title }}</span>
+          </a-menu-item>
         </a-sub-menu>
       </template>
     </a-menu>
@@ -37,7 +38,7 @@
 <script lang="ts">
 import { ref, computed, watch, defineComponent } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import menuConfig from '../config/menu';
+import menuConfig from '../../config/menu';
 import {
   DashboardOutlined,
   ShoppingOutlined,
