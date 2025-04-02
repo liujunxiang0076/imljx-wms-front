@@ -2,6 +2,7 @@
  * 布局状态管理
  */
 import { defineStore } from 'pinia';
+import config from '@/config';
 
 export type LayoutType = 'sider' | 'top' | 'mix';
 export type ThemeType = 'light' | 'dark';
@@ -50,7 +51,7 @@ export const useLayoutStore = defineStore('layout', {
     fixedHeader: true,
     fixedSider: true,
     primaryColor: '#1890ff',
-    showTabs: true,
+    showTabs: config.features.enableTabs, // 从配置中读取是否启用标签页
     contentWidth: 'fluid',
     splitMenus: false
   }),
