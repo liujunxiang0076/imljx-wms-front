@@ -138,7 +138,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { 
   MenuFoldOutlined, 
   MenuUnfoldOutlined, 
@@ -146,7 +145,6 @@ import {
   SettingOutlined,
   BgColorsOutlined
 } from '@ant-design/icons-vue';
-import UserAvatar from './UserAvatar.vue';
 import { useLayoutStore } from '../../store/layout';
 
 // Props 定义

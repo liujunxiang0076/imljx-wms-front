@@ -54,54 +54,36 @@
   </a-layout>
 </template>
 
-<script lang="ts">
-import { ref, onMounted, onBeforeUnmount, defineComponent } from 'vue';
+<script setup lang="ts">
 import { useLayoutStore } from '../../store/layout';
-// 导入组件
-import AppLogo from '../components/AppLogo.vue';
-import SideMenu from '../components/SideMenu.vue';
-import HeaderContent from '../components/HeaderContent.vue';
-import TabsNav from '../components/TabsNav.vue';
 
-export default defineComponent({
-  name: 'SiderLayout',
-  components: {
-    AppLogo,
-    SideMenu,
-    HeaderContent,
-    TabsNav
-  },
-  setup() {
-    // 布局状态管理
-    const layoutStore = useLayoutStore();
+// 布局状态管理
+const layoutStore = useLayoutStore();
 
-    // 侧边栏折叠状态
-    const collapsed = ref(false);
+// 侧边栏折叠状态
+const collapsed = ref(false);
 
-    // 响应式布局 - 窗口大小变化时自动调整布局
-    const handleResize = () => {
-      if (document.documentElement.clientWidth < 992 && !collapsed.value) {
-        collapsed.value = true;
-      } else if (document.documentElement.clientWidth > 1200 && collapsed.value) {
-        collapsed.value = false;
-      }
-    };
-
-    // 监听窗口大小变化
-    onMounted(() => {
-      handleResize();
-      window.addEventListener('resize', handleResize);
-    });
-
-    onBeforeUnmount(() => {
-      window.removeEventListener('resize', handleResize);
-    });
-
-    return {
-      layoutStore,
-      collapsed
-    };
+// 响应式布局 - 窗口大小变化时自动调整布局
+const handleResize = () => {
+  if (document.documentElement.clientWidth < 992 && !collapsed.value) {
+    collapsed.value = true;
+  } else if (document.documentElement.clientWidth > 1200 && collapsed.value) {
+    collapsed.value = false;
   }
+};
+
+// 监听窗口大小变化
+onMounted(() => {
+  handleResize();
+  window.addEventListener('resize', handleResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+});
+
+defineExpose({
+  collapsed
 });
 </script>
 

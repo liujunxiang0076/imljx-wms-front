@@ -186,8 +186,8 @@
   </a-layout>
 </template>
 
-<script lang="ts">
-import { ref, computed, watch, onMounted, defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref, computed, watch, onMounted } from 'vue';
 import { useLayoutStore } from '../../store/layout';
 import { useRoute } from 'vue-router';
 import { 
@@ -196,75 +196,43 @@ import {
   InboxOutlined, 
   ExportOutlined, 
   BarChartOutlined, 
-  SettingOutlined,
-  BellOutlined,
-  UserOutlined,
-  TeamOutlined
+  SettingOutlined
 } from '@ant-design/icons-vue';
-import UserAvatar from '../components/UserAvatar.vue';
-import TabsNav from '../components/TabsNav.vue';
-import HeaderContent from '../components/HeaderContent.vue';
-import menuConfig from '../../config/menu';
 
-export default defineComponent({
-  name: 'TopLayout',
-  components: {
-    DashboardOutlined, 
-    AppstoreOutlined, 
-    InboxOutlined, 
-    ExportOutlined, 
-    BarChartOutlined, 
-    SettingOutlined,
-    BellOutlined,
-    UserOutlined,
-    TeamOutlined,
-    UserAvatar,
-    TabsNav,
-    HeaderContent
-  },
-  setup() {
-    // 布局状态管理
-    const layoutStore = useLayoutStore();
-    const route = useRoute();
 
-    // 当前打开的子菜单
-    const openKeys = ref<string[]>([]);
+// 布局状态管理
+const layoutStore = useLayoutStore();
+const route = useRoute();
 
-    // 当前选中的菜单
-    const selectedKeys = computed(() => {
-      const path = route.path;
-      const paths = path.split('/').filter(Boolean);
-      
-      if (paths.length > 1) {
-        // 如果路径有多级，选中具体的子菜单项
-        return [`${paths[0]}-${paths[1]}`];
-      } else {
-        // 一级路径，选中主菜单
-        return [paths[0] || 'dashboard'];
-      }
-    });
+// 当前打开的子菜单
+const openKeys = ref<string[]>([]);
 
-    // 监听路由变化，更新打开的子菜单
-    watch(() => route.path, (path) => {
-      const paths = path.split('/').filter(Boolean);
-      if (paths.length > 0) {
-        openKeys.value = [paths[0]];
-      }
-    }, { immediate: true });
+// 当前选中的菜单
+const selectedKeys = computed(() => {
+  const path = route.path;
+  const paths = path.split('/').filter(Boolean);
+  
+  if (paths.length > 1) {
+    // 如果路径有多级，选中具体的子菜单项
+    return [`${paths[0]}-${paths[1]}`];
+  } else {
+    // 一级路径，选中主菜单
+    return [paths[0] || 'dashboard'];
+  }
+});
 
-    onMounted(() => {
-      // 在移动设备上调整布局
-      if (window.innerWidth < 768) {
-        layoutStore.collapsed = true;
-      }
-    });
+// 监听路由变化，更新打开的子菜单
+watch(() => route.path, (path) => {
+  const paths = path.split('/').filter(Boolean);
+  if (paths.length > 0) {
+    openKeys.value = [paths[0]];
+  }
+}, { immediate: true });
 
-    return {
-      layoutStore,
-      selectedKeys,
-      openKeys,
-      menuConfig
-    };
+onMounted(() => {
+  // 在移动设备上调整布局
+  if (window.innerWidth < 768) {
+    layoutStore.collapsed = true;
   }
 });
 </script>

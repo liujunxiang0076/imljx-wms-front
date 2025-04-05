@@ -225,8 +225,7 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined
 } from '@ant-design/icons-vue';
-import TabsNav from '../components/TabsNav.vue';
-import HeaderContent from '../components/HeaderContent.vue';
+
 import menuConfig from '../../config/menu';
 
 // 创建图标映射对象
