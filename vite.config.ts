@@ -7,18 +7,24 @@ import { resolve } from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // 别名
   resolve: {
+    // 路径别名
     alias: {
       '@': resolve(__dirname, 'src'),
       'vue-router': 'vue-router/dist/vue-router.esm-bundler.js',
     },
+    // 优化依赖
     dedupe: ['vue', 'vue-router']
   },
+  // 开发服务器
   server: {
+    port: 8080, // 端口
     hmr: {
       overlay: false, // 禁用HMR错误覆盖
     },
   },
+  // 优化依赖
   optimizeDeps: {
     include: [
       'vue',
@@ -29,6 +35,7 @@ export default defineConfig({
       '@ant-design/icons-vue'
     ]
   },
+  // 插件
   plugins: [
     vue(),
     AutoImport({
@@ -42,6 +49,8 @@ export default defineConfig({
           importStyle: false, // 已全局引入样式
         }),
       ],
+      dirs: ['src/components', 'src/layouts/components'],
+      extensions: ['vue'],
       dts: 'src/components.d.ts',
     }),
   ],
