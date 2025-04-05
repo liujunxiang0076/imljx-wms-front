@@ -10,10 +10,12 @@
       width="256"
     >
       <!-- Logo -->
-      <AppLogo :collapsed="collapsed" :theme="layoutStore.siderTheme" />
-      
-      <!-- 侧边菜单 -->
-      <SideMenu :collapsed="collapsed" :theme="layoutStore.siderTheme" />
+      <div class="sider-container">
+        <AppLogo :collapsed="collapsed" :theme="layoutStore.siderTheme" />
+        
+        <!-- 侧边菜单 -->
+        <SideMenu :collapsed="collapsed" :theme="layoutStore.siderTheme" />
+      </div>
     </a-layout-sider>
 
     <a-layout class="main-layout-right">
@@ -100,19 +102,44 @@ defineExpose({
     height: 100vh;
     overflow: auto;
     z-index: 10;
+    transition: width 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    
+    .sider-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+      
+      .app-logo {
+        position: relative;
+        z-index: 2;
+      }
+      
+      .side-menu {
+        position: relative;
+        z-index: 1;
+      }
+    }
     
     &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 4px;
+      height: 4px;
+      background-color: transparent;
     }
     
     &::-webkit-scrollbar-thumb {
       background: rgba(0, 0, 0, 0.2);
-      border-radius: 3px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.4);
+      }
     }
     
     &::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
+      background: transparent;
     }
   }
   
@@ -192,18 +219,22 @@ defineExpose({
     .tags-nav-container {
       width: calc(100% - 80px);
       left: 80px;
+      transition: all 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
     }
     
     .main-layout-content {
       margin-left: 104px; /* 80px + 24px margin */
+      transition: margin 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
     }
     
     .main-layout-footer {
       margin-left: 80px;
+      transition: margin-left 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
     }
     
     .main-layout-sider {
       width: 80px !important;
+      transition: width 0.2s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
     }
   }
 }
