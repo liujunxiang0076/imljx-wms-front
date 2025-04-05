@@ -55,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useLayoutStore } from '../../store/layout';
 
 // 布局状态管理

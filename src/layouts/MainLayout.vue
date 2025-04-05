@@ -6,10 +6,7 @@
 import { computed } from 'vue';
 import { useLayoutStore } from '../store/layout';
 
-// 引入布局模板组件
-import SiderLayout from './templates/SiderLayout.vue';
-import TopLayout from './templates/TopLayout.vue';
-import MixLayout from './templates/MixLayout.vue';
+
 
 // 布局状态管理
 const layoutStore = useLayoutStore();
@@ -18,12 +15,12 @@ const layoutStore = useLayoutStore();
 const layoutComponent = computed(() => {
   switch (layoutStore.layoutType) {
     case 'top':
-      return TopLayout;
+      return () => import('@/layouts/templates/TopLayout.vue');
     case 'mix':
-      return MixLayout;
+      return () => import('@/layouts/templates/MixLayout.vue');
     case 'sider':
     default:
-      return SiderLayout;
+      return () => import('@/layouts/templates/SiderLayout.vue');
   }
 });
 </script>
