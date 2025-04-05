@@ -35,7 +35,8 @@ const routes: Array<RouteRecordRaw> = [
         meta: {
           title: '仪表盘',
           icon: 'dashboard',
-          requiresAuth: true
+          requiresAuth: true,
+          keepAlive: true
         }
       }
     ]

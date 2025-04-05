@@ -34,8 +34,8 @@ const menuConfig: MenuItem[] = [
     permissions: [],
     children: [
       {
-        key: 'dashboard-overview',
-        path: '/dashboard',
+        key: 'dashboard-index',
+        path: '/dashboard/index',
         title: '总览',
         icon: 'FundOutlined',
         permissions: [],
