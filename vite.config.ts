@@ -37,20 +37,29 @@ export default defineConfig({
   },
   // 插件
   plugins: [
+    // Vue插件
     vue(),
+    // 自动导入
     AutoImport({
       resolvers: [AntDesignVueResolver()],
       imports: ['vue', 'vue-router'],
+      // 自动导入类型
       dts: 'src/auto-imports.d.ts',
     }),
+    // 自动导入组件
     Components({
+      // 自动导入组件类型
       resolvers: [
+        // 自动导入组件类型
         AntDesignVueResolver({
           importStyle: false, // 已全局引入样式
         }),
       ],
-      dirs: ['src/components', 'src/layouts/components'],
+      // 组件目录
+      dirs: ['src/components', 'src/layouts/components', 'src/layouts/templates'],
+      // 组件扩展名
       extensions: ['vue'],
+      // 组件类型
       dts: 'src/components.d.ts',
     }),
   ],
