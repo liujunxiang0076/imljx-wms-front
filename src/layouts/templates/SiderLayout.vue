@@ -102,14 +102,16 @@ defineExpose({
     height: 100vh;
     overflow: auto;
     z-index: 10;
-    transition: width 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+    transition: width 0.15s ease;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.12);
+    background-color: #0c2135; /* 匹配菜单背景色 */
     
     .sider-container {
       display: flex;
       flex-direction: column;
       height: 100%;
       position: relative;
+      will-change: contents; /* 优化性能 */
       
       .app-logo {
         position: relative;
@@ -123,18 +125,18 @@ defineExpose({
     }
     
     &::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
+      width: 3px;
+      height: 3px;
       background-color: transparent;
     }
     
     &::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.2);
-      border-radius: 4px;
-      transition: background-color 0.3s;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+      transition: background-color 0.15s ease;
       
       &:hover {
-        background: rgba(0, 0, 0, 0.4);
+        background: rgba(255, 255, 255, 0.25);
       }
     }
     
@@ -219,22 +221,22 @@ defineExpose({
     .tags-nav-container {
       width: calc(100% - 80px);
       left: 80px;
-      transition: all 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+      transition: all 0.15s ease;
     }
     
     .main-layout-content {
       margin-left: 104px; /* 80px + 24px margin */
-      transition: margin 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+      transition: margin 0.15s ease;
     }
     
     .main-layout-footer {
       margin-left: 80px;
-      transition: margin-left 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+      transition: margin-left 0.15s ease;
     }
     
     .main-layout-sider {
       width: 80px !important;
-      transition: width 0.2s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+      transition: width 0.15s ease !important;
     }
   }
 }

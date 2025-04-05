@@ -223,18 +223,20 @@ updateSelectedMenu();
     
     // 改进菜单展开/收起动画
     .ant-menu-sub {
-      transition: all 0.2s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
-      overflow: hidden;
+      transition: height 0.15s ease !important;
+      transition-delay: 0ms !important;
     }
     
     // 改进SubMenu样式
     .ant-menu-submenu {
       &-title {
-        transition: color 0.2s, background 0.2s !important;
+        transition: padding 0.15s ease, 
+                   background 0.15s ease, 
+                   color 0.15s ease !important;
       }
       
       &-arrow {
-        transition: transform 0.2s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+        transition: transform 0.15s ease !important;
       }
       
       &-open > .ant-menu-submenu-title .ant-menu-submenu-arrow {
@@ -245,9 +247,9 @@ updateSelectedMenu();
     // 优化菜单项动画
     .ant-menu-item,
     .ant-menu-submenu-title {
-      transition: padding 0.2s cubic-bezier(0.215, 0.61, 0.355, 1), 
-                 background 0.2s, 
-                 color 0.2s !important;
+      transition: padding 0.15s ease, 
+                 background 0.15s ease, 
+                 color 0.15s ease !important;
       border-radius: 0 22px 22px 0;
       margin: 4px 0;
       position: relative;
@@ -294,7 +296,7 @@ updateSelectedMenu();
     // 图标动画效果
     .anticon {
       margin-right: 10px;
-      transition: transform 0.2s, margin 0.2s;
+      transition: transform 0.15s ease, margin 0.15s ease;
     }
     
     // 收起状态优化
@@ -336,39 +338,46 @@ updateSelectedMenu();
 
 /* 暗色主题下的特殊处理 */
 :deep(.ant-menu-dark) {
+  background-color: #0c2135 !important; /* 更柔和的深蓝色 */
+  
   .ant-menu-item:hover:not(.ant-menu-item-selected),
   .ant-menu-submenu-title:hover:not(.ant-menu-item-selected) {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.05);
   }
   
   .ant-menu-item-selected {
-    background-color: #1890ff;
+    background-color: rgba(24, 144, 255, 0.8); /* 半透明蓝色，更专业 */
     
     &:hover {
-      background-color: #1890ff !important;
+      background-color: rgba(24, 144, 255, 0.9) !important;
     }
   }
   
   .ant-menu-submenu-selected > .ant-menu-submenu-title {
-    color: #fff !important;
+    color: rgba(255, 255, 255, 0.95) !important;
   }
   
   // 一级菜单展开/收起动画
   .ant-menu-submenu {
     > .ant-menu-submenu-title {
-      transition: all 0.2s ease-out !important;
+      transition: background 0.15s ease, color 0.15s ease !important;
     }
     
     &-open {
       > .ant-menu-submenu-title {
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: rgba(255, 255, 255, 0.03);
       }
     }
     
     // 子菜单内容区域
     > .ant-menu-sub {
-      background-color: #000c17 !important;
+      background-color: rgba(0, 0, 0, 0.2) !important; /* 淡化子菜单背景 */
     }
+  }
+  
+  // 优化箭头动画
+  .ant-menu-submenu-arrow {
+    transition: transform 0.15s ease !important;
   }
 }
 

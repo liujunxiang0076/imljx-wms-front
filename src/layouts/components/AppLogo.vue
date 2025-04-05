@@ -37,8 +37,8 @@ defineProps({
   height: 64px;
   min-height: 64px;
   overflow: hidden;
-  transition: all 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
-  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.05);
   position: relative;
   z-index: 1;
   
@@ -46,7 +46,7 @@ defineProps({
     width: 32px;
     height: 32px;
     margin-right: 12px;
-    transition: all 0.2s;
+    transition: all 0.15s ease;
   }
   
   &-title {
@@ -57,7 +57,7 @@ defineProps({
     color: inherit;
     white-space: nowrap;
     opacity: 1;
-    transition: opacity 0.2s, width 0.2s;
+    transition: opacity 0.15s ease, width 0.15s ease;
     display: inline-block;
   }
   
@@ -76,8 +76,8 @@ defineProps({
   }
   
   &.dark {
-    background-color: #001529;
-    color: #fff;
+    background-color: #0c2135;
+    color: rgba(255, 255, 255, 0.95);
   }
   
   &.light {
