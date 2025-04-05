@@ -2,7 +2,7 @@
 import { ref, onMounted, reactive, h } from 'vue';
 import { Card, Col, Row, Statistic, Table, Progress, Tabs, DatePicker, Button, message } from 'ant-design-vue';
 import { ArrowUpOutlined, ArrowDownOutlined, ReloadOutlined, FilterOutlined, DownloadOutlined } from '@ant-design/icons-vue';
-import config from '@/config';
+import config from '../../config';
 
 const { TabPane } = Tabs;
 const { RangePicker } = DatePicker;
