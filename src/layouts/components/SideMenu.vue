@@ -191,25 +191,218 @@ updateSelectedMenu();
 <style lang="scss" scoped>
 .side-menu {
   height: 100%;
-  overflow-y: auto;
-  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
   
-  &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
+  :deep(.ant-menu) {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+    
+    // 优化滚动条样式
+    &::-webkit-scrollbar {
+      width: 4px;
+      background-color: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      transition: background-color 0.3s;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+    }
+    
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+    
+    // 改进菜单展开/收起动画
+    .ant-menu-sub {
+      transition: all 0.2s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+      overflow: hidden;
+    }
+    
+    // 改进SubMenu样式
+    .ant-menu-submenu {
+      &-title {
+        transition: color 0.2s, background 0.2s !important;
+      }
+      
+      &-arrow {
+        transition: transform 0.2s cubic-bezier(0.215, 0.61, 0.355, 1) !important;
+      }
+      
+      &-open > .ant-menu-submenu-title .ant-menu-submenu-arrow {
+        transform: rotate(180deg) !important;
+      }
+    }
+    
+    // 优化菜单项动画
+    .ant-menu-item,
+    .ant-menu-submenu-title {
+      transition: padding 0.2s cubic-bezier(0.215, 0.61, 0.355, 1), 
+                 background 0.2s, 
+                 color 0.2s !important;
+      border-radius: 0 22px 22px 0;
+      margin: 4px 0;
+      position: relative;
+      overflow: hidden;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 3px;
+        height: 100%;
+        background-color: currentColor;
+        transform: scaleY(0);
+        opacity: 0;
+        transition: transform 0.2s, opacity 0.2s;
+      }
+      
+      &:hover {
+        background: rgba(0, 0, 0, 0.04);
+        
+        .anticon {
+          transform: scale(1.1);
+        }
+      }
+      
+      &.ant-menu-item-selected {
+        font-weight: 500;
+        
+        &::before {
+          transform: scaleY(1);
+          opacity: 1;
+        }
+        
+        &:hover {
+          // 选中项悬停时保持相同背景色
+          .anticon {
+            transform: scale(1.1);
+          }
+        }
+      }
+    }
+    
+    // 图标动画效果
+    .anticon {
+      margin-right: 10px;
+      transition: transform 0.2s, margin 0.2s;
+    }
+    
+    // 收起状态优化
+    &.ant-menu-inline-collapsed {
+      width: 80px !important;
+      
+      > .ant-menu-item,
+      > .ant-menu-submenu > .ant-menu-submenu-title {
+        padding: 0 calc(50% - 16px) !important;
+        text-align: center;
+        
+        .anticon {
+          margin: 0;
+          font-size: 16px;
+          line-height: 40px;
+        }
+      }
+      
+      .ant-menu-submenu-arrow {
+        display: none;
+      }
+    }
   }
   
   &.collapsed {
-    overflow-y: visible;
+    :deep(.ant-menu-inline-collapsed) {
+      width: 80px !important;
+    }
+  }
+}
+
+/* 确保布局结构正确 */
+:global(.ant-layout-sider-children) {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
+/* 暗色主题下的特殊处理 */
+:deep(.ant-menu-dark) {
+  .ant-menu-item:hover:not(.ant-menu-item-selected),
+  .ant-menu-submenu-title:hover:not(.ant-menu-item-selected) {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+  
+  .ant-menu-item-selected {
+    background-color: #1890ff;
+    
+    &:hover {
+      background-color: #1890ff !important;
+    }
+  }
+  
+  .ant-menu-submenu-selected > .ant-menu-submenu-title {
+    color: #fff !important;
+  }
+  
+  // 一级菜单展开/收起动画
+  .ant-menu-submenu {
+    > .ant-menu-submenu-title {
+      transition: all 0.2s ease-out !important;
+    }
+    
+    &-open {
+      > .ant-menu-submenu-title {
+        background-color: rgba(255, 255, 255, 0.05);
+      }
+    }
+    
+    // 子菜单内容区域
+    > .ant-menu-sub {
+      background-color: #000c17 !important;
+    }
+  }
+}
+
+/* 亮色主题下的特殊处理 */
+:deep(.ant-menu-light) {
+  .ant-menu-item-selected {
+    background-color: #e6f7ff;
+    color: #1890ff;
+    
+    &:hover {
+      background-color: #e6f7ff !important;
+    }
+  }
+  
+  .ant-menu-submenu-selected > .ant-menu-submenu-title {
+    color: #1890ff !important;
+  }
+  
+  // 一级菜单展开/收起动画
+  .ant-menu-submenu {
+    > .ant-menu-submenu-title {
+      transition: all 0.2s ease-out !important;
+    }
+    
+    &-open {
+      > .ant-menu-submenu-title {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+    }
+    
+    // 子菜单内容区域
+    > .ant-menu-sub {
+      background-color: #fafafa !important;
+    }
   }
 }
 </style> 
