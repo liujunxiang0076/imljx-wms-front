@@ -33,6 +33,7 @@ declare module 'vue' {
     AMenu: typeof import('ant-design-vue/es')['Menu']
     AMenuDivider: typeof import('ant-design-vue/es')['MenuDivider']
     AMenuItem: typeof import('ant-design-vue/es')['MenuItem']
+    AppLogo: typeof import('./layouts/components/AppLogo.vue')['default']
     ARow: typeof import('ant-design-vue/es')['Row']
     ASpin: typeof import('ant-design-vue/es')['Spin']
     ASubMenu: typeof import('ant-design-vue/es')['SubMenu']
@@ -40,7 +41,11 @@ declare module 'vue' {
     ATabPane: typeof import('ant-design-vue/es')['TabPane']
     ATabs: typeof import('ant-design-vue/es')['Tabs']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
+    HeaderContent: typeof import('./layouts/components/HeaderContent.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SideMenu: typeof import('./layouts/components/SideMenu.vue')['default']
+    TabsNav: typeof import('./layouts/components/TabsNav.vue')['default']
+    UserAvatar: typeof import('./layouts/components/UserAvatar.vue')['default']
   }
 }
