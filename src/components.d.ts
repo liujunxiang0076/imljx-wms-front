@@ -42,10 +42,13 @@ declare module 'vue' {
     ATabs: typeof import('ant-design-vue/es')['Tabs']
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     HeaderContent: typeof import('./layouts/components/HeaderContent.vue')['default']
+    MixLayout: typeof import('./layouts/templates/MixLayout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SideMenu: typeof import('./layouts/components/SideMenu.vue')['default']
+    SiderLayout: typeof import('./layouts/templates/SiderLayout.vue')['default']
     TabsNav: typeof import('./layouts/components/TabsNav.vue')['default']
+    TopLayout: typeof import('./layouts/templates/TopLayout.vue')['default']
     UserAvatar: typeof import('./layouts/components/UserAvatar.vue')['default']
   }
 }
