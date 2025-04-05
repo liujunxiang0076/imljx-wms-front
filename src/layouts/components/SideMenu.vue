@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import menuConfig from '../../config/menu';
 import {
@@ -162,6 +162,13 @@ watch(() => props.collapsed, (val) => {
   }
 });
 
+// 处理菜单展开状态变化，检查滚动状态
+watch(() => openKeys.value, () => {
+  nextTick(() => {
+    checkMenuOverflow();
+  });
+}, { deep: true });
+
 // 处理菜单点击
 const handleMenuClick: MenuProps['onClick'] = (info) => {
   // 查找对应菜单项的路径
@@ -184,8 +191,49 @@ const handleMenuClick: MenuProps['onClick'] = (info) => {
   }
 };
 
-// 初始化菜单状态
-updateSelectedMenu();
+// 检查菜单是否需要滚动
+const checkMenuOverflow = () => {
+  const menuEl = document.querySelector('.side-menu .ant-menu') as HTMLElement;
+  if (menuEl) {
+    const hasOverflow = menuEl.scrollHeight > menuEl.clientHeight;
+    
+    // 检测是否可以向下滚动
+    const hasBottomOverflow = hasOverflow && (menuEl.scrollHeight - menuEl.scrollTop - menuEl.clientHeight > 0);
+    
+    // 检测是否可以向上滚动
+    const hasTopOverflow = hasOverflow && menuEl.scrollTop > 0;
+    
+    // 设置相应的类
+    if (hasBottomOverflow) {
+      menuEl.classList.add('ant-menu--has-overflow-bottom');
+    } else {
+      menuEl.classList.remove('ant-menu--has-overflow-bottom');
+    }
+    
+    if (hasTopOverflow) {
+      menuEl.classList.add('ant-menu--has-overflow-top');
+    } else {
+      menuEl.classList.remove('ant-menu--has-overflow-top');
+    }
+  }
+};
+
+// 监听菜单滚动事件
+const setupScrollListener = () => {
+  const menuEl = document.querySelector('.side-menu .ant-menu') as HTMLElement;
+  if (menuEl) {
+    menuEl.addEventListener('scroll', checkMenuOverflow);
+  }
+};
+
+// 组件挂载时初始化
+onMounted(() => {
+  updateSelectedMenu();
+  nextTick(() => {
+    checkMenuOverflow();
+    setupScrollListener();
+  });
+});
 </script>
 
 <style lang="scss" scoped>
@@ -201,217 +249,145 @@ updateSelectedMenu();
     overflow-x: hidden;
     width: 100%;
     height: 100%;
+    position: relative;
     
     // 优化滚动条样式
     &::-webkit-scrollbar {
-      width: 4px;
+      width: 6px;
       background-color: transparent;
     }
     
     &::-webkit-scrollbar-thumb {
-      background-color: rgba(0, 0, 0, 0.2);
-      border-radius: 4px;
-      transition: background-color 0.3s;
+      background-color: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
       
       &:hover {
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: rgba(255, 255, 255, 0.3);
       }
+    }
+    
+    &::-webkit-scrollbar-track {
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 3px;
+    }
+    
+    // 底部渐变阴影提示
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 6px;
+      height: 30px;
+      background: linear-gradient(to top, rgba(12, 33, 53, 0.9), transparent);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1;
+    }
+    
+    // 顶部渐变阴影提示
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 6px;
+      height: 24px;
+      background: linear-gradient(to bottom, rgba(12, 33, 53, 0.9), transparent);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1;
+    }
+    
+    &.ant-menu--has-overflow-bottom::after {
+      opacity: 1;
+    }
+    
+    &.ant-menu--has-overflow-top::before {
+      opacity: 1;
     }
     
     scrollbar-width: thin;
-    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
-    
-    // 改进菜单展开/收起动画
-    .ant-menu-sub {
-      transition: height 0.15s ease !important;
-      transition-delay: 0ms !important;
-    }
-    
-    // 改进SubMenu样式
-    .ant-menu-submenu {
-      &-title {
-        transition: padding 0.15s ease, 
-                   background 0.15s ease, 
-                   color 0.15s ease !important;
-      }
-      
-      &-arrow {
-        transition: transform 0.15s ease !important;
-      }
-      
-      &-open > .ant-menu-submenu-title .ant-menu-submenu-arrow {
-        transform: rotate(180deg) !important;
-      }
-    }
-    
-    // 优化菜单项动画
-    .ant-menu-item,
-    .ant-menu-submenu-title {
-      transition: padding 0.15s ease, 
-                 background 0.15s ease, 
-                 color 0.15s ease !important;
-      border-radius: 0 22px 22px 0;
-      margin: 4px 0;
-      position: relative;
-      overflow: hidden;
-      
-      &::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 3px;
-        height: 100%;
-        background-color: currentColor;
-        transform: scaleY(0);
-        opacity: 0;
-        transition: transform 0.2s, opacity 0.2s;
-      }
-      
-      &:hover {
-        background: rgba(0, 0, 0, 0.04);
-        
-        .anticon {
-          transform: scale(1.1);
-        }
-      }
-      
-      &.ant-menu-item-selected {
-        font-weight: 500;
-        
-        &::before {
-          transform: scaleY(1);
-          opacity: 1;
-        }
-        
-        &:hover {
-          // 选中项悬停时保持相同背景色
-          .anticon {
-            transform: scale(1.1);
-          }
-        }
-      }
-    }
-    
-    // 图标动画效果
-    .anticon {
-      margin-right: 10px;
-      transition: transform 0.15s ease, margin 0.15s ease;
-    }
-    
-    // 收起状态优化
-    &.ant-menu-inline-collapsed {
-      width: 80px !important;
-      
-      > .ant-menu-item,
-      > .ant-menu-submenu > .ant-menu-submenu-title {
-        padding: 0 calc(50% - 16px) !important;
-        text-align: center;
-        
-        .anticon {
-          margin: 0;
-          font-size: 16px;
-          line-height: 40px;
-        }
-      }
-      
-      .ant-menu-submenu-arrow {
-        display: none;
-      }
-    }
-  }
-  
-  &.collapsed {
-    :deep(.ant-menu-inline-collapsed) {
-      width: 80px !important;
-    }
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
   }
 }
 
-/* 确保布局结构正确 */
-:global(.ant-layout-sider-children) {
+/* 全局覆盖 Ant Design Vue 样式 */
+:deep(.ant-menu-submenu-title) {
   display: flex !important;
-  flex-direction: column !important;
-  height: 100% !important;
-  overflow: hidden !important;
-}
+  align-items: center !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  padding: 0 16px !important;
 
-/* 暗色主题下的特殊处理 */
-:deep(.ant-menu-dark) {
-  background-color: #0c2135 !important; /* 更柔和的深蓝色 */
-  
-  .ant-menu-item:hover:not(.ant-menu-item-selected),
-  .ant-menu-submenu-title:hover:not(.ant-menu-item-selected) {
-    background-color: rgba(255, 255, 255, 0.05);
+  .ant-menu-title-content {
+    flex: 1 !important;
+    margin-left: 10px !important;
   }
   
-  .ant-menu-item-selected {
-    background-color: rgba(24, 144, 255, 0.8); /* 半透明蓝色，更专业 */
-    
-    &:hover {
-      background-color: rgba(24, 144, 255, 0.9) !important;
-    }
-  }
-  
-  .ant-menu-submenu-selected > .ant-menu-submenu-title {
-    color: rgba(255, 255, 255, 0.95) !important;
-  }
-  
-  // 一级菜单展开/收起动画
-  .ant-menu-submenu {
-    > .ant-menu-submenu-title {
-      transition: background 0.15s ease, color 0.15s ease !important;
-    }
-    
-    &-open {
-      > .ant-menu-submenu-title {
-        background-color: rgba(255, 255, 255, 0.03);
-      }
-    }
-    
-    // 子菜单内容区域
-    > .ant-menu-sub {
-      background-color: rgba(0, 0, 0, 0.2) !important; /* 淡化子菜单背景 */
-    }
-  }
-  
-  // 优化箭头动画
   .ant-menu-submenu-arrow {
-    transition: transform 0.15s ease !important;
+    position: static !important;
+    margin: 0 !important;
   }
 }
 
-/* 亮色主题下的特殊处理 */
-:deep(.ant-menu-light) {
+:deep(.ant-menu-item) {
+  display: flex !important;
+  align-items: center !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  padding: 0 16px !important;
+  
+  .ant-menu-title-content {
+    flex: 1 !important;
+    margin-left: 10px !important;
+  }
+}
+
+:deep(.ant-menu-inline-collapsed) {
+  .ant-menu-submenu-title,
+  .ant-menu-item {
+    padding: 0 !important;
+    justify-content: center !important;
+    
+    .ant-menu-item-icon,
+    .anticon {
+      margin: 0 !important;
+    }
+    
+    .ant-menu-title-content {
+      display: none !important;
+    }
+    
+    .ant-menu-submenu-arrow {
+      display: none !important;
+    }
+  }
+}
+
+:deep(.ant-menu-dark) {
+  background-color: #0c2135;
+  
   .ant-menu-item-selected {
-    background-color: #e6f7ff;
-    color: #1890ff;
-    
-    &:hover {
-      background-color: #e6f7ff !important;
+    background-color: rgba(24, 144, 255, 0.8);
+  }
+  
+  .ant-menu-submenu-arrow {
+    &::before, &::after {
+      background: rgba(255, 255, 255, 0.65) !important;
     }
   }
   
-  .ant-menu-submenu-selected > .ant-menu-submenu-title {
-    color: #1890ff !important;
+  .ant-menu-sub {
+    background-color: rgba(0, 0, 0, 0.2) !important;
   }
-  
-  // 一级菜单展开/收起动画
-  .ant-menu-submenu {
-    > .ant-menu-submenu-title {
-      transition: all 0.2s ease-out !important;
-    }
-    
-    &-open {
-      > .ant-menu-submenu-title {
-        background-color: rgba(0, 0, 0, 0.02);
-      }
-    }
-    
-    // 子菜单内容区域
-    > .ant-menu-sub {
-      background-color: #fafafa !important;
-    }
+}
+
+:deep(.ant-menu-sub) {
+  .ant-menu-item {
+    padding-left: 42px !important;
   }
 }
 </style> 
