@@ -85,12 +85,12 @@
             <template v-if="item.children && item.children.length">
               <a-sub-menu :key="item.key">
                 <template #title>
-                  <component :is="item.icon" v-if="item.icon" />
+                  <component :is="getComponentIcon(item.icon)" v-if="item.icon" />
                   <span>{{ item.title }}</span>
                 </template>
                 <a-menu-item v-for="child in item.children" :key="child.key">
                   <router-link :to="child.path || ''">
-                    <component :is="child.icon" v-if="child.icon" />
+                    <component :is="getComponentIcon(child.icon)" v-if="child.icon" />
                     <span>{{ child.title }}</span>
                   </router-link>
                 </a-menu-item>
@@ -101,7 +101,7 @@
             <template v-else>
               <a-menu-item :key="item.key">
                 <router-link :to="item.path || ''">
-                  <component :is="item.icon" v-if="item.icon" />
+                  <component :is="getComponentIcon(item.icon)" v-if="item.icon" />
                   <span>{{ item.title }}</span>
                 </router-link>
               </a-menu-item>
@@ -145,8 +145,8 @@
   </a-layout>
 </template>
 
-<script lang="ts">
-import { ref, computed, watch, defineComponent } from 'vue';
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useLayoutStore } from '../../store/layout';
 import { 
@@ -165,7 +165,6 @@ import {
   LockOutlined,
   ShoppingOutlined,
   ImportOutlined,
-  // 所有可能用到的图标组件
   AimOutlined,
   AlertOutlined,
   ApiOutlined,
@@ -225,176 +224,156 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined
 } from '@ant-design/icons-vue';
-import UserAvatar from '../components/UserAvatar.vue';
 import TabsNav from '../components/TabsNav.vue';
 import HeaderContent from '../components/HeaderContent.vue';
 import menuConfig from '../../config/menu';
 
-export default defineComponent({
-  name: 'MixLayout',
-  components: {
-    DashboardOutlined, 
-    AppstoreOutlined, 
-    ClusterOutlined,
-    InboxOutlined,
-    ExportOutlined,
-    BarChartOutlined, 
-    SettingOutlined,
-    BellOutlined,
-    UnorderedListOutlined,
-    CheckSquareOutlined,
-    UserOutlined,
-    TeamOutlined,
-    LockOutlined,
-    ShoppingOutlined,
-    ImportOutlined,
-    // 所有可能用到的图标组件
-    AimOutlined,
-    AlertOutlined,
-    ApiOutlined,
-    AppstoreAddOutlined,
-    AuditOutlined,
-    BankOutlined,
-    BookOutlined,
-    BuildOutlined,
-    CalculatorOutlined,
-    CalendarOutlined,
-    CloudOutlined,
-    CodeOutlined,
-    CommentOutlined,
-    CompassOutlined,
-    ContactsOutlined,
-    CreditCardOutlined,
-    CrownOutlined,
-    DatabaseOutlined,
-    DollarOutlined,
-    EnvironmentOutlined,
-    FileOutlined,
-    FolderOutlined,
-    ForkOutlined,
-    FundOutlined,
-    GlobalOutlined,
-    HomeOutlined,
-    IdcardOutlined,
-    InsuranceOutlined,
-    LayoutOutlined,
-    LoginOutlined,
-    LogoutOutlined,
-    MenuOutlined,
-    MonitorOutlined,
-    PayCircleOutlined,
-    PieChartOutlined,
-    PrinterOutlined,
-    ProfileOutlined,
-    ProjectOutlined,
-    PropertySafetyOutlined,
-    ReadOutlined,
-    ReconciliationOutlined,
-    RedEnvelopeOutlined,
-    ScanOutlined,
-    ScheduleOutlined,
-    SearchOutlined,
-    ShopOutlined,
-    SolutionOutlined,
-    SoundOutlined,
-    StarOutlined,
-    SubnodeOutlined,
-    TableOutlined,
-    TagOutlined,
-    ToolOutlined,
-    TrophyOutlined,
-    UsergroupAddOutlined,
-    WalletOutlined,
-    MenuUnfoldOutlined,
-    MenuFoldOutlined,
-    UserAvatar,
-    TabsNav,
-    HeaderContent
-  },
-  setup() {
-    // 布局状态管理
-    const layoutStore = useLayoutStore();
-    const route = useRoute();
+// 创建图标映射对象
+const iconComponents = {
+  DashboardOutlined,
+  AppstoreOutlined,
+  ClusterOutlined,
+  InboxOutlined,
+  ExportOutlined,
+  BarChartOutlined,
+  SettingOutlined,
+  BellOutlined,
+  UnorderedListOutlined,
+  CheckSquareOutlined,
+  UserOutlined,
+  TeamOutlined,
+  LockOutlined,
+  ShoppingOutlined,
+  ImportOutlined,
+  AimOutlined,
+  AlertOutlined,
+  ApiOutlined,
+  AppstoreAddOutlined,
+  AuditOutlined,
+  BankOutlined,
+  BookOutlined,
+  BuildOutlined,
+  CalculatorOutlined,
+  CalendarOutlined,
+  CloudOutlined,
+  CodeOutlined,
+  CommentOutlined,
+  CompassOutlined,
+  ContactsOutlined,
+  CreditCardOutlined,
+  CrownOutlined,
+  DatabaseOutlined,
+  DollarOutlined,
+  EnvironmentOutlined,
+  FileOutlined,
+  FolderOutlined,
+  ForkOutlined,
+  FundOutlined,
+  GlobalOutlined,
+  HomeOutlined,
+  IdcardOutlined,
+  InsuranceOutlined,
+  LayoutOutlined,
+  LoginOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  MonitorOutlined,
+  PayCircleOutlined,
+  PieChartOutlined,
+  PrinterOutlined,
+  ProfileOutlined,
+  ProjectOutlined,
+  PropertySafetyOutlined,
+  ReadOutlined,
+  ReconciliationOutlined,
+  RedEnvelopeOutlined,
+  ScanOutlined,
+  ScheduleOutlined,
+  SearchOutlined,
+  ShopOutlined,
+  SolutionOutlined,
+  SoundOutlined,
+  StarOutlined,
+  SubnodeOutlined,
+  TableOutlined,
+  TagOutlined,
+  ToolOutlined,
+  TrophyOutlined,
+  UsergroupAddOutlined,
+  WalletOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined
+};
 
-    // 当前顶部菜单选中项
-    const selectedTopMenu = computed(() => {
-      const path = route.path;
-      const firstLevelPath = path.split('/')[1];
-      return [firstLevelPath || 'dashboard'];
-    });
+// 获取图标组件的函数
+const getComponentIcon = (iconName: string | undefined) => {
+  if (!iconName) return null;
+  return iconComponents[iconName as keyof typeof iconComponents];
+};
 
-    // 当前子菜单选中项
-    const selectedKeys = computed(() => {
-      const path = route.path;
-      const pathParts = path.split('/').filter(Boolean);
-      
-      if (pathParts.length >= 2) {
-        // 如果是操作类菜单，使用完整路径作为key
-        if (pathParts[0] === 'operations' && pathParts.length >= 3) {
-          return [`${pathParts[1]}-${pathParts[2]}`];
-        }
-        // 其他情况使用二级路径作为key
-        return [`${pathParts[0]}-${pathParts[1]}`];
-      }
-      
-      return [];
-    });
+// 布局状态管理
+const layoutStore = useLayoutStore();
+const route = useRoute();
 
-    // 默认展开的子菜单
-    const openKeys = ref<string[]>([]);
-
-    // 是否显示侧边栏
-    const showSider = computed(() => {
-      const topMenu = selectedTopMenu.value[0];
-      const menuItem = menuConfig.find(item => item.key === topMenu);
-      return menuItem && menuItem.children && menuItem.children.length > 0;
-    });
-
-    // 当前选中的顶部菜单对应的子菜单配置
-    const currentSubmenu = computed(() => {
-      const topMenuKey = selectedTopMenu.value[0];
-      const menuItem = menuConfig.find(item => item.key === topMenuKey);
-      return menuItem?.children || [];
-    });
-
-    // 根据图标名称获取对应的图标组件
-    const getIconComponent = (iconName: string | undefined) => {
-      if (!iconName) return null;
-      return iconName;
-    };
-
-    // 监听顶部菜单变化，更新子菜单展开状态
-    watch(selectedTopMenu, (newVal) => {
-      const topMenuKey = newVal[0];
-      const menuItem = menuConfig.find(item => item.key === topMenuKey);
-      
-      if (menuItem && menuItem.children) {
-        // 更新侧边栏默认展开项
-        const subKeys = menuItem.children
-          .filter(item => item.children && item.children.length > 0)
-          .map(item => item.key);
-        
-        if (subKeys.length > 0) {
-          openKeys.value = [subKeys[0]]; // 默认展开第一个子菜单
-        } else {
-          openKeys.value = [];
-        }
-      }
-    }, { immediate: true });
-
-    return {
-      layoutStore,
-      route,
-      selectedTopMenu,
-      selectedKeys,
-      openKeys,
-      showSider,
-      currentSubmenu,
-      getIconComponent,
-      menuConfig
-    };
-  }
+// 当前顶部菜单选中项
+const selectedTopMenu = computed(() => {
+  const path = route.path;
+  const firstLevelPath = path.split('/')[1];
+  return [firstLevelPath || 'dashboard'];
 });
+
+// 当前子菜单选中项
+const selectedKeys = computed(() => {
+  const path = route.path;
+  const pathParts = path.split('/').filter(Boolean);
+  
+  if (pathParts.length >= 2) {
+    // 如果是操作类菜单，使用完整路径作为key
+    if (pathParts[0] === 'operations' && pathParts.length >= 3) {
+      return [`${pathParts[1]}-${pathParts[2]}`];
+    }
+    // 其他情况使用二级路径作为key
+    return [`${pathParts[0]}-${pathParts[1]}`];
+  }
+  
+  return [];
+});
+
+// 默认展开的子菜单
+const openKeys = ref<string[]>([]);
+
+// 是否显示侧边栏
+const showSider = computed(() => {
+  const topMenu = selectedTopMenu.value[0];
+  const menuItem = menuConfig.find(item => item.key === topMenu);
+  return menuItem && menuItem.children && menuItem.children.length > 0;
+});
+
+// 当前选中的顶部菜单对应的子菜单配置
+const currentSubmenu = computed(() => {
+  const topMenuKey = selectedTopMenu.value[0];
+  const menuItem = menuConfig.find(item => item.key === topMenuKey);
+  return menuItem?.children || [];
+});
+
+// 监听顶部菜单变化，更新子菜单展开状态
+watch(selectedTopMenu, (newVal) => {
+  const topMenuKey = newVal[0];
+  const menuItem = menuConfig.find(item => item.key === topMenuKey);
+  
+  if (menuItem && menuItem.children) {
+    // 更新侧边栏默认展开项
+    const subKeys = menuItem.children
+      .filter(item => item.children && item.children.length > 0)
+      .map(item => item.key);
+    
+    if (subKeys.length > 0) {
+      openKeys.value = [subKeys[0]]; // 默认展开第一个子菜单
+    } else {
+      openKeys.value = [];
+    }
+  }
+}, { immediate: true });
 </script>
 
 <style lang="scss" scoped>

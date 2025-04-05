@@ -137,436 +137,349 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount, defineComponent } from 'vue';
-import { useRoute } from 'vue-router';
+<script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { 
   MenuFoldOutlined, 
   MenuUnfoldOutlined, 
   BellOutlined,
-  FullscreenOutlined,
-  FullscreenExitOutlined,
   SettingOutlined,
-  BgColorsOutlined,
-  CheckOutlined
+  BgColorsOutlined
 } from '@ant-design/icons-vue';
 import UserAvatar from './UserAvatar.vue';
 import { useLayoutStore } from '../../store/layout';
 
-export default defineComponent({
-  name: 'HeaderContent',
-  components: {
-    MenuFoldOutlined, 
-    MenuUnfoldOutlined, 
-    BellOutlined,
-    FullscreenOutlined,
-    FullscreenExitOutlined,
-    SettingOutlined,
-    BgColorsOutlined,
-    UserAvatar,
-    CheckOutlined
+// Props 定义
+defineProps({
+  collapsed: {
+    type: Boolean,
+    default: false
   },
-  props: {
-    collapsed: {
-      type: Boolean,
-      default: false
-    },
-    isTopMenu: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['update:collapsed'],
-  setup(props, { emit }) {
-    const layoutStore = useLayoutStore();
-    const drawerVisible = ref(false);
-    const customColor = ref('#1890ff');
-
-    // 切换侧边栏
-    const toggleCollapsed = () => {
-      emit('update:collapsed', !props.collapsed);
-    };
-
-    // 全屏控制
-    const isFullscreen = ref(false);
-
-    const toggleFullscreen = () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch((e) => {
-          console.error('无法进入全屏模式:', e);
-        });
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-      }
-    };
-
-    // 全屏事件监听
-    const handleFullscreenChange = () => {
-      isFullscreen.value = !!document.fullscreenElement;
-    };
-
-    onMounted(() => {
-      document.addEventListener('fullscreenchange', handleFullscreenChange);
-      
-      // 初始化主题
-      setTimeout(() => {
-        // 延迟执行以确保组件完全挂载
-        setPrimaryColor(layoutStore.primaryColor);
-        setTheme(layoutStore.siderTheme);
-      }, 100);
-    });
-
-    onBeforeUnmount(() => {
-      document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    });
-
-    // 面包屑处理
-    const route = useRoute();
-
-    interface BreadcrumbItem {
-      title: string;
-      path?: string;
-    }
-
-    const breadcrumbList = computed<BreadcrumbItem[]>(() => {
-      const result: BreadcrumbItem[] = [
-        { title: '首页', path: '/' }
-      ];
-      
-      // 根据当前路由生成面包屑
-      const paths = route.path.split('/').filter(Boolean);
-      
-      if (paths.length) {
-        let currentPath = '';
-        
-        paths.forEach((path, index) => {
-          currentPath += `/${path}`;
-          
-          // 从route.matched中找到对应的路由信息
-          const matchedRoute = route.matched[index];
-          
-          if (matchedRoute && matchedRoute.meta.title) {
-            result.push({
-              title: matchedRoute.meta.title as string,
-              path: index === paths.length - 1 ? undefined : currentPath
-            });
-          }
-        });
-      }
-      
-      return result;
-    });
-
-    // 主题颜色列表
-    const themeColors = [
-      { name: '拂晓蓝', value: '#1890ff' },
-      { name: '薄暮红', value: '#f5222d' },
-      { name: '火山橙', value: '#fa541c' },
-      { name: '日暮黄', value: '#faad14' },
-      { name: '青柠绿', value: '#52c41a' },
-      { name: '极光绿', value: '#13c2c2' },
-      { name: '酱紫', value: '#722ed1' }
-    ];
-
-    // 设置主题
-    const setTheme = (theme: 'light' | 'dark') => {
-      layoutStore.$patch({ siderTheme: theme });
-      
-      // 给body添加主题类，方便全局样式适配
-      if (theme === 'dark') {
-        document.body.classList.add('dark-theme');
-        document.body.classList.remove('light-theme');
-      } else {
-        document.body.classList.add('light-theme');
-        document.body.classList.remove('dark-theme');
-      }
-      
-      // 重新应用主题色，确保在暗色模式下也能正确显示
-      setPrimaryColor(layoutStore.primaryColor);
-    };
-
-    // 设置布局类型
-    const setLayoutType = (type: 'sider' | 'top' | 'mix') => {
-      layoutStore.$patch({ layoutType: type });
-    };
-
-    // 设置主题色
-    const setPrimaryColor = (color: string) => {
-      // 更新store中的主题色
-      layoutStore.primaryColor = color;
-      customColor.value = color;
-      
-      // 创建或更新样式标签
-      let styleTag = document.getElementById('theme-color-style');
-      if (!styleTag) {
-        styleTag = document.createElement('style');
-        styleTag.id = 'theme-color-style';
-        document.head.appendChild(styleTag);
-      }
-      
-      // 直接注入CSS变量和全局覆盖样式
-      const cssVars = `
-        :root {
-          --ant-primary-color: ${color} !important;
-          --primary-color: ${color} !important;
-          --ant-primary-color-hover: ${adjustColor(color, 15)} !important;
-          --ant-primary-color-active: ${adjustColor(color, 25)} !important;
-          --ant-primary-color-outline: ${color}33 !important;
-          --ant-primary-color-deprecated-bg: ${adjustColor(color, 90)} !important;
-          --ant-primary-color-deprecated-border: ${adjustColor(color, 60)} !important;
-          --ant-primary-1: ${adjustColor(color, 80)} !important;
-          --ant-primary-2: ${adjustColor(color, 60)} !important;
-          --ant-primary-3: ${adjustColor(color, 40)} !important;
-          --ant-primary-4: ${adjustColor(color, 20)} !important;
-          --ant-primary-5: ${color} !important;
-          --ant-primary-6: ${adjustColor(color, -10)} !important;
-          --ant-primary-7: ${adjustColor(color, -20)} !important;
-        }
-        
-        /* 暗色主题特殊处理 */
-        .dark-theme {
-          --ant-primary-color-deprecated-bg: ${adjustColor(color, 20)} !important;
-          --ant-primary-1: ${adjustColor(color, 15)} !important;
-          --ant-primary-2: ${adjustColor(color, 25)} !important;
-        }
-        
-        /* 全局组件样式覆盖 */
-        
-        /* 进度条和滑块 */
-        .ant-progress-bg {
-          background-color: ${color} !important;
-        }
-        .ant-slider-track {
-          background-color: ${color} !important;
-        }
-        .ant-slider-handle {
-          border-color: ${color} !important;
-        }
-        .ant-slider-handle:focus {
-          box-shadow: 0 0 0 5px ${color}33 !important;
-        }
-        
-        /* 树形控件 */
-        .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
-          background-color: ${adjustColor(color, 90)} !important;
-        }
-        .ant-tree .ant-tree-node-content-wrapper:hover {
-          background-color: ${adjustColor(color, 95)} !important;
-        }
-        
-        /* 下拉菜单 */
-        .ant-dropdown-menu-item-selected {
-          color: ${color} !important;
-          background-color: ${adjustColor(color, 95)} !important;
-        }
-        
-        /* 步骤条 */
-        .ant-steps .ant-steps-item-finish .ant-steps-item-icon {
-          background-color: #fff !important;
-          border-color: ${color} !important;
-        }
-        .ant-steps .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon {
-          color: ${color} !important;
-        }
-        .ant-steps .ant-steps-item-process .ant-steps-item-icon {
-          background-color: ${color} !important;
-          border-color: ${color} !important;
-        }
-        
-        /* 时间轴 */
-        .ant-timeline-item-head-blue {
-          color: ${color} !important;
-          border-color: ${color} !important;
-        }
-        
-        /* 标记和徽章 */
-        .ant-tag-checkable:not(.ant-tag-checkable-checked):hover {
-          color: ${color} !important;
-        }
-        .ant-tag-checkable-checked {
-          background-color: ${color} !important;
-        }
-        
-        /* 表单验证 */
-        .ant-form-item-has-success.ant-form-item-has-feedback .ant-form-item-children-icon {
-          color: ${color} !important;
-        }
-        
-        /* 加载状态 */
-        .ant-spin {
-          color: ${color} !important;
-        }
-        
-        /* 上传组件 */
-        .ant-upload.ant-upload-select:hover {
-          border-color: ${color} !important;
-        }
-        .ant-upload.ant-upload-drag:hover {
-          border-color: ${color} !important;
-        }
-        
-        /* 按钮相关 */
-        .ant-btn-primary {
-          background-color: ${color} !important;
-          border-color: ${color} !important;
-        }
-        .ant-btn-primary:hover,
-        .ant-btn-primary:focus {
-          background-color: ${adjustColor(color, 15)} !important;
-          border-color: ${adjustColor(color, 15)} !important;
-        }
-        .ant-btn-link {
-          color: ${color} !important;
-        }
-        .ant-btn-link:hover {
-          color: ${adjustColor(color, 15)} !important;
-        }
-        
-        /* 表单控件 */
-        .ant-checkbox-checked .ant-checkbox-inner,
-        .ant-checkbox-indeterminate .ant-checkbox-inner {
-          background-color: ${color} !important;
-          border-color: ${color} !important;
-        }
-        .ant-radio-checked .ant-radio-inner {
-          border-color: ${color} !important;
-        }
-        .ant-radio-checked .ant-radio-inner::after {
-          background-color: ${color} !important;
-        }
-        .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
-          color: ${color} !important;
-          border-color: ${color} !important;
-        }
-        
-        /* 开关、选择器等 */
-        .ant-switch-checked {
-          background-color: ${color} !important;
-        }
-        .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
-          border-color: ${color} !important;
-          box-shadow: 0 0 0 2px ${color}33 !important;
-        }
-        .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
-          background-color: ${adjustColor(color, 80)} !important;
-        }
-        
-        /* 导航和标签 */
-        .ant-menu-light .ant-menu-item-selected, 
-        .ant-menu-light .ant-menu-submenu-selected {
-          color: ${color} !important;
-        }
-        .ant-menu-light .ant-menu-item:hover, 
-        .ant-menu-light .ant-menu-item-active {
-          color: ${color} !important;
-        }
-        .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-          color: ${color} !important;
-        }
-        .ant-tabs-ink-bar {
-          background: ${color} !important;
-        }
-        
-        /* 链接和文字 */
-        a {
-          color: ${color};
-        }
-        a:hover {
-          color: ${adjustColor(color, 15)};
-        }
-        .ant-typography a {
-          color: ${color} !important;
-        }
-        
-        /* 分页和日期选择器 */
-        .ant-pagination-item-active {
-          border-color: ${color} !important;
-        }
-        .ant-pagination-item-active a {
-          color: ${color} !important;
-        }
-        .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
-          background: ${color} !important;
-        }
-        
-        /* 表格 */
-        .ant-table-column-sort {
-          background: ${adjustColor(color, 80)} !important;
-        }
-        
-        /* 消息和通知 */
-        .ant-message-info .anticon,
-        .ant-notification-notice-info .anticon {
-          color: ${color} !important;
-        }
-        
-        /* 自定义类 */
-        .text-primary {
-          color: ${color} !important;
-        }
-        .bg-primary {
-          background-color: ${color} !important;
-        }
-        .border-primary {
-          border-color: ${color} !important;
-        }
-      `;
-      
-      styleTag.innerHTML = cssVars;
-      
-      // 应用到favicon（如果存在）
-      const favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-      if (favicon && favicon.href && favicon.href.includes('data:image/svg+xml')) {
-        const svg = decodeURIComponent(favicon.href.split(',')[1]);
-        const coloredSvg = svg.replace(/fill="([^"]+)"/g, `fill="${color}"`);
-        favicon.href = `data:image/svg+xml,${encodeURIComponent(coloredSvg)}`;
-      }
-    };
-
-    // 帮助函数 - 调整颜色亮度
-    function adjustColor(color: string, percent: number): string {
-      // 解析颜色
-      const hexToRgb = (hex: string): number[] => {
-        const cleanHex = hex.replace('#', '');
-        return [
-          parseInt(cleanHex.substring(0, 2), 16),
-          parseInt(cleanHex.substring(2, 4), 16),
-          parseInt(cleanHex.substring(4, 6), 16)
-        ];
-      };
-      
-      const rgb = hexToRgb(color);
-      let adjustedRgb;
-      
-      if (percent > 0) {
-        // 变亮
-        adjustedRgb = rgb.map(c => Math.min(255, Math.round(c + (255 - c) * (percent / 100))));
-      } else {
-        // 变暗
-        adjustedRgb = rgb.map(c => Math.max(0, Math.round(c + (c * (percent / 100)))));
-      }
-      
-      // 转回十六进制
-      return `#${adjustedRgb.map(c => c.toString(16).padStart(2, '0')).join('')}`;
-    }
-
-    return {
-      toggleCollapsed,
-      isFullscreen,
-      toggleFullscreen,
-      breadcrumbList,
-      drawerVisible,
-      layoutStore,
-      themeColors,
-      customColor,
-      setTheme,
-      setLayoutType,
-      setPrimaryColor
-    };
+  isTopMenu: {
+    type: Boolean,
+    default: false
   }
 });
+
+// Emits 定义
+const emit = defineEmits(['update:collapsed']);
+
+const layoutStore = useLayoutStore();
+const drawerVisible = ref(false);
+const customColor = ref('#1890ff');
+
+// 全屏事件监听
+const handleFullscreenChange = () => {
+  // 移除未使用的全屏控制相关代码
+};
+
+onMounted(() => {
+  document.addEventListener('fullscreenchange', handleFullscreenChange);
+  
+  // 初始化主题
+  setTimeout(() => {
+    // 延迟执行以确保组件完全挂载
+    setPrimaryColor(layoutStore.primaryColor);
+    setTheme(layoutStore.siderTheme);
+  }, 100);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('fullscreenchange', handleFullscreenChange);
+});
+
+// 主题颜色列表
+const themeColors = [
+  { name: '拂晓蓝', value: '#1890ff' },
+  { name: '薄暮红', value: '#f5222d' },
+  { name: '火山橙', value: '#fa541c' },
+  { name: '日暮黄', value: '#faad14' },
+  { name: '青柠绿', value: '#52c41a' },
+  { name: '极光绿', value: '#13c2c2' },
+  { name: '酱紫', value: '#722ed1' }
+];
+
+// 设置主题
+const setTheme = (theme: 'light' | 'dark') => {
+  layoutStore.$patch({ siderTheme: theme });
+  
+  // 给body添加主题类，方便全局样式适配
+  if (theme === 'dark') {
+    document.body.classList.add('dark-theme');
+    document.body.classList.remove('light-theme');
+  } else {
+    document.body.classList.add('light-theme');
+    document.body.classList.remove('dark-theme');
+  }
+  
+  // 重新应用主题色，确保在暗色模式下也能正确显示
+  setPrimaryColor(layoutStore.primaryColor);
+};
+
+// 设置布局类型
+const setLayoutType = (type: 'sider' | 'top' | 'mix') => {
+  layoutStore.$patch({ layoutType: type });
+};
+
+// 设置主题色
+const setPrimaryColor = (color: string) => {
+  // 更新store中的主题色
+  layoutStore.primaryColor = color;
+  customColor.value = color;
+  
+  // 创建或更新样式标签
+  let styleTag = document.getElementById('theme-color-style');
+  if (!styleTag) {
+    styleTag = document.createElement('style');
+    styleTag.id = 'theme-color-style';
+    document.head.appendChild(styleTag);
+  }
+  
+  // 直接注入CSS变量和全局覆盖样式
+  const cssVars = `
+    :root {
+      --ant-primary-color: ${color} !important;
+      --primary-color: ${color} !important;
+      --ant-primary-color-hover: ${adjustColor(color, 15)} !important;
+      --ant-primary-color-active: ${adjustColor(color, 25)} !important;
+      --ant-primary-color-outline: ${color}33 !important;
+      --ant-primary-color-deprecated-bg: ${adjustColor(color, 90)} !important;
+      --ant-primary-color-deprecated-border: ${adjustColor(color, 60)} !important;
+      --ant-primary-1: ${adjustColor(color, 80)} !important;
+      --ant-primary-2: ${adjustColor(color, 60)} !important;
+      --ant-primary-3: ${adjustColor(color, 40)} !important;
+      --ant-primary-4: ${adjustColor(color, 20)} !important;
+      --ant-primary-5: ${color} !important;
+      --ant-primary-6: ${adjustColor(color, -10)} !important;
+      --ant-primary-7: ${adjustColor(color, -20)} !important;
+    }
+    
+    /* 暗色主题特殊处理 */
+    .dark-theme {
+      --ant-primary-color-deprecated-bg: ${adjustColor(color, 20)} !important;
+      --ant-primary-1: ${adjustColor(color, 15)} !important;
+      --ant-primary-2: ${adjustColor(color, 25)} !important;
+    }
+    
+    /* 全局组件样式覆盖 */
+    
+    /* 进度条和滑块 */
+    .ant-progress-bg {
+      background-color: ${color} !important;
+    }
+    .ant-slider-track {
+      background-color: ${color} !important;
+    }
+    .ant-slider-handle {
+      border-color: ${color} !important;
+    }
+    .ant-slider-handle:focus {
+      box-shadow: 0 0 0 5px ${color}33 !important;
+    }
+    
+    /* 树形控件 */
+    .ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+      background-color: ${adjustColor(color, 90)} !important;
+    }
+    .ant-tree .ant-tree-node-content-wrapper:hover {
+      background-color: ${adjustColor(color, 95)} !important;
+    }
+    
+    /* 下拉菜单 */
+    .ant-dropdown-menu-item-selected {
+      color: ${color} !important;
+      background-color: ${adjustColor(color, 95)} !important;
+    }
+    
+    /* 步骤条 */
+    .ant-steps .ant-steps-item-finish .ant-steps-item-icon {
+      background-color: #fff !important;
+      border-color: ${color} !important;
+    }
+    .ant-steps .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon {
+      color: ${color} !important;
+    }
+    .ant-steps .ant-steps-item-process .ant-steps-item-icon {
+      background-color: ${color} !important;
+      border-color: ${color} !important;
+    }
+    
+    /* 时间轴 */
+    .ant-timeline-item-head-blue {
+      color: ${color} !important;
+      border-color: ${color} !important;
+    }
+    
+    /* 标记和徽章 */
+    .ant-tag-checkable:not(.ant-tag-checkable-checked):hover {
+      color: ${color} !important;
+    }
+    .ant-tag-checkable-checked {
+      background-color: ${color} !important;
+    }
+    
+    /* 表单验证 */
+    .ant-form-item-has-success.ant-form-item-has-feedback .ant-form-item-children-icon {
+      color: ${color} !important;
+    }
+    
+    /* 加载状态 */
+    .ant-spin {
+      color: ${color} !important;
+    }
+    
+    /* 上传组件 */
+    .ant-upload.ant-upload-select:hover {
+      border-color: ${color} !important;
+    }
+    .ant-upload.ant-upload-drag:hover {
+      border-color: ${color} !important;
+    }
+    
+    /* 按钮相关 */
+    .ant-btn-primary {
+      background-color: ${color} !important;
+      border-color: ${color} !important;
+    }
+    .ant-btn-primary:hover,
+    .ant-btn-primary:focus {
+      background-color: ${adjustColor(color, 15)} !important;
+      border-color: ${adjustColor(color, 15)} !important;
+    }
+    .ant-btn-link {
+      color: ${color} !important;
+    }
+    .ant-btn-link:hover {
+      color: ${adjustColor(color, 15)} !important;
+    }
+    
+    /* 表单控件 */
+    .ant-checkbox-checked .ant-checkbox-inner,
+    .ant-checkbox-indeterminate .ant-checkbox-inner {
+      background-color: ${color} !important;
+      border-color: ${color} !important;
+    }
+    .ant-radio-checked .ant-radio-inner {
+      border-color: ${color} !important;
+    }
+    .ant-radio-checked .ant-radio-inner::after {
+      background-color: ${color} !important;
+    }
+    .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+      color: ${color} !important;
+      border-color: ${color} !important;
+    }
+    
+    /* 开关、选择器等 */
+    .ant-switch-checked {
+      background-color: ${color} !important;
+    }
+    .ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+      border-color: ${color} !important;
+      box-shadow: 0 0 0 2px ${color}33 !important;
+    }
+    .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+      background-color: ${adjustColor(color, 80)} !important;
+    }
+    
+    /* 导航和标签 */
+    .ant-menu-light .ant-menu-item-selected, 
+    .ant-menu-light .ant-menu-submenu-selected {
+      color: ${color} !important;
+    }
+    .ant-menu-light .ant-menu-item:hover, 
+    .ant-menu-light .ant-menu-item-active {
+      color: ${color} !important;
+    }
+    .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+      color: ${color} !important;
+    }
+    .ant-tabs-ink-bar {
+      background: ${color} !important;
+    }
+    
+    /* 链接和文字 */
+    a {
+      color: ${color};
+    }
+    a:hover {
+      color: ${adjustColor(color, 15)};
+    }
+    .ant-typography a {
+      color: ${color} !important;
+    }
+    
+    /* 分页和日期选择器 */
+    .ant-pagination-item-active {
+      border-color: ${color} !important;
+    }
+    .ant-pagination-item-active a {
+      color: ${color} !important;
+    }
+    .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner {
+      background: ${color} !important;
+    }
+    
+    /* 表格 */
+    .ant-table-column-sort {
+      background: ${adjustColor(color, 80)} !important;
+    }
+    
+    /* 消息和通知 */
+    .ant-message-info .anticon,
+    .ant-notification-notice-info .anticon {
+      color: ${color} !important;
+    }
+    
+    /* 自定义类 */
+    .text-primary {
+      color: ${color} !important;
+    }
+    .bg-primary {
+      background-color: ${color} !important;
+    }
+    .border-primary {
+      border-color: ${color} !important;
+    }
+  `;
+  
+  styleTag.innerHTML = cssVars;
+  
+  // 应用到favicon（如果存在）
+  const favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+  if (favicon && favicon.href && favicon.href.includes('data:image/svg+xml')) {
+    const svg = decodeURIComponent(favicon.href.split(',')[1]);
+    const coloredSvg = svg.replace(/fill="([^"]+)"/g, `fill="${color}"`);
+    favicon.href = `data:image/svg+xml,${encodeURIComponent(coloredSvg)}`;
+  }
+};
+
+// 帮助函数 - 调整颜色亮度
+function adjustColor(color: string, percent: number): string {
+  // 解析颜色
+  const hexToRgb = (hex: string): number[] => {
+    const cleanHex = hex.replace('#', '');
+    return [
+      parseInt(cleanHex.substring(0, 2), 16),
+      parseInt(cleanHex.substring(2, 4), 16),
+      parseInt(cleanHex.substring(4, 6), 16)
+    ];
+  };
+  
+  const rgb = hexToRgb(color);
+  let adjustedRgb;
+  
+  if (percent > 0) {
+    // 变亮
+    adjustedRgb = rgb.map(c => Math.min(255, Math.round(c + (255 - c) * (percent / 100))));
+  } else {
+    // 变暗
+    adjustedRgb = rgb.map(c => Math.max(0, Math.round(c + (c * (percent / 100)))));
+  }
+  
+  // 转回十六进制
+  return `#${adjustedRgb.map(c => c.toString(16).padStart(2, '0')).join('')}`;
+}
 </script>
 
 <style lang="scss" scoped>
