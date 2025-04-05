@@ -149,6 +149,7 @@
 import { ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useLayoutStore } from '../../store/layout';
+// 图标
 import { 
   DashboardOutlined, 
   AppstoreOutlined, 
@@ -398,7 +399,7 @@ watch(selectedTopMenu, (newVal) => {
       left: 0;
       width: 100%;
     }
-    
+    // 头部容器
     .header-container {
       display: flex;
       align-items: center;
@@ -449,6 +450,30 @@ watch(selectedTopMenu, (newVal) => {
             &:hover {
               color: var(--ant-primary-color);
               background: rgba(0, 0, 0, 0.015);
+            }
+          }
+        }
+      }
+      
+      // 添加头部右侧区域样式
+      .header-right {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        
+        :deep(.header-content) {
+          height: 100%;
+          
+          .action-area {
+            height: 100%;
+            
+            .action-item {
+              height: 64px;
+              line-height: 64px;
+              min-width: 40px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
             }
           }
         }
