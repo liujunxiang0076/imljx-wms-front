@@ -525,6 +525,19 @@ function adjustColor(color: string, percent: number): string {
     }
   }
   
+  // 修复混合模式下的样式问题
+  .action-item {
+    min-width: 40px;
+    min-height: 40px;
+    justify-content: center;
+    
+    // 混合模式特殊处理
+    .mix-layout & {
+      height: 64px;
+      line-height: 64px;
+    }
+  }
+  
   .notification-wrapper {
     position: relative;
     
