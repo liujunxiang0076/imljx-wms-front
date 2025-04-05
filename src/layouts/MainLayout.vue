@@ -3,10 +3,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, defineAsyncComponent } from 'vue';
 import { useLayoutStore } from '../store/layout';
 
-
+// 预加载布局组件，避免[object Promise]错误
+const SiderLayout = defineAsyncComponent(() => import('./templates/SiderLayout.vue'));
+const TopLayout = defineAsyncComponent(() => import('./templates/TopLayout.vue'));
+const MixLayout = defineAsyncComponent(() => import('./templates/MixLayout.vue'));
 
 // 布局状态管理
 const layoutStore = useLayoutStore();
@@ -15,12 +18,12 @@ const layoutStore = useLayoutStore();
 const layoutComponent = computed(() => {
   switch (layoutStore.layoutType) {
     case 'top':
-      return () => import('@/layouts/templates/TopLayout.vue');
+      return TopLayout;
     case 'mix':
-      return () => import('@/layouts/templates/MixLayout.vue');
+      return MixLayout;
     case 'sider':
     default:
-      return () => import('@/layouts/templates/SiderLayout.vue');
+      return SiderLayout;
   }
 });
 </script>
