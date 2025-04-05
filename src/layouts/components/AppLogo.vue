@@ -1,7 +1,7 @@
 <template>
   <div class="app-logo" :class="{ collapsed }">
-    <img :src="logo" alt="Logo" />
-    <h1 v-if="!collapsed">{{ title }}</h1>
+    <img :src="logo" alt="Logo" class="app-logo-img" />
+    <h1 v-if="!collapsed" class="app-logo-title">{{ title }}</h1>
   </div>
 </template>
 
@@ -31,43 +31,57 @@ defineProps({
 
 <style lang="scss" scoped>
 .app-logo {
-  height: 64px;
-  padding: 16px;
   display: flex;
   align-items: center;
+  padding: 16px;
+  height: 64px;
+  min-height: 64px;
   overflow: hidden;
-  transition: all 0.3s;
-  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.215, 0.61, 0.355, 1);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 1;
   
-  &.collapsed {
-    padding: 16px 8px;
-    justify-content: center;
-  }
-  
-  img {
+  &-img {
+    width: 32px;
     height: 32px;
     margin-right: 12px;
+    transition: all 0.2s;
+  }
+  
+  &-title {
+    height: 32px;
+    line-height: 32px;
+    font-size: 18px;
+    font-weight: 600;
+    color: inherit;
+    white-space: nowrap;
+    opacity: 1;
+    transition: opacity 0.2s, width 0.2s;
+    display: inline-block;
+  }
+  
+  &.collapsed {
+    padding: 16px 0;
+    justify-content: center;
     
-    .collapsed & {
+    .app-logo-img {
       margin-right: 0;
+    }
+    
+    .app-logo-title {
+      width: 0;
+      opacity: 0;
     }
   }
   
-  h1 {
-    color: inherit;
-    font-size: 18px;
-    font-weight: 600;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  &.dark {
+    background-color: #001529;
+    color: #fff;
   }
   
-  :deep(.ant-layout-sider-dark) & {
-    color: white;
-  }
-  
-  :deep(.ant-layout-sider-light) & {
+  &.light {
+    background-color: #fff;
     color: rgba(0, 0, 0, 0.85);
   }
 }
