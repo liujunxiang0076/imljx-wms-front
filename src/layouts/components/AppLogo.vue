@@ -5,36 +5,26 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue';
+<script setup lang="ts">
 import config from '../../config';
 
-export default defineComponent({
-  name: 'AppLogo',
-  props: {
-    collapsed: {
-      type: Boolean,
-      default: false
-    },
-    theme: {
-      type: String as () => 'light' | 'dark',
-      default: 'dark'
-    },
-    logo: {
-      type: String,
-      default: () => config.system.systemLogo
-    },
-    title: {
-      type: String,
-      default: () => config.system.systemName
-    }
+// Props定义
+defineProps({
+  collapsed: {
+    type: Boolean,
+    default: false
   },
-  setup(props) {
-    const isDarkTheme = computed(() => props.theme === 'dark');
-    
-    return {
-      isDarkTheme
-    };
+  theme: {
+    type: String as () => 'light' | 'dark',
+    default: 'dark'
+  },
+  logo: {
+    type: String,
+    default: () => config.system.systemLogo
+  },
+  title: {
+    type: String,
+    default: () => config.system.systemName
   }
 });
 </script>
