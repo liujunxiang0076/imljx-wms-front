@@ -76,7 +76,7 @@ const router = createRouter({
 });
 
 // 全局前置守卫
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   // 设置页面标题
   document.title = to.meta.title ? `${to.meta.title} - ${config.system.systemName}` : config.system.systemName;
   
