@@ -10,10 +10,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     AAvatar: typeof import('ant-design-vue/es')['Avatar']
     ABadge: typeof import('ant-design-vue/es')['Badge']
-    ABreadcrumb: typeof import('ant-design-vue/es')['Breadcrumb']
-    ABreadcrumbItem: typeof import('ant-design-vue/es')['BreadcrumbItem']
     AButton: typeof import('ant-design-vue/es')['Button']
-    ACheckbox: typeof import('ant-design-vue/es')['Checkbox']
     ACol: typeof import('ant-design-vue/es')['Col']
     ADrawer: typeof import('ant-design-vue/es')['Drawer']
     ADropdown: typeof import('ant-design-vue/es')['Dropdown']
@@ -40,7 +37,6 @@ declare module 'vue' {
     ASwitch: typeof import('ant-design-vue/es')['Switch']
     ATabPane: typeof import('ant-design-vue/es')['TabPane']
     ATabs: typeof import('ant-design-vue/es')['Tabs']
-    ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     HeaderContent: typeof import('./layouts/components/HeaderContent.vue')['default']
     MixLayout: typeof import('./layouts/templates/MixLayout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
