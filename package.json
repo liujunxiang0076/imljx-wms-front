@@ -17,9 +17,11 @@
     "vue-router": "4"
   },
   "devDependencies": {
+    "@antfu/utils": "^9.2.0",
     "@tsconfig/node18": "^18.2.4",
     "@types/node": "^22.13.17",
     "@types/vue-router": "^2.0.0",
+    "@types/webpack": "^5.28.5",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
     "sass": "^1.86.1",
