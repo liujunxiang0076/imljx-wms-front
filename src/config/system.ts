@@ -45,10 +45,10 @@ const systemConfig: SystemConfig = {
     enable: true,
     // 登录页轮播图
     images: [
-      'src/assets/images/warehouse_1.png'
+      '/assets/images/warehouse_1.png'
     ],
     interval: 5000
   }
 };
 
-export default systemConfig; 
+export default systemConfig;
