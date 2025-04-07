@@ -26,17 +26,23 @@ interface SystemConfig {
  * 系统配置
  */
 const systemConfig: SystemConfig = {
+  // 系统名称
   systemName: 'IMLJX-WMS',
+  // 系统Logo
   systemLogo: '/logo.png',
+  // 公司名称
   companyName: 'IMLJX',
+  // 版权年份
   copyrightYear: '2024',
+  // 登录页轮播图
   loginCarousel: {
+    // 是否开启登录页轮播图
     enable: true,
+    // 登录页轮播图
     images: [
-      '/images/login-bg1.jpg',
-      '/images/login-bg2.jpg',
-      '/images/login-bg3.jpg',
-      '/images/login-bg4.jpg'
+      'src/assets/images/warehouse_1.png',
+      'src/assets/images/warehouse_2.png',
+
     ],
     interval: 5000
   }
