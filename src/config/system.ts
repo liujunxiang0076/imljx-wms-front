@@ -45,8 +45,7 @@ const systemConfig: SystemConfig = {
     enable: true,
     // 登录页轮播图
     images: [
-      'src/assets/images/warehouse_1.png',
-      'src/assets/images/warehouse_2.png',
+      'src/assets/images/warehouse_1.png'
     ],
     interval: 5000
   }
