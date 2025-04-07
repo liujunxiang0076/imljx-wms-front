@@ -2,7 +2,6 @@
  * 布局状态管理
  */
 import { defineStore } from 'pinia';
-import config from '@/config';
 
 export type LayoutType = 'sider' | 'top' | 'mix';
 export type ThemeType = 'light' | 'dark';
@@ -100,14 +99,14 @@ export const useLayoutStore = defineStore('layout', {
     },
     
     /**
-     * 切换是否固定头部
+     * 切换固定头部
      */
     toggleFixedHeader(): void {
       this.fixedHeader = !this.fixedHeader;
     },
     
     /**
-     * 切换是否固定侧边栏
+     * 切换固定侧边栏
      */
     toggleFixedSider(): void {
       this.fixedSider = !this.fixedSider;
@@ -121,14 +120,14 @@ export const useLayoutStore = defineStore('layout', {
     },
     
     /**
-     * 切换是否显示标签页
+     * 切换显示标签页
      */
     toggleShowTabs(): void {
       this.showTabs = !this.showTabs;
     },
     
     /**
-     * 设置是否显示标签页
+     * 设置显示标签页
      */
     setShowTabs(show: boolean): void {
       this.showTabs = show;
@@ -142,30 +141,37 @@ export const useLayoutStore = defineStore('layout', {
     },
     
     /**
-     * 重置布局设置为默认值
+     * 重置设置
      */
     resetSettings(): void {
-      this.$reset();
+      this.layoutType = 'sider';
+      this.collapsed = false;
+      this.siderTheme = 'dark';
+      this.headerTheme = 'light';
+      this.fixedHeader = true;
+      this.fixedSider = true;
+      this.primaryColor = '#1890ff';
+      this.showTabs = true;
+      this.contentWidth = 'fluid';
+      this.splitMenus = false;
     },
     
     /**
      * 根据视口调整布局
      */
     adjustLayoutForViewport(): void {
-      if (window.innerWidth < 768) {
+      if (this.isMobile) {
         this.collapsed = true;
+        this.fixedHeader = false;
         this.fixedSider = false;
       }
     },
     
     /**
-     * 更新主题设置
+     * 更新主题
      */
     updateTheme(payload: Partial<LayoutState>): void {
       Object.assign(this, payload);
     }
-  },
-  
-  // 持久化布局设置
-  persist: true
+  }
 }); 
