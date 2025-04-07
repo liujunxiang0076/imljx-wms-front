@@ -1,31 +1,24 @@
 import { get, post } from './index';
 
 // 接口返回数据类型定义
-interface BaseResponse<T = any> {
+export interface BaseResponse<T = any> {
   code: number;
   message: string;
   data: T;
 }
 
-interface LoginParams {
+export interface LoginParams {
   username: string;
   password: string;
   captcha?: string;
 }
 
-interface LoginResult {
+export interface LoginResult {
   token: string;
-  userInfo: {
-    id: number;
-    username: string;
-    name: string;
-    avatar: string;
-    roles: string[];
-    permissions: string[];
-  }
+  userInfo: UserInfo;
 }
 
-interface UserInfo {
+export interface UserInfo {
   id: number;
   username: string;
   name: string;
