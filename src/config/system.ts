@@ -1,7 +1,7 @@
 /**
  * 系统配置
  */
-interface SystemConfig {
+export interface SystemConfig {
   /** 系统名称 */
   systemName: string;
   
@@ -13,6 +13,9 @@ interface SystemConfig {
   
   /** 版权年份 */
   copyrightYear: string;
+  
+  /** 是否显示页脚 */
+  showFooter: boolean;
   
   /** 登录页轮播图 */
   loginCarousel: {
@@ -34,6 +37,8 @@ const systemConfig: SystemConfig = {
   companyName: 'IMLJX',
   // 版权年份
   copyrightYear: '2024',
+  // 是否显示页脚
+  showFooter: true,
   // 登录页轮播图
   loginCarousel: {
     // 是否开启登录页轮播图
@@ -42,7 +47,6 @@ const systemConfig: SystemConfig = {
     images: [
       'src/assets/images/warehouse_1.png',
       'src/assets/images/warehouse_2.png',
-
     ],
     interval: 5000
   }
