@@ -1,3 +1,133 @@
+<template>
+  <div class="login-container">
+    <!-- 左侧背景图轮播 -->
+    <div class="login-background" 
+         :style="{ backgroundImage: `url(${backgroundImages[currentImageIndex]})` }"
+         @mouseenter="stopAutoPlay" 
+         @mouseleave="startAutoPlay">
+      <div class="logo-header">
+        <div class="logo-container">
+          <img :src="systemLogo" alt="Logo" class="logo" />
+          <span class="logo-text">{{ systemName }}</span>
+        </div>
+      </div>
+      
+      <!-- 轮播控制按钮 -->
+      <div v-if="loginCarousel.enable && backgroundImages.length > 1" class="carousel-controls">
+        <div class="carousel-arrow carousel-arrow-left" @click="prevImage">
+          <LeftOutlined />
+        </div>
+        <div class="carousel-arrow carousel-arrow-right" @click="nextImage">
+          <RightOutlined />
+        </div>
+      </div>
+      
+      <!-- 指示器 -->
+      <div v-if="loginCarousel.enable && backgroundImages.length > 1" class="carousel-indicators">
+        <span 
+          v-for="(_, index) in backgroundImages" 
+          :key="index" 
+          :class="['carousel-indicator', { active: index === currentImageIndex }]"
+          @click="goToImage(index)">
+        </span>
+      </div>
+    </div>
+    
+    <!-- 右侧登录表单 -->
+    <div class="login-form-wrapper">
+      <div class="login-form-container">
+        <div class="login-header">
+          <h2>欢迎登录</h2>
+          <p>请使用用户名与密码登录</p>
+        </div>
+        
+        <a-form
+          :model="loginForm"
+          class="login-form"
+          @finish="handleLogin"
+        >
+          <a-form-item
+            name="username"
+            :rules="[{ required: true, message: '请输入用户名' }]"
+          >
+            <a-input
+              v-model:value="loginForm.username"
+              size="large"
+              placeholder="请输入用户名"
+            >
+              <template #prefix>
+                <UserOutlined class="site-form-item-icon" />
+              </template>
+            </a-input>
+          </a-form-item>
+          
+          <a-form-item
+            name="password"
+            :rules="[{ required: true, message: '请输入密码' }]"
+          >
+            <a-input-password
+              v-model:value="loginForm.password"
+              size="large"
+              placeholder="请输入密码"
+            >
+              <template #prefix>
+                <LockOutlined class="site-form-item-icon" />
+              </template>
+            </a-input-password>
+          </a-form-item>
+          
+          <a-form-item
+            v-if="config.auth.enableCaptcha"
+            name="captcha"
+            :rules="[{ required: true, message: '请输入验证码' }]"
+          >
+            <a-row :gutter="8">
+              <a-col :span="16">
+                <a-input
+                  v-model:value="loginForm.captcha"
+                  size="large"
+                  placeholder="请选择"
+                >
+                  <template #prefix>
+                    <SafetyCertificateOutlined class="site-form-item-icon" />
+                  </template>
+                </a-input>
+              </a-col>
+              <a-col :span="8">
+                <div class="captcha-container" @click="refreshCaptcha">
+                  <a-spin :spinning="captchaLoading" size="small">
+                    <div class="captcha-content">
+                      {{ captchaText }}
+                      <SyncOutlined class="refresh-icon" />
+                    </div>
+                  </a-spin>
+                </div>
+              </a-col>
+            </a-row>
+          </a-form-item>
+          
+          <a-form-item>
+            <a-button
+              type="primary"
+              html-type="submit"
+              :loading="loginLoading"
+              class="login-form-button"
+              size="large"
+              block
+            >
+              欢迎登录
+            </a-button>
+          </a-form-item>
+        </a-form>
+        
+        <div v-if="config.system.showFooter" class="login-footer">
+          <p>Copyright © {{ copyrightYear }} {{ companyName }} All Rights Reserved</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { ref, reactive, defineComponent, onMounted, onUnmounted } from 'vue';
 import { UserOutlined, LockOutlined, SafetyCertificateOutlined, LeftOutlined, RightOutlined, SyncOutlined } from '@ant-design/icons-vue';
@@ -6,7 +136,6 @@ import router from '@/router';
 import { useUserStore } from '@/store/user';
 import config from '@/config';
 
-// 添加默认导出
 defineComponent({
   name: 'LoginView'
 });
@@ -169,135 +298,6 @@ const refreshCaptcha = () => {
 };
 </script>
 
-<template>
-  <div class="login-container">
-    <!-- 左侧背景图轮播 -->
-    <div class="login-background" 
-         :style="{ backgroundImage: `url(${backgroundImages[currentImageIndex]})` }"
-         @mouseenter="stopAutoPlay" 
-         @mouseleave="startAutoPlay">
-      <div class="logo-header">
-        <div class="logo-container">
-          <img :src="systemLogo" alt="Logo" class="logo" />
-          <span class="logo-text">{{ systemName }}</span>
-        </div>
-      </div>
-      
-      <!-- 轮播控制按钮 -->
-      <div v-if="loginCarousel.enable && backgroundImages.length > 1" class="carousel-controls">
-        <div class="carousel-arrow carousel-arrow-left" @click="prevImage">
-          <LeftOutlined />
-        </div>
-        <div class="carousel-arrow carousel-arrow-right" @click="nextImage">
-          <RightOutlined />
-        </div>
-      </div>
-      
-      <!-- 指示器 -->
-      <div v-if="loginCarousel.enable && backgroundImages.length > 1" class="carousel-indicators">
-        <span 
-          v-for="(_, index) in backgroundImages" 
-          :key="index" 
-          :class="['carousel-indicator', { active: index === currentImageIndex }]"
-          @click="goToImage(index)">
-        </span>
-      </div>
-    </div>
-    
-    <!-- 右侧登录表单 -->
-    <div class="login-form-wrapper">
-      <div class="login-form-container">
-        <div class="login-header">
-          <h2>欢迎登录</h2>
-          <p>请使用用户名与密码登录</p>
-        </div>
-        
-        <a-form
-          :model="loginForm"
-          class="login-form"
-          @finish="handleLogin"
-        >
-          <a-form-item
-            name="username"
-            :rules="[{ required: true, message: '请输入用户名' }]"
-          >
-            <a-input
-              v-model:value="loginForm.username"
-              size="large"
-              placeholder="请输入用户名"
-            >
-              <template #prefix>
-                <UserOutlined class="site-form-item-icon" />
-              </template>
-            </a-input>
-          </a-form-item>
-          
-          <a-form-item
-            name="password"
-            :rules="[{ required: true, message: '请输入密码' }]"
-          >
-            <a-input-password
-              v-model:value="loginForm.password"
-              size="large"
-              placeholder="请输入密码"
-            >
-              <template #prefix>
-                <LockOutlined class="site-form-item-icon" />
-              </template>
-            </a-input-password>
-          </a-form-item>
-          
-          <a-form-item
-            v-if="config.auth.enableCaptcha"
-            name="captcha"
-            :rules="[{ required: true, message: '请输入验证码' }]"
-          >
-            <a-row :gutter="8">
-              <a-col :span="16">
-                <a-input
-                  v-model:value="loginForm.captcha"
-                  size="large"
-                  placeholder="请选择"
-                >
-                  <template #prefix>
-                    <SafetyCertificateOutlined class="site-form-item-icon" />
-                  </template>
-                </a-input>
-              </a-col>
-              <a-col :span="8">
-                <div class="captcha-container" @click="refreshCaptcha">
-                  <a-spin :spinning="captchaLoading" size="small">
-                    <div class="captcha-content">
-                      {{ captchaText }}
-                      <SyncOutlined class="refresh-icon" />
-                    </div>
-                  </a-spin>
-                </div>
-              </a-col>
-            </a-row>
-          </a-form-item>
-          
-          <a-form-item>
-            <a-button
-              type="primary"
-              html-type="submit"
-              :loading="loginLoading"
-              class="login-form-button"
-              size="large"
-              block
-            >
-              欢迎登录
-            </a-button>
-          </a-form-item>
-        </a-form>
-        
-        <div v-if="config.system.showFooter" class="login-footer">
-          <p>Copyright © {{ copyrightYear }} {{ companyName }} All Rights Reserved</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
 
 <style lang="scss" scoped>
 .login-container {
