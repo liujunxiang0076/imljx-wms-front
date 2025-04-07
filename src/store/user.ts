@@ -1,18 +1,12 @@
 import { defineStore } from 'pinia';
 import { login as userLogin, getUserInfo, logout as userLogout } from '@/api/user';
+import type { UserInfo } from '@/api/user';
 import router from '@/router';
 import config from '@/config';
 
 interface UserState {
   token: string;
-  userInfo: {
-    id: number;
-    username: string;
-    name: string;
-    avatar: string;
-    roles: string[];
-    permissions: string[];
-  } | null;
+  userInfo: UserInfo | null;
   loginAttempts: number;
 }
 
