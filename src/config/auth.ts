@@ -2,7 +2,7 @@
  * 认证相关配置
  */
 
-interface AuthConfig {
+export interface AuthConfig {
   /** 是否启用验证码 */
   enableCaptcha: boolean;
   
