@@ -305,6 +305,7 @@ const refreshCaptcha = () => {
   overflow: hidden;
 }
 
+// 左侧背景图轮播
 .login-background {
   flex: 2.5;
   background-size: cover;
@@ -312,6 +313,7 @@ const refreshCaptcha = () => {
   position: relative;
   transition: background-image 0.8s ease-in-out;
 
+  // 添加伪元素
   &::before {
     content: '';
     position: absolute;
@@ -319,16 +321,16 @@ const refreshCaptcha = () => {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));
     z-index: 1;
   }
-
+  
   .logo-header {
     position: absolute;
     top: 20px;
-    left: 20px;
+    // left: 20px;
     z-index: 10;
-
+    padding: 20px 20px 20px 0;
+    background: linear-gradient(to right, rgba(173, 216, 230, 0), rgba(38, 95, 114, 0.8));
     .logo-container {
       display: flex;
       align-items: center;
