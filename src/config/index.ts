@@ -8,7 +8,7 @@ import authConfig from './auth';
 import systemConfig from './system';
 
 // 全局配置
-export default {
+const config = {
   system: systemConfig,
   auth: authConfig,
   
@@ -20,4 +20,7 @@ export default {
     // 是否启用搜索框
     enableSearch: true
   }
-}; 
+} as const;
+
+export type Config = typeof config;
+export default config; 
