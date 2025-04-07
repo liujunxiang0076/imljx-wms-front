@@ -135,6 +135,7 @@ import { message } from 'ant-design-vue';
 import router from '@/router';
 import { useUserStore } from '@/store/user';
 import config from '@/config';
+import type { LoginParams } from '@/api/user';
 
 defineComponent({
   name: 'LoginView'
@@ -198,10 +199,7 @@ onUnmounted(() => {
   stopAutoPlay();
 });
 
-interface LoginForm {
-  username: string;
-  password: string;
-  captcha: string;
+interface LoginForm extends LoginParams {
   remember: boolean;
 }
 
