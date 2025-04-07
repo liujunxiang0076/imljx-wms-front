@@ -308,7 +308,7 @@ const refreshCaptcha = () => {
 }
 
 .login-background {
-  flex: 1.3;
+  flex: 2.5;
   background-size: cover;
   background-position: center;
   position: relative;
