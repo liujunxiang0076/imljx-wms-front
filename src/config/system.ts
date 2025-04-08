@@ -44,10 +44,10 @@ const systemConfig: SystemConfig = {
     // 是否开启登录页轮播图
     enable: true,
     // 登录页轮播图
+    interval: 5000, // 5秒切换一次
     images: [
-      '/assets/images/warehouse_1.png'
+      new URL('../assets/images/warehouse_1.png', import.meta.url).href
     ],
-    interval: 5000
   }
 };
 
