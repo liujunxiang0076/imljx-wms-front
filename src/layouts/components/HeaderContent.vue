@@ -21,13 +21,14 @@
         </a-badge>
       </div>
       
-      <!-- 页面配置按钮 -->
-      <div class="action-item config-btn" @click="drawerVisible = true">
-        <SettingOutlined />
-      </div>
-      
       <!-- 用户头像 -->
       <UserAvatar />
+
+      <!-- 页面配置按钮 -->
+      <div class="action-item config-btn" @click="drawerVisible = true">
+        <MoreOutlined style="font-size: 20px;"/>
+      </div>
+
     </div>
     
     <!-- 页面配置抽屉 -->
@@ -36,7 +37,7 @@
       placement="right"
       :visible="drawerVisible"
       @close="drawerVisible = false"
-      width="300"
+      width="500"
     >
       <!-- 主题模式 -->
       <div class="setting-block">
@@ -143,7 +144,7 @@ import {
   MenuFoldOutlined, 
   MenuUnfoldOutlined, 
   BellOutlined,
-  SettingOutlined,
+  MoreOutlined,
   BgColorsOutlined
 } from '@ant-design/icons-vue';
 import { useLayoutStore } from '../../store/layout';
@@ -482,13 +483,14 @@ function adjustColor(color: string, percent: number): string {
 </script>
 
 <style lang="scss" scoped>
+// 头部内容
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   height: 100%;
-  
+  // 触发按钮
   .trigger-btn {
     font-size: 18px;
     padding: 0 24px;
@@ -498,19 +500,32 @@ function adjustColor(color: string, percent: number): string {
     transition: color 0.3s;
     display: inline-flex;
     align-items: center;
-    
+    // 鼠标悬停效果
     &:hover {
       color: #1890ff;
     }
   }
-  
+  // 触发按钮
   .action-area {
     display: flex;
     align-items: center;
     height: 100%;
     margin-left: auto;
+
+    // 配置按钮
+    .config-btn {
+      width: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      // 鼠标悬停效果
+      &:hover {
+        background: rgba(0, 0, 0, 0.025);
+      }
+    }
+    
   }
-  
+  // 操作区域
   .action-item {
     padding: 0 12px;
     cursor: pointer;
@@ -518,7 +533,7 @@ function adjustColor(color: string, percent: number): string {
     display: flex;
     align-items: center;
     position: relative;
-    
+    // 鼠标悬停效果
     &:hover {
       background: rgba(0, 0, 0, 0.025);
     }
@@ -536,10 +551,10 @@ function adjustColor(color: string, percent: number): string {
       line-height: 64px;
     }
   }
-  
+  // 通知图标
   .notification-wrapper {
     position: relative;
-    
+    // 通知图标点
     :deep(.ant-badge-dot) {
       position: absolute;
       top: -2px;
@@ -549,7 +564,7 @@ function adjustColor(color: string, percent: number): string {
       box-shadow: 0 0 0 1.5px #fff;
       animation: badge-breathe 1.2s ease-in-out infinite;
     }
-    
+    // 通知图标悬停效果
     &:hover :deep(.ant-badge-dot) {
       background: #ff4d4f;
       box-shadow: 0 0 0 1.5px #ff7875;
@@ -577,13 +592,14 @@ function adjustColor(color: string, percent: number): string {
 .setting-block {
   margin-bottom: 24px;
   
+  // 设置标题
   .setting-title {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.85);
     margin-bottom: 12px;
     font-weight: 500;
   }
-  
+  // 设置选项
   .setting-option {
     margin-bottom: 24px;
   }
@@ -631,6 +647,7 @@ function adjustColor(color: string, percent: number): string {
         border: 1px solid #1890ff;
       }
       
+      // 布局预览
       .layout-preview {
         height: 64px;
         margin-bottom: 8px;
@@ -639,12 +656,12 @@ function adjustColor(color: string, percent: number): string {
         position: relative;
         overflow: hidden;
       }
-      
+      // 布局文本
       .layout-text {
         font-size: 14px;
         color: rgba(0, 0, 0, 0.65);
       }
-      
+      // 左侧菜单预览
       .sider-preview {
         &::before {
           content: '';
@@ -655,7 +672,7 @@ function adjustColor(color: string, percent: number): string {
           height: 100%;
           background: #001529;
         }
-        
+        // 左侧菜单预览
         &::after {
           content: '';
           position: absolute;
@@ -667,7 +684,7 @@ function adjustColor(color: string, percent: number): string {
           border-bottom: 1px solid #f0f0f0;
         }
       }
-      
+      // 顶部菜单预览
       .top-preview {
         &::before {
           content: '';
@@ -679,7 +696,7 @@ function adjustColor(color: string, percent: number): string {
           background: #001529;
         }
       }
-      
+      // 混合菜单预览
       .mix-preview {
         &::before {
           content: '';
@@ -690,7 +707,7 @@ function adjustColor(color: string, percent: number): string {
           height: 20%;
           background: #001529;
         }
-        
+        // 混合菜单预览
         &::after {
           content: '';
           position: absolute;
