@@ -352,25 +352,59 @@ onBeforeUnmount(() => {
     width: 100%;
     height: 100%;
     position: relative;
+    transition: height 0.3s ease, overflow-y 0.3s ease;
     
-    /* 滚动条样式优化 */
+    /* 滚动条样式优化 - 仅在悬停时显示 */
     &::-webkit-scrollbar {
       width: 6px;
       background-color: transparent;
+      opacity: 0;
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    &:hover::-webkit-scrollbar {
+      opacity: 1;
     }
     
     &::-webkit-scrollbar-thumb {
-      background-color: rgba(255, 255, 255, 0.15);
+      background-color: rgba(255, 255, 255, 0.2);
       border-radius: 3px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       
       &:hover {
-        background-color: rgba(255, 255, 255, 0.3);
+        background-color: rgba(255, 255, 255, 0.4);
       }
     }
     
     &::-webkit-scrollbar-track {
-      background-color: rgba(0, 0, 0, 0.1);
+      background-color: rgba(0, 0, 0, 0.05);
       border-radius: 3px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* 深色主题下的滚动条样式 */
+    .ant-menu-dark & {
+      &::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.3);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.5);
+        }
+      }
+      
+      &::-webkit-scrollbar-track {
+        background-color: rgba(0, 0, 0, 0.2);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    }
+    
+    /* 防止菜单展开时滚动条闪烁 */
+    &.ant-menu-submenu-open {
+      &::-webkit-scrollbar {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
     }
     
     /* 底部渐变阴影提示 - 当内容超出并可向下滚动时显示 */
@@ -508,4 +542,4 @@ onBeforeUnmount(() => {
     padding-left: 42px !important;
   }
 }
-</style> 
+</style>
