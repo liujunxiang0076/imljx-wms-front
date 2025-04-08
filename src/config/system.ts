@@ -45,6 +45,7 @@ const systemConfig: SystemConfig = {
     enable: true,
     // 登录页轮播图
     interval: 5000, // 5秒切换一次
+    // 登录页轮播图图片
     images: [
       new URL('../assets/images/warehouse_1.png', import.meta.url).href
     ],
