@@ -47,7 +47,8 @@ const systemConfig: SystemConfig = {
     interval: 5000, // 5秒切换一次
     // 登录页轮播图图片
     images: [
-      new URL('../assets/images/warehouse_1.png', import.meta.url).href
+      new URL('../assets/images/warehouse_1.png', import.meta.url).href,
+      new URL('../assets/images/warehouse_2.png', import.meta.url).href
     ],
   }
 };
