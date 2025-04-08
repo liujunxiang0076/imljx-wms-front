@@ -238,14 +238,15 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+// 顶部布局
 .top-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  
+  // 顶部布局头部
   &-header {
     background: #fff;
-    padding: 0;
+    padding: 0 !important;
     height: 64px;
     line-height: 64px;
     box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
@@ -258,24 +259,24 @@ onMounted(() => {
       left: 0;
       width: 100%;
     }
-    
+    // 头部容器
     .header-container {
       display: flex;
       align-items: center;
-      padding: 0 24px;
+      padding: 0 0 0 24px;
       height: 100%;
     }
-    
+    // 头部logo
     .logo-container {
       display: flex;
       align-items: center;
       margin-right: 24px;
-      
+      // logo图片
       .logo-img {
         height: 32px;
         width: auto;
       }
-      
+      // logo标题
       .logo-title {
         margin: 0 0 0 12px;
         color: rgba(0, 0, 0, 0.85);
@@ -284,32 +285,32 @@ onMounted(() => {
         white-space: nowrap;
       }
     }
-    
+    // 顶部菜单
     .top-menu-container {
       flex: 1;
       overflow-x: auto;
-      
+      // 顶部菜单滚动条
       &::-webkit-scrollbar {
         display: none;
       }
-      
+      // 顶部菜单
       .top-menu {
         line-height: 64px;
         border-bottom: none;
-        
+        // 顶部菜单项
         :deep(.ant-menu-item) {
           padding: 0 16px;
-          
+          // 顶部菜单项下划线
           &::after {
             left: 16px;
             right: 16px;
           }
         }
-        
+        // 顶部菜单子菜单
         :deep(.ant-menu-submenu-title) {
           padding: 0 16px;
         }
-        
+        // 顶部菜单子菜单下划线
         :deep(.ant-menu-submenu) {
           &::after {
             left: 16px;
@@ -318,30 +319,30 @@ onMounted(() => {
         }
       }
     }
-    
+    // 头部右侧操作区
     .header-right {
       display: flex;
       align-items: center;
       margin-left: auto;
-      
+      // 搜索框
       .ant-input-search {
         margin-right: 16px;
       }
-      
+      // 头部内容
       :deep(.header-content) {
         display: flex;
         height: 64px;
-        
+        // 头部操作区域
         .action-area {
           display: flex;
           height: 100%;
-          
+          // 头部操作项
           .action-item {
             padding: 0 12px;
             display: flex;
             align-items: center;
             height: 100%;
-            
+            // 鼠标悬停效果
             &:hover {
               background: rgba(0, 0, 0, 0.025);
             }
@@ -350,7 +351,7 @@ onMounted(() => {
       }
     }
   }
-  
+  // 标签页
   .tags-nav-container {
     background: #fff;
     margin: 0;
@@ -365,27 +366,27 @@ onMounted(() => {
     width: 100%;
     z-index: 8;
   }
-  
+  // 内容区
   &-content {
     flex: 1;
     padding: 24px;
     margin: 24px;
     background: #fff;
     border-radius: 2px;
-    
+    // 固定头部
     &.fixed-header {
       margin-top: 88px;
-      
-      &.show-tabs {
-        margin-top: 128px;
-      }
+    }
+    // 显示标签页
+    &.show-tabs {
+      margin-top: 128px;
     }
   }
-  
+  // 内容容器
   .content-container {
     min-height: calc(100vh - 64px - 48px - 70px);
   }
-  
+  // 页脚
   &-footer {
     text-align: center;
     padding: 14px 50px;
