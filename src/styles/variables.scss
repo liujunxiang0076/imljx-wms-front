@@ -56,6 +56,11 @@ $sider-dark-bg: #0c2135;
   --sider-bg: #{$sider-dark-bg};
   --sider-shadow: 2px 0 8px rgba(0, 0, 0, 0.48);
   --menu-item-color: rgba(255, 255, 255, 0.85);
-  --menu-item-hover-bg: rgba(255, 255, 255, 0.12);
-  --menu-item-active-bg: rgba(24, 144, 255, 0.3);
+  --menu-item-hover-bg: rgba(255, 255, 255, 0.15);
+  --menu-item-active-bg: rgba(24, 144, 255, 0.4);
+  --submenu-dark-bg: #0c2135;
+  --menu-dark-submenu-bg: #0a1a2d;
+  --scrollbar-track-bg: transparent;
+  --scrollbar-thumb-bg: rgba(255, 255, 255, 0.15);
+  --scrollbar-thumb-hover-bg: rgba(255, 255, 255, 0.25);
 }
