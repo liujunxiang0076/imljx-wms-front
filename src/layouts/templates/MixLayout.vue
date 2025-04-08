@@ -402,19 +402,19 @@ watch(selectedTopMenu, (newVal) => {
     .header-container {
       display: flex;
       align-items: center;
-      padding: 0 24px;
+      padding: 0 0 0 24px;
       height: 100%;
-      
+      // 头部logo
       .logo-container {
         display: flex;
         align-items: center;
         padding-right: 48px;
-        
+        // logo图片
         .logo-img {
           height: 32px;
           width: auto;
         }
-        
+        // logo标题
         .logo-title {
           margin: 0 0 0 12px;
           color: rgba(0, 0, 0, 0.85);
@@ -423,7 +423,7 @@ watch(selectedTopMenu, (newVal) => {
           white-space: nowrap;
         }
       }
-      
+      // 顶部菜单
       .top-menu-container {
         flex: 1;
         overflow-x: auto;
@@ -459,13 +459,13 @@ watch(selectedTopMenu, (newVal) => {
         height: 100%;
         display: flex;
         align-items: center;
-        
+        // 头部内容
         :deep(.header-content) {
           height: 100%;
-          
+          // 头部操作区域
           .action-area {
             height: 100%;
-            
+            // 头部操作项
             .action-item {
               height: 64px;
               line-height: 64px;
@@ -473,18 +473,22 @@ watch(selectedTopMenu, (newVal) => {
               display: flex;
               align-items: center;
               justify-content: center;
+              // 鼠标悬停效果
+              &:hover {
+                background: rgba(0, 0, 0, 0.025);
+              }
             }
           }
         }
       }
     }
   }
-  
+  // 容器
   &-container {
     flex: 1;
     margin-top: 64px;
     display: flex;
-    
+    // 侧边栏
     .mix-layout-sider {
       position: fixed;
       top: 64px;
@@ -496,60 +500,60 @@ watch(selectedTopMenu, (newVal) => {
       transition: all 0.3s;
       box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05);
       background-color: #001529;
-      
+      // 侧边栏滚动条
       &::-webkit-scrollbar {
         width: 6px;
         height: 6px;
       }
-      
+      // 侧边栏滚动条
       &::-webkit-scrollbar-thumb {
         background: rgba(0, 0, 0, 0.12);
         border-radius: 3px;
       }
-      
+      // 侧边栏滚动条
       &::-webkit-scrollbar-track {
         background: rgba(0, 0, 0, 0.06);
       }
-      
+      // 侧边栏菜单
       :deep(.ant-menu) {
         border-right: none;
-        
+        // 侧边栏菜单项
         .ant-menu-item {
           margin: 4px 12px;
           padding: 0 12px 0 16px;
           border-radius: 6px;
           height: 40px;
           line-height: 40px;
-          
+          // 鼠标悬停效果
           &:hover {
             color: var(--ant-primary-color);
             background: rgba(0, 0, 0, 0.015);
           }
-          
+          // 选中效果
           &.ant-menu-item-selected {
             background: var(--ant-primary-1);
             color: var(--ant-primary-color);
             font-weight: 500;
-            
+            // 选中效果下划线
             &::after {
               opacity: 1;
               transform: scaleY(1);
               transition: transform 0.15s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
             }
           }
-          
+          // 图标
           .anticon {
             font-size: 16px;
             min-width: 16px;
             transition: all 0.3s;
           }
-          
+          // 标题
           span {
             margin-left: 10px;
             transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
           }
         }
-        
+        // 子菜单
         .ant-menu-submenu {
           &-title {
             margin: 4px 12px;
@@ -557,34 +561,34 @@ watch(selectedTopMenu, (newVal) => {
             border-radius: 6px;
             height: 40px;
             line-height: 40px;
-            
+            // 鼠标悬停效果
             &:hover {
               color: var(--ant-primary-color);
               background: rgba(0, 0, 0, 0.015);
             }
-            
+            // 图标
             .anticon {
               font-size: 16px;
               min-width: 16px;
               transition: all 0.3s;
             }
-            
+            // 标题
             span {
               margin-left: 10px;
               transition: opacity 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
             }
           }
-          
+          // 箭头
           &-arrow {
             right: 12px;
             color: rgba(0, 0, 0, 0.45);
             transition: all 0.3s;
           }
-          
+          // 展开效果
           &-open {
             > .ant-menu-submenu-title {
               color: var(--ant-primary-color);
-              
+              // 箭头
               .ant-menu-submenu-arrow {
                 color: var(--ant-primary-color);
                 transform: translateY(-2px);
@@ -599,21 +603,21 @@ watch(selectedTopMenu, (newVal) => {
             &:hover {
               background: rgba(255, 255, 255, 0.08);
             }
-            
+            // 选中效果
             &.ant-menu-item-selected {
               background: var(--ant-primary-color);
               color: #fff;
             }
           }
-          
+          // 子菜单
           .ant-menu-submenu {
             &-title:hover {
               background: rgba(255, 255, 255, 0.08);
             }
-            
+            // 展开效果
             &-open > .ant-menu-submenu-title {
               color: #fff;
-              
+              // 箭头
               .ant-menu-submenu-arrow {
                 color: #fff;
               }
@@ -623,33 +627,37 @@ watch(selectedTopMenu, (newVal) => {
       }
     }
   }
-  
+  // 右侧内容区
   &-right {
     flex: 1;
     transition: all 0.3s;
     margin-left: 256px;
-    
+    // 内容区
     .mix-layout-content {
       margin: 24px;
       padding: 24px;
       background: #fff;
       border-radius: 2px;
       box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-      
+      // 固定头部
       &.fixed-header {
         margin-top: 88px;
-        
+        // 显示标签页
         &.show-tabs {
           margin-top: 128px;
         }
       }
+      // 内容容器
+      .content-container {
+        min-height: calc(100vh - 64px - 48px - 70px);
+      }
     }
   }
-  
+  // 内容容器
   .content-container {
     min-height: calc(100vh - 64px - 48px - 70px);
   }
-  
+  // 标签页
   .tags-nav-container {
     background: #fff;
     margin: 0;
@@ -665,7 +673,7 @@ watch(selectedTopMenu, (newVal) => {
     z-index: 9;
     transition: all 0.3s;
   }
-  
+  // 页脚
   &-footer {
     text-align: center;
     padding: 14px 50px;
