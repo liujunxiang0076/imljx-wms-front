@@ -5,6 +5,8 @@
          :style="{ backgroundImage: `url(${backgroundImages[currentImageIndex]})` }"
          @mouseenter="stopAutoPlay" 
          @mouseleave="startAutoPlay">
+
+      <!-- 系统名称和Logo -->
       <div class="logo-header">
         <div class="logo-container">
           <img :src="systemLogo" alt="Logo" class="logo" />
@@ -328,15 +330,18 @@ const refreshCaptcha = () => {
     position: absolute;
     top: 20px;
     // left: 20px;
+    width: 400px;
     z-index: 10;
-    padding: 20px 20px 20px 0;
-    background: linear-gradient(to right, rgba(173, 216, 230, 0), rgba(38, 95, 114, 0.8));
+    padding: 15px 20px 15px 0;
+    background: linear-gradient(to right, rgba(173, 216, 230, 0), #6885f0cc);
+
     .logo-container {
       display: flex;
       align-items: center;
-
+      
       .logo {
         height: 28px;
+        margin-left: 15px;
         margin-right: 10px;
       }
 
