@@ -35,16 +35,20 @@
           </a-space>
           <!-- 搜索框 -->
           <div class="search-container">
-            <a-input-search
-              placeholder="搜索..."
-              style="width: 240px"
-              :bordered="false"
-              size="middle"
-              class="global-search"
-              allowClear
-              @pressEnter="handleSearch"
-              v-model:value="searchValue"
-            />
+            <div class="custom-search-wrapper">
+              <input 
+                type="text" 
+                class="custom-search-input" 
+                placeholder="搜索功能、命令或文档..." 
+                v-model="searchValue"
+                @keyup.enter="handleSearch"
+              />
+              <button class="custom-search-button" @click="handleSearch">
+                <svg viewBox="64 64 896 896" data-icon="search" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
+                  <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
         <!-- 右侧功能区 -->
@@ -497,14 +501,71 @@ defineExpose({
         .search-container {
           display: flex;
           align-items: center;
-          justify-content: center;
-          background-color: #f5f5f5;
-          border-radius: 6px;
-          transition: all 0.3s;
-          border: 1px solid rgba(0, 0, 0, 0.06);
-          &:hover {
-            background-color: #f0f0f0;
-            border-color: #e8e8e8;
+          margin-left: 12px;
+
+          .custom-search-wrapper {
+            display: flex;
+            width: 280px;
+            height: 32px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s;
+
+            &:hover, &:focus-within {
+              border-color: #40a9ff;
+              box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.08);
+            }
+
+            .custom-search-input {
+              flex: 1;
+              height: 100%;
+              padding: 0 11px;
+              border: none;
+              outline: none;
+              font-size: 14px;
+              background: #fff;
+              color: rgba(0, 0, 0, 0.85);
+              line-height: 32px; /* 确保高度一致 */
+              display: block;
+              box-sizing: border-box;
+
+              &::placeholder {
+                color: rgba(0, 0, 0, 0.35);
+                line-height: 32px; /* 确保文字居中 */
+              }
+            }
+
+            .custom-search-button {
+              width: 36px;
+              height: 32px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              background: #fafafa;
+              border: none;
+              outline: none;
+              cursor: pointer;
+              color: rgba(0, 0, 0, 0.45);
+              transition: all 0.3s;
+              border-left: 1px solid #f0f0f0;
+
+              &:hover {
+                background: #e6f7ff;
+                color: #40a9ff;
+              }
+
+              svg {
+                width: 16px;
+                height: 16px;
+              }
+            }
+          }
+
+          /* 移除原来的样式 */
+          .global-search {
+            display: none;
           }
         }
       }
