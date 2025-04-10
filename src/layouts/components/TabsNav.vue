@@ -8,7 +8,7 @@
         @edit="onTabEdit"
       >
         <a-tab-pane
-          v-for="tab in tabList"
+          v-for="tab in visibleTabs"
           :key="tab.key"
           :closable="tab.key !== defaultTab"
         >
@@ -40,17 +40,36 @@
         </a-tab-pane>
       </a-tabs>
       
-      <div class="tabs-actions">
-        <ReloadOutlined class="tabs-action-item" @click="refreshCurrentPage" />
+      <!-- 标签菜单按钮 - 当标签数量超过最大显示数量时显示 -->
+      <div v-if="hasHiddenTabs" class="tabs-more-btn">
+        <a-dropdown :trigger="['click']" placement="bottomRight">
+          <a-button type="text" size="small">
+            <span class="tabs-hidden-count">+{{ hiddenTabsCount }}</span>
+          </a-button>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item 
+                v-for="tab in hiddenTabs" 
+                :key="tab.key"
+                @click="switchToTab(tab.key)"
+              >
+                <span>{{ tab.title }}</span>
+              </a-menu-item>
+              <a-menu-divider v-if="hiddenTabs.length > 0" />
+              <a-menu-item key="close-all" @click="closeAllTabs">
+                <span>关闭全部标签</span>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { ReloadOutlined } from '@ant-design/icons-vue';
 import { useLayoutStore } from '../../store/layout';
 
 // 定义TabItem接口
@@ -76,6 +95,66 @@ const activeTabKey = ref(defaultTab);
 
 // 全屏状态
 const isFullscreen = ref(false);
+
+// 最大可见标签数量
+const MAX_VISIBLE_TABS = 8;
+
+// 计算可见标签和隐藏标签
+const visibleTabs = computed(() => {
+  // 确保当前活动标签页始终可见
+  const currentTabIndex = tabList.value.findIndex(tab => tab.key === activeTabKey.value);
+  const activeTab = tabList.value[currentTabIndex];
+  
+  if (tabList.value.length <= MAX_VISIBLE_TABS) {
+    return tabList.value;
+  }
+  
+  // 可见标签优先包含：1. 固定标签(仪表盘) 2. 当前激活标签 3. 其他标签按顺序
+  const fixedTab = tabList.value.find(tab => tab.key === defaultTab);
+  let result = [];
+  
+  // 添加固定标签
+  if (fixedTab) {
+    result.push(fixedTab);
+  }
+  
+  // 如果活动标签不是固定标签，添加它
+  if (activeTab && activeTab.key !== defaultTab) {
+    result.push(activeTab);
+  }
+  
+  // 填充剩余空间
+  const remainingSlots = MAX_VISIBLE_TABS - result.length;
+  let otherTabs = tabList.value.filter(tab => 
+    tab.key !== defaultTab && tab.key !== activeTabKey.value
+  );
+  
+  // 优先显示当前活动标签附近的标签
+  if (currentTabIndex > 0 && currentTabIndex < tabList.value.length) {
+    otherTabs.sort((a, b) => {
+      const aIndex = tabList.value.findIndex(tab => tab.key === a.key);
+      const bIndex = tabList.value.findIndex(tab => tab.key === b.key);
+      return Math.abs(aIndex - currentTabIndex) - Math.abs(bIndex - currentTabIndex);
+    });
+  }
+  
+  result = [...result, ...otherTabs.slice(0, remainingSlots)];
+  
+  // 确保返回的数组长度不超过最大可见标签数
+  return result.slice(0, MAX_VISIBLE_TABS);
+});
+
+// 隐藏的标签
+const hiddenTabs = computed(() => {
+  const visibleKeys = visibleTabs.value.map(tab => tab.key);
+  return tabList.value.filter(tab => !visibleKeys.includes(tab.key));
+});
+
+// 是否有隐藏的标签
+const hasHiddenTabs = computed(() => hiddenTabs.value.length > 0);
+
+// 隐藏标签的数量
+const hiddenTabsCount = computed(() => hiddenTabs.value.length);
 
 const router = useRouter();
 const route = useRoute();
@@ -125,6 +204,15 @@ const addTab = (path: string) => {
   }
   
   activeTabKey.value = key;
+};
+
+// 切换到指定标签
+const switchToTab = (key: string) => {
+  const targetTab = tabList.value.find(tab => tab.key === key);
+  if (targetTab) {
+    activeTabKey.value = key;
+    router.push(targetTab.path);
+  }
 };
 
 // 刷新当前页面
@@ -275,24 +363,40 @@ onBeforeUnmount(() => {
         .ant-tabs-extra-content {
           display: none;
         }
+        
+        // 移除左右箭头导航按钮
+        .ant-tabs-nav-operations {
+          display: none !important;
+        }
       }
     }
     
-    .tabs-actions {
-      padding: 0 16px;
+    // 标签菜单按钮样式
+    .tabs-more-btn {
+      margin-left: 8px;
+      padding: 0 4px;
+      height: 32px;
       display: flex;
       align-items: center;
       
-      .tabs-action-item {
-        font-size: 16px;
+      .ant-btn {
+        min-width: 32px;
+        border-radius: 4px;
+        border: 1px solid #e0e0e0;
+        height: 24px;
         padding: 0 8px;
-        cursor: pointer;
-        color: rgba(0, 0, 0, 0.45);
-        transition: all 0.3s;
+        background-color: #fafafa;
         
         &:hover {
-          color: #1890ff;
+          background-color: #f0f0f0;
+          border-color: #d9d9d9;
         }
+      }
+      
+      .tabs-hidden-count {
+        color: rgba(0, 0, 0, 0.65);
+        font-size: 12px;
+        font-weight: 500;
       }
     }
   }
