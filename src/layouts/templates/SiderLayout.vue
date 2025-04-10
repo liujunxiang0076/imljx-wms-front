@@ -630,28 +630,30 @@ defineExpose({
     line-height: initial;
     border-bottom: 1px solid #eaeaea;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
-    position: sticky;
+    position: fixed;
     top: 60px;
-    width: 100%;
-    z-index: 999;
-    /* 最高层级确保标签栏始终在最上层 */
-    transition: all 0.3s;
+    right: 0;
+    width: calc(100% - 256px);
+    z-index: 9; /* 降低z-index确保不会覆盖菜单 */
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     margin-bottom: 0;
     /* 移除底部间距，由内容区域的padding-top管理 */
     display: flex;
     align-items: center;
-    padding-left: 8px;
+    padding-left: 16px;
   }
 
   .right-content {
     margin-left: 256px;
     /* 与侧边栏宽度一致 */
-    transition: margin-left 0.3s;
+    transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    padding-top: 40px; /* 为固定定位的标签栏留出空间 */
   }
 
   &.collapsed .right-content {
     margin-left: 80px;
     /* 折叠后的侧边栏宽度 */
+    transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
   }
 
   &-content {
@@ -907,24 +909,24 @@ defineExpose({
     }
 
     .tags-nav-container {
-      width: 100%;
-      transition: all 0.15s ease;
+      width: calc(100% - 80px);
+      transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
 
     .main-layout-content {
       margin-left: 104px;
       /* 80px + 24px margin */
-      transition: margin 0.15s ease;
+      transition: margin 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
 
     .main-layout-footer {
       margin-left: 80px;
-      transition: margin-left 0.15s ease;
+      transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
 
     .main-layout-sider {
       width: 80px !important;
-      transition: width 0.15s ease !important;
+      transition: width 0.2s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
 
       /* 折叠时的滚动条隐藏 */
       &::-webkit-scrollbar {
