@@ -401,70 +401,193 @@ defineExpose({
     top: 60px;
     left: 0;
     height: calc(100vh - 60px);
-    overflow: hidden;
     z-index: 10;
-    transition: width 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    background-color: #001529;
+    overflow-x: hidden;
+    overflow-y: overlay !important;
 
-    /* 鼠标进入时显示滚动条 */
-    &:hover {
-      overflow-y: overlay;
+    /* 深色主题样式 */
+    &.ant-layout-sider-dark {
+      background-color: #001529;
+
+      .sider-container {
+        :deep(.ant-menu) {
+          background: linear-gradient(180deg, #001529 0%, #00213d 100%);
+          
+          .ant-menu-item {
+            color: rgba(255, 255, 255, 0.75);
+            
+            &:hover {
+              color: #fff;
+              text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            }
+            
+            &.ant-menu-item-selected {
+              color: #fff;
+              background: linear-gradient(90deg, rgba(24, 144, 255, 0.1), transparent) !important;
+              border-left: 3px solid #1890ff;
+              
+              &::before {
+                background: #1890ff;
+              }
+            }
+          }
+          
+          .ant-menu-submenu {
+            &-title {
+              color: rgba(255, 255, 255, 0.85);
+              
+              &::after {
+                background: rgba(255, 255, 255, 0.3);
+              }
+            }
+            
+            &-arrow {
+              color: rgba(255, 255, 255, 0.45);
+            }
+            
+            &-open > .ant-menu-submenu-title {
+              color: #fff;
+              
+              .ant-menu-submenu-arrow {
+                color: rgba(255, 255, 255, 0.85);
+              }
+            }
+          }
+        }
+      }
+
+      /* 深色主题滚动条 */
+      &:hover {
+        &::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          
+          &:hover {
+            background: rgba(255, 255, 255, 0.3);
+          }
+        }
+      }
+    }
+
+    /* 浅色主题样式 */
+    &.ant-layout-sider-light {
+      background-color: #fff;
+      border-right: 1px solid #f0f0f0;
+
+      .sider-container {
+        :deep(.ant-menu) {
+          background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+          
+          .ant-menu-item {
+            color: rgba(0, 0, 0, 0.65);
+            
+            &:hover {
+              color: #1890ff;
+              text-shadow: 0 0 10px rgba(24, 144, 255, 0.1);
+            }
+            
+            &.ant-menu-item-selected {
+              color: #1890ff;
+              background: linear-gradient(90deg, rgba(24, 144, 255, 0.05), transparent) !important;
+              border-left: 3px solid #1890ff;
+              
+              &::before {
+                background: #1890ff;
+              }
+            }
+          }
+          
+          .ant-menu-submenu {
+            &-title {
+              color: rgba(0, 0, 0, 0.85);
+              
+              &::after {
+                background: rgba(0, 0, 0, 0.15);
+              }
+            }
+            
+            &-arrow {
+              color: rgba(0, 0, 0, 0.45);
+            }
+            
+            &-open > .ant-menu-submenu-title {
+              color: #1890ff;
+              
+              .ant-menu-submenu-arrow {
+                color: #1890ff;
+              }
+            }
+          }
+
+          /* 浅色主题子菜单项样式 */
+          .ant-menu-sub.ant-menu-inline {
+            .ant-menu-item {
+              &::before {
+                background: rgba(0, 0, 0, 0.06);
+              }
+            }
+          }
+        }
+      }
+
+      /* 浅色主题滚动条 */
+      &:hover {
+        &::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.15);
+          
+          &:hover {
+            background: rgba(0, 0, 0, 0.2);
+          }
+        }
+      }
     }
 
     .sider-container {
       height: 100%;
       display: flex;
       flex-direction: column;
+      width: 256px;
+      box-sizing: content-box;
+      padding-right: 0;
 
-      /* 菜单容器 */
+      /* 菜单容器基础样式 */
       :deep(.ant-menu) {
         flex: 1;
         border-right: none;
+        width: 256px !important;
+        transition: all 0.3s;
         
-        /* 防止菜单项展开时出现闪烁的滚动条 */
-        .ant-menu-sub {
-          overflow: hidden !important;
+        /* 菜单项基础样式 */
+        .ant-menu-item, .ant-menu-submenu-title {
+          height: 48px;
+          line-height: 48px;
+          margin: 4px 0;
+          padding: 0 24px !important;
+          width: 256px !important;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
           
-          &.ant-menu-inline {
-            background: transparent;
+          &:hover {
+            background: transparent !important;
           }
         }
-        
-        /* 优化子菜单展开动画 */
+
+        /* 子菜单展开动画 */
         .ant-menu-sub.ant-menu-inline {
-          transition: height 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.2s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+          transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 确保菜单项高度一致 */
-        .ant-menu-item, .ant-menu-submenu-title {
-          height: 40px;
-          line-height: 40px;
-          margin: 0;
-          padding: 0 16px 0 24px !important;
+        /* 子菜单项样式 */
+        .ant-menu-sub.ant-menu-inline {
+          .ant-menu-item {
+            height: 40px;
+            line-height: 40px;
+            padding-left: 48px !important;
+            font-size: 13px;
+          }
         }
       }
-    }
-
-    /* 自定义滚动条样式 */
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-      background-color: transparent;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 6px;
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.3);
-      }
-    }
-
-    &::-webkit-scrollbar-track {
-      background: transparent;
-      border-radius: 6px;
     }
   }
 
@@ -834,6 +957,22 @@ defineExpose({
     .right-content {
       margin-left: 80px;
       transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+
+    .main-layout-sider {
+      width: 80px !important;
+      
+      .sider-container {
+        width: 80px;
+        
+        :deep(.ant-menu) {
+          width: 80px !important;
+          
+          .ant-menu-item, .ant-menu-submenu-title {
+            width: 80px !important;
+          }
+        }
+      }
     }
   }
 }
