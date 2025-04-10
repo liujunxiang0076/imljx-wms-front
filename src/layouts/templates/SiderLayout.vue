@@ -399,21 +399,17 @@ defineExpose({
   &-sider {
     position: fixed;
     top: 60px;
-    /* 放在header下方 */
     left: 0;
     height: calc(100vh - 60px);
-    /* 减去header高度 */
     overflow: hidden;
-    /* 默认隐藏滚动条 */
     z-index: 10;
     transition: width 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     background-color: #001529;
-    /* 更深的深蓝色调 */
 
     /* 鼠标进入时显示滚动条 */
     &:hover {
-      overflow-y: auto;
+      overflow-y: overlay;
     }
 
     .sider-container {
@@ -421,18 +417,27 @@ defineExpose({
       flex-direction: column;
       height: 100%;
       position: relative;
-      will-change: contents;
-      /* 优化性能 */
-      overflow-x: hidden;
-      /* 防止水平滚动 */
+      overflow: hidden;
       padding-bottom: 16px;
-      /* 底部留出空间，防止菜单被截断 */
 
-      .side-menu {
-        position: relative;
-        z-index: 1;
-        overflow: hidden;
-        /* 防止一闪而过的滚动条 */
+      /* 菜单容器 */
+      :deep(.ant-menu) {
+        height: 100%;
+        border-right: none;
+        
+        /* 防止菜单项展开时出现闪烁的滚动条 */
+        .ant-menu-sub {
+          overflow: hidden !important;
+          
+          &.ant-menu-inline {
+            background: transparent;
+          }
+        }
+        
+        /* 优化子菜单展开动画 */
+        .ant-menu-sub.ant-menu-inline {
+          transition: height 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.2s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+        }
       }
     }
 
