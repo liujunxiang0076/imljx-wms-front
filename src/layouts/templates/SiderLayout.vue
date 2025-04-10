@@ -194,28 +194,26 @@
           </div>
         </div>
         
-        <!-- 主内容区 -->
-        <a-layout-content
-          class="main-layout-content"
-          :class="{
-            'fixed-header': layoutStore.fixedHeader,
-          }"
-        >
-          <div class="main-content-container">
-            <router-view v-slot="{ Component }">
-              <transition name="fade-transform" mode="out-in">
-                <keep-alive>
-                  <component :is="Component" />
-                </keep-alive>
-              </transition>
-            </router-view>
-          </div>
-        </a-layout-content>
+        <!-- 内容滚动区域 -->
+        <div class="content-scroll">
+          <!-- 主内容区 -->
+          <a-layout-content class="main-layout-content">
+            <div class="main-content-container">
+              <router-view v-slot="{ Component }">
+                <transition name="fade-transform" mode="out-in">
+                  <keep-alive>
+                    <component :is="Component" />
+                  </keep-alive>
+                </transition>
+              </router-view>
+            </div>
+          </a-layout-content>
 
-        <!-- 页脚 -->
-        <a-layout-footer class="main-layout-footer">
-          IMLJX-WMS 仓储管理系统 ©2024 Created by IMLJX
-        </a-layout-footer>
+          <!-- 页脚 -->
+          <a-layout-footer class="main-layout-footer">
+            IMLJX-WMS 仓储管理系统 ©2024 Created by IMLJX
+          </a-layout-footer>
+        </div>
       </a-layout>
     </a-layout>
   </a-layout>
@@ -716,15 +714,15 @@ defineExpose({
     border-bottom: 1px solid #e8e8e8;
     display: flex;
     position: fixed;
-    top: 60px; /* 固定在header下方 */
+    top: 60px;
     left: 0;
     right: 0;
-    overflow: visible; /* 修改为visible以支持标签菜单的弹出 */
+    overflow: visible;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     z-index: 9;
     transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    padding-left: 256px; /* 默认状态下与侧边栏宽度一致 */
-    
+    padding-left: 256px;
+
     .tabs-nav-content {
       display: flex;
       align-items: center;
@@ -747,121 +745,86 @@ defineExpose({
 
   .right-content {
     margin-left: 256px;
-    /* 与侧边栏宽度一致 */
     transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    padding-top: 60px; /* 为固定定位的header留出空间 */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-top: 60px; /* header高度 */
     
     &.show-tabs {
-      padding-top: 100px; /* 60px header + 40px 标签栏 */
+      padding-top: 100px; /* header + tabs高度 */
+    }
+  }
+
+  /* 内容滚动区域 */
+  .content-scroll {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: calc(100vh - 60px); /* 减去header高度 */
+    
+    .show-tabs & {
+      height: calc(100vh - 100px); /* 减去header和tabs高度 */
+    }
+
+    /* 自定义滚动条样式 */
+    &::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 4px;
+      
+      &:hover {
+        background: #a8a8a8;
+      }
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 4px;
     }
   }
 
   &-content {
-    margin: 16px 20px 20px 20px;
-    background: transparent;
-    border-radius: 4px;
-    transition: all 0.3s;
+    padding: 24px;
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 60px - 40px - 48px); /* 减去header高度、标签栏高度和footer高度 */
+    flex: 1;
+    min-width: 0;
+  }
+
+  .main-content-container {
+    flex: 1;
+    background: #fff;
+    border-radius: 4px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     position: relative;
-    overflow: visible;
-    
-    &.show-tabs {
-      /* 标签栏显示时调整内容区域的高度 */
-      min-height: calc(100vh - 60px - 40px - 48px);
-    }
-
-    /* 内容区域的卡片容器 */
-    .dashboard-card {
-      background: #fff;
-      border-radius: 4px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      margin-bottom: 16px;
-      padding: 24px;
-      transition: all 0.3s;
-
-      &-header {
-        margin-bottom: 16px;
-        border-bottom: 1px solid #f0f0f0;
-        padding-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-
-        h2 {
-          font-size: 16px;
-          font-weight: 500;
-          margin: 0;
-          color: rgba(0, 0, 0, 0.85);
-        }
-      }
-
-      &:hover {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
-      }
-    }
-
-    &.fixed-header {
-      /* 无需额外padding，因为整个right-content已经有padding-top了 */
-    }
   }
 
   &-footer {
     text-align: center;
-    padding: 12px 50px;
+    padding: 16px 24px;
     color: rgba(0, 0, 0, 0.45);
     font-size: 13px;
     background: #fff;
     border-top: 1px solid #f0f0f0;
-    transition: all 0.3s;
-    margin-top: auto;
+    margin: 0 24px 24px;
   }
 
   &.collapsed {
-    .main-layout-header.fixed {
-      width: 100%;
-    }
-
-    .main-layout-content {
-      margin-left: 104px;
-      /* 80px + 24px margin */
-      transition: margin 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-
-    .main-layout-footer {
-      margin-left: 80px;
-      transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    }
-
-    .main-layout-sider {
-      width: 80px !important;
-      transition: width 0.2s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
-
-      /* 折叠时的滚动条隐藏 */
-      &::-webkit-scrollbar {
-        width: 0;
-        height: 0;
-      }
-    }
-
-    .right-content {
-      margin-left: 80px;
-    }
-
     .tabs-nav-container {
-      padding-left: 80px; /* 折叠状态下与侧边栏宽度一致 */
+      padding-left: 80px;
       transition: padding-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
     
     .right-content {
       margin-left: 80px;
-      /* 折叠后的侧边栏宽度 */
       transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-      
-      &.show-tabs {
-        padding-top: 100px; /* 60px header + 40px 标签栏 */
-      }
     }
   }
 }
@@ -900,6 +863,28 @@ defineExpose({
   padding: 16px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   position: relative;
+  overflow-y: auto; /* 添加垂直滚动 */
+  height: 100%; /* 确保容器填满父元素高度 */
+  
+  /* 自定义滚动条样式 */
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+  }
 
   /* 主面板内容区域样式 */
   .dashboard-container {
