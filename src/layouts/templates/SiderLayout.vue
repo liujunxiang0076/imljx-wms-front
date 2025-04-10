@@ -29,7 +29,13 @@
               <menu-unfold-outlined style="font-size: 18px" v-if="collapsed" />
               <menu-fold-outlined style="font-size: 18px" v-else />
             </a-button>
-            <a-button type="text" class="trigger-btn" size="small">
+            <a-button
+              type="text"
+              class="trigger-btn"
+              size="small"
+              @click="handleRefresh"
+              title="刷新当前页面"
+            >
               <ReloadOutlined style="font-size: 18px" />
             </a-button>
           </a-space>
@@ -180,21 +186,19 @@
       </a-layout-sider>
 
       <!-- 右侧内容 -->
-      <a-layout class="right-content">
-        <!-- 标签页 -->
-        <a-layout-content
-          v-if="layoutStore.showTabs"
-          class="tags-nav-container"
-        >
-          <TabsNav />
-        </a-layout-content>
-
+      <a-layout class="right-content" :class="{ 'show-tabs': layoutStore.showTabs }">
+        <!-- 标签页 - 顶部固定位置 -->
+        <div v-if="layoutStore.showTabs" class="tabs-nav-container">
+          <div class="tabs-nav-content">
+            <TabsNav />
+          </div>
+        </div>
+        
         <!-- 主内容区 -->
         <a-layout-content
           class="main-layout-content"
           :class="{
             'fixed-header': layoutStore.fixedHeader,
-            'show-tabs': layoutStore.showTabs,
           }"
         >
           <div class="main-content-container">
@@ -244,6 +248,13 @@
           <a-switch
             :modelValue="layoutStore.fixedHeader"
             @update:modelValue="toggleFixedHeader"
+          />
+        </div>
+        <div class="setting-item">
+          <span>显示标签页</span>
+          <a-switch
+            :modelValue="layoutStore.showTabs"
+            @update:modelValue="toggleShowTabs"
           />
         </div>
         <div class="setting-item">
@@ -346,6 +357,22 @@ const toggleCollapsed = (value: boolean) => {
 // 切换固定头部
 const toggleFixedHeader = (value: boolean) => {
   layoutStore.fixedHeader = value;
+};
+
+// 切换显示标签页
+const toggleShowTabs = (value: boolean) => {
+  layoutStore.showTabs = value;
+};
+
+// 处理页面刷新
+const handleRefresh = () => {
+  // 获取当前路由
+  const currentPath = window.location.pathname;
+  console.log("刷新页面:", currentPath);
+  
+  // 重新加载当前页面内容
+  // 这里可以根据实际需求选择不同的刷新方式：
+  window.location.reload();
 };
 
 // 监听窗口大小变化
@@ -681,53 +708,69 @@ defineExpose({
     }
   }
 
-  .tags-nav-container {
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(8px);
-    margin: 0;
-    padding: 0;
+  /* 标签栏样式 */
+  .tabs-nav-container {
+    width: 100%;
     height: 40px;
-    /* 只保留标签栏高度 */
-    line-height: initial;
-    border-bottom: 1px solid #eaeaea;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
-    position: fixed;
-    top: 60px;
-    right: 0;
-    width: calc(100% - 256px);
-    z-index: 9; /* 降低z-index确保不会覆盖菜单 */
-    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    margin-bottom: 0;
-    /* 移除底部间距，由内容区域的padding-top管理 */
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
     display: flex;
-    align-items: center;
-    padding-left: 16px;
+    position: fixed;
+    top: 60px; /* 固定在header下方 */
+    left: 0;
+    right: 0;
+    overflow: visible; /* 修改为visible以支持标签菜单的弹出 */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    z-index: 9;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    padding-left: 256px; /* 默认状态下与侧边栏宽度一致 */
+    
+    .tabs-nav-content {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      height: 40px;
+      background: #fff;
+      padding: 0 16px;
+      overflow-x: auto;
+      white-space: nowrap;
+      
+      /* 隐藏水平滚动条，但允许滚动 */
+      &::-webkit-scrollbar {
+        height: 0;
+        display: none;
+      }
+      scrollbar-width: none; /* Firefox */
+    }
   }
 
   .right-content {
     margin-left: 256px;
     /* 与侧边栏宽度一致 */
     transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
-    padding-top: 40px; /* 为固定定位的标签栏留出空间 */
-  }
-
-  &.collapsed .right-content {
-    margin-left: 80px;
-    /* 折叠后的侧边栏宽度 */
-    transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    padding-top: 60px; /* 为固定定位的header留出空间 */
+    
+    &.show-tabs {
+      padding-top: 100px; /* 60px header + 40px 标签栏 */
+    }
   }
 
   &-content {
-    margin: 0 20px 20px 20px;
-    /* 增加左右和底部间距 */
-    padding-top: 120px;
-    /* 再次增加顶部与标签栏的间距，完全避免遮挡 */
-    padding-bottom: 0;
-    padding-left: 0;
-    padding-right: 0;
+    margin: 16px 20px 20px 20px;
     background: transparent;
-    border-radius: 2px;
+    border-radius: 4px;
     transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 60px - 40px - 48px); /* 减去header高度、标签栏高度和footer高度 */
+    position: relative;
+    overflow: visible;
+    
+    &.show-tabs {
+      /* 标签栏显示时调整内容区域的高度 */
+      min-height: calc(100vh - 60px - 40px - 48px);
+    }
 
     /* 内容区域的卡片容器 */
     .dashboard-card {
@@ -760,196 +803,7 @@ defineExpose({
     }
 
     &.fixed-header {
-      padding-top: 120px;
-
-      &.show-tabs {
-        padding-top: 120px;
-      }
-    }
-  }
-
-  .main-content-container {
-    min-height: calc(100vh - 60px - 40px - 60px - 20px);
-    /* 考虑标签栏的高度和底部margin */
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-
-    /* 主面板内容区域样式 */
-    .dashboard-container {
-      width: 100%;
-
-      .card-overview {
-        margin-bottom: 24px;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 16px;
-
-        .data-card {
-          text-align: center;
-          padding: 24px 20px;
-          border-radius: 8px;
-          background: #fff;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-          transition: all 0.3s;
-          position: relative;
-          overflow: hidden;
-
-          &::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 0;
-            height: 3px;
-            width: 100%;
-            background: linear-gradient(90deg, #1890ff, #3a77ff);
-            opacity: 0.8;
-          }
-
-          &:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
-            transform: translateY(-2px);
-          }
-
-          .data-title {
-            font-size: 14px;
-            color: rgba(0, 0, 0, 0.65);
-            margin-bottom: 16px;
-          }
-
-          .data-value {
-            font-size: 28px;
-            font-weight: 600;
-            margin: 8px 0;
-            color: #1890ff;
-            text-shadow: 0 0 1px rgba(24, 144, 255, 0.1);
-          }
-
-          .data-trend {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            margin-top: 8px;
-            padding: 4px 0;
-
-            &.up {
-              color: #f5222d;
-            }
-
-            &.down {
-              color: #52c41a;
-            }
-
-            .trend-icon {
-              margin-right: 4px;
-              font-size: 12px;
-            }
-          }
-        }
-      }
-
-      /* 库存预警图表区域 */
-      .inventory-warning {
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        padding: 16px;
-        margin-bottom: 16px;
-
-        &-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 16px;
-
-          h3 {
-            font-size: 16px;
-            font-weight: 500;
-            margin: 0;
-            color: rgba(0, 0, 0, 0.85);
-          }
-        }
-
-        &-chart {
-          margin-top: 16px;
-
-          .progress-item {
-            margin-bottom: 12px;
-
-            .progress-info {
-              display: flex;
-              justify-content: space-between;
-              margin-bottom: 4px;
-
-              .progress-title {
-                color: rgba(0, 0, 0, 0.65);
-                font-size: 14px;
-              }
-
-              .progress-value {
-                font-weight: 500;
-              }
-            }
-          }
-        }
-      }
-
-      /* 库存明细表格 */
-      .inventory-table {
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        padding: 0;
-        overflow: hidden;
-
-        :deep(.ant-table) {
-          font-size: 14px;
-
-          .ant-table-thead > tr > th {
-            background: #fafafa;
-            font-weight: 500;
-          }
-
-          .ant-tag {
-            margin-right: 0;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-          }
-
-          .ant-tag-red {
-            background: rgba(245, 34, 45, 0.08);
-            border-color: rgba(245, 34, 45, 0.3);
-            color: #cf1322;
-          }
-
-          .ant-tag-green {
-            background: rgba(82, 196, 26, 0.08);
-            border-color: rgba(82, 196, 26, 0.3);
-            color: #52c41a;
-          }
-
-          .ant-tag-orange {
-            background: rgba(250, 173, 20, 0.08);
-            border-color: rgba(250, 173, 20, 0.3);
-            color: #fa8c16;
-          }
-
-          .ant-btn-text {
-            padding: 0 4px;
-            font-size: 14px;
-
-            &:not(:last-child) {
-              margin-right: 8px;
-            }
-
-            &:hover {
-              background: rgba(0, 0, 0, 0.03);
-            }
-          }
-        }
-      }
+      /* 无需额外padding，因为整个right-content已经有padding-top了 */
     }
   }
 
@@ -967,11 +821,6 @@ defineExpose({
   &.collapsed {
     .main-layout-header.fixed {
       width: 100%;
-    }
-
-    .tags-nav-container {
-      width: calc(100% - 80px);
-      transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     }
 
     .main-layout-content {
@@ -999,6 +848,21 @@ defineExpose({
     .right-content {
       margin-left: 80px;
     }
+
+    .tabs-nav-container {
+      padding-left: 80px; /* 折叠状态下与侧边栏宽度一致 */
+      transition: padding-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    }
+    
+    .right-content {
+      margin-left: 80px;
+      /* 折叠后的侧边栏宽度 */
+      transition: margin-left 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+      
+      &.show-tabs {
+        padding-top: 100px; /* 60px header + 40px 标签栏 */
+      }
+    }
   }
 }
 
@@ -1024,6 +888,192 @@ defineExpose({
 
       span {
         color: rgba(0, 0, 0, 0.65);
+      }
+    }
+  }
+}
+
+.main-content-container {
+  flex: 1;
+  background: #fff;
+  border-radius: 4px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  position: relative;
+
+  /* 主面板内容区域样式 */
+  .dashboard-container {
+    width: 100%;
+
+    .card-overview {
+      margin-bottom: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+
+      .data-card {
+        text-align: center;
+        padding: 24px 20px;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+
+        &::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 3px;
+          width: 100%;
+          background: linear-gradient(90deg, #1890ff, #3a77ff);
+          opacity: 0.8;
+        }
+
+        &:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
+          transform: translateY(-2px);
+        }
+
+        .data-title {
+          font-size: 14px;
+          color: rgba(0, 0, 0, 0.65);
+          margin-bottom: 16px;
+        }
+
+        .data-value {
+          font-size: 28px;
+          font-weight: 600;
+          margin: 8px 0;
+          color: #1890ff;
+          text-shadow: 0 0 1px rgba(24, 144, 255, 0.1);
+        }
+
+        .data-trend {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 13px;
+          margin-top: 8px;
+          padding: 4px 0;
+
+          &.up {
+            color: #f5222d;
+          }
+
+          &.down {
+            color: #52c41a;
+          }
+
+          .trend-icon {
+            margin-right: 4px;
+            font-size: 12px;
+          }
+        }
+      }
+    }
+
+    /* 库存预警图表区域 */
+    .inventory-warning {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      padding: 16px;
+      margin-bottom: 16px;
+
+      &-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+
+        h3 {
+          font-size: 16px;
+          font-weight: 500;
+          margin: 0;
+          color: rgba(0, 0, 0, 0.85);
+        }
+      }
+
+      &-chart {
+        margin-top: 16px;
+
+        .progress-item {
+          margin-bottom: 12px;
+
+          .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+
+            .progress-title {
+              color: rgba(0, 0, 0, 0.65);
+              font-size: 14px;
+            }
+
+            .progress-value {
+              font-weight: 500;
+            }
+          }
+        }
+      }
+    }
+
+    /* 库存明细表格 */
+    .inventory-table {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      padding: 0;
+      overflow: hidden;
+
+      :deep(.ant-table) {
+        font-size: 14px;
+
+        .ant-table-thead > tr > th {
+          background: #fafafa;
+          font-weight: 500;
+        }
+
+        .ant-tag {
+          margin-right: 0;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 12px;
+        }
+
+        .ant-tag-red {
+          background: rgba(245, 34, 45, 0.08);
+          border-color: rgba(245, 34, 45, 0.3);
+          color: #cf1322;
+        }
+
+        .ant-tag-green {
+          background: rgba(82, 196, 26, 0.08);
+          border-color: rgba(82, 196, 26, 0.3);
+          color: #52c41a;
+        }
+
+        .ant-tag-orange {
+          background: rgba(250, 173, 20, 0.08);
+          border-color: rgba(250, 173, 20, 0.3);
+          color: #fa8c16;
+        }
+
+        .ant-btn-text {
+          padding: 0 4px;
+          font-size: 14px;
+
+          &:not(:last-child) {
+            margin-right: 8px;
+          }
+
+          &:hover {
+            background: rgba(0, 0, 0, 0.03);
+          }
+        }
       }
     }
   }
