@@ -1,54 +1,75 @@
 <template>
   <!-- 布局容器 -->
-  <a-layout class="main-layout" :class="{ 'collapsed': collapsed }">
+  <a-layout class="main-layout" :class="{ collapsed: collapsed }">
     <!-- 顶部导航 -->
-    <a-layout-header class="main-layout-header" :class="{ 'fixed': layoutStore.fixedHeader }">
+    <a-layout-header
+      class="main-layout-header"
+      :class="{ fixed: layoutStore.fixedHeader }"
+    >
+      <!-- 顶部内容区 -->
       <div class="header-content">
         <div class="header-left">
-          <img :src="config.system.systemLogo" alt="IMLJX" class="company-logo" />
+          <img
+            :src="config.system.systemLogo"
+            alt="IMLJX"
+            class="company-logo"
+          />
           <div class="system-title">{{ config.system.systemName }}</div>
-          <!-- 将菜单按钮放在文字后面 -->
-          <a-button 
-            type="text"
-            class="trigger-btn"
-            @click="collapsed = !collapsed"
-            size="small"
-          >
-            <menu-unfold-outlined v-if="collapsed" />
-            <menu-fold-outlined v-else />
-          </a-button>
         </div>
+        <!-- 菜单按钮 -->
+        <div class="header-middle">
+          <a-space size="small">
+            <!-- 将菜单按钮放在文字后面 -->
+            <a-button
+              type="text"
+              class="trigger-btn"
+              @click="collapsed = !collapsed"
+              size="small"
+            >
+              <menu-unfold-outlined style="font-size: 18px" v-if="collapsed" />
+              <menu-fold-outlined style="font-size: 18px" v-else />
+            </a-button>
+            <a-button type="text" class="trigger-btn" size="small">
+              <ReloadOutlined style="font-size: 18px" />
+            </a-button>
+          </a-space>
+          <!-- 搜索框 -->
+          <div class="search-container">
+            <a-input-search
+              placeholder="搜索..."
+              style="width: 240px"
+              :bordered="false"
+              size="middle"
+              class="global-search"
+              allowClear
+              @pressEnter="handleSearch"
+              v-model:value="searchValue"
+            />
+          </div>
+        </div>
+        <!-- 右侧功能区 -->
         <div class="header-right">
           <a-space size="middle">
-            <!-- 搜索框 -->
-            <div class="search-container">
-              <a-input
-                placeholder="搜索..."
-                style="width: 240px"
-                :bordered="false"
-                size="middle"
-                class="global-search"
-                allow-clear
-                @pressEnter="handleSearch"
-                v-model:value="searchValue"
-              >
-                <template #prefix>
-                  <search-outlined style="color: #8c8c8c; font-size: 16px" />
-                </template>
-              </a-input>
-            </div>
-            
             <!-- 通知器 -->
             <a-dropdown placement="bottomRight">
               <div class="notification-icon-wrapper">
                 <a-button type="text" shape="circle" class="notification-btn">
-                  <template #icon><bell-outlined style="font-size: 16px" /></template>
+                  <template #icon
+                    ><bell-outlined style="font-size: 16px"
+                  /></template>
                 </a-button>
                 <a-badge count="5" class="notification-badge" size="small" />
               </div>
               <template #overlay>
-                <a-menu style="width: 300px">
-                  <a-menu-item key="notification-title" style="text-align: center; cursor: default; font-weight: 500">
+                <a-menu style="width: 200px">
+                  <a-menu-item
+                    key="notification-title"
+                    style="
+                      text-align: center;
+                      cursor: default;
+                      font-weight: 500;
+                    "
+                  >
                     通知信息 (5条未读)
                   </a-menu-item>
                   <a-menu-divider />
@@ -57,7 +78,11 @@
                       <a-tag color="blue">入库</a-tag>
                       <div style="margin-left: 8px; flex: 1">
                         <div style="font-weight: 500">新的入库订单已创建</div>
-                        <div style="font-size: 12px; color: rgba(0, 0, 0, 0.45)">刚刚</div>
+                        <div
+                          style="font-size: 12px; color: rgba(0, 0, 0, 0.45)"
+                        >
+                          刚刚
+                        </div>
                       </div>
                     </div>
                   </a-menu-item>
@@ -65,8 +90,14 @@
                     <div style="display: flex; align-items: flex-start">
                       <a-tag color="red">警告</a-tag>
                       <div style="margin-left: 8px; flex: 1">
-                        <div style="font-weight: 500">产品B2库存低于安全库存</div>
-                        <div style="font-size: 12px; color: rgba(0, 0, 0, 0.45)">10分钟前</div>
+                        <div style="font-weight: 500">
+                          产品B2库存低于安全库存
+                        </div>
+                        <div
+                          style="font-size: 12px; color: rgba(0, 0, 0, 0.45)"
+                        >
+                          10分钟前
+                        </div>
                       </div>
                     </div>
                   </a-menu-item>
@@ -77,18 +108,31 @@
                 </a-menu>
               </template>
             </a-dropdown>
-            
+
             <!-- 设置按钮 - 打开抽屉 -->
-            <a-button type="text" shape="circle" class="setting-btn" @click="showSettingDrawer = true">
-              <template #icon><setting-outlined style="font-size: 16px" /></template>
+            <a-button
+              type="text"
+              shape="circle"
+              class="setting-btn"
+              @click="showSettingDrawer = true"
+            >
+              <template #icon
+                ><setting-outlined style="font-size: 16px"
+              /></template>
             </a-button>
 
             <!-- 用户个人信息 -->
             <a-dropdown placement="bottomRight">
               <div class="user-dropdown-btn">
-                <a-avatar>{{ userStore?.userInfo?.username?.substring(0, 1) || '用户' }}</a-avatar>
-                <span class="username">{{ userStore?.userInfo?.username || '用户名' }}</span>
-                <down-outlined style="font-size: 12px; color: rgba(0, 0, 0, 0.45)" />  
+                <a-avatar>{{
+                  userStore?.userInfo?.username?.substring(0, 1) || "用户"
+                }}</a-avatar>
+                <span class="username">{{
+                  userStore?.userInfo?.username || "用户名"
+                }}</span>
+                <down-outlined
+                  style="font-size: 12px; color: rgba(0, 0, 0, 0.45)"
+                />
               </div>
               <template #overlay>
                 <a-menu>
@@ -116,15 +160,16 @@
     <!-- 中间内容区 -->
     <a-layout>
       <!-- 侧边栏 -->
-      <a-layout-sider v-model:collapsed="collapsed" :theme="layoutStore.siderTheme" :trigger="null" collapsible
-        class="main-layout-sider" width="256">
+      <a-layout-sider
+        v-model:collapsed="collapsed"
+        :theme="layoutStore.siderTheme"
+        :trigger="null"
+        collapsible
+        class="main-layout-sider"
+        width="256"
+      >
         <!-- Logo -->
         <div class="sider-container">
-          <!-- 仅保留控制台文字，去除空白元素 -->
-          <div v-if="!collapsed" class="sidebar-title">
-            <h1 class="sidebar-title-text">控制台</h1>
-          </div>
-
           <!-- 侧边菜单 -->
           <SideMenu :collapsed="collapsed" :theme="layoutStore.siderTheme" />
         </div>
@@ -133,15 +178,21 @@
       <!-- 右侧内容 -->
       <a-layout class="right-content">
         <!-- 标签页 -->
-        <a-layout-content v-if="layoutStore.showTabs" class="tags-nav-container">
+        <a-layout-content
+          v-if="layoutStore.showTabs"
+          class="tags-nav-container"
+        >
           <TabsNav />
         </a-layout-content>
 
         <!-- 主内容区 -->
-        <a-layout-content class="main-layout-content" :class="{
-          'fixed-header': layoutStore.fixedHeader,
-          'show-tabs': layoutStore.showTabs
-        }">
+        <a-layout-content
+          class="main-layout-content"
+          :class="{
+            'fixed-header': layoutStore.fixedHeader,
+            'show-tabs': layoutStore.showTabs,
+          }"
+        >
           <div class="main-content-container">
             <router-view v-slot="{ Component }">
               <transition name="fade-transform" mode="out-in">
@@ -160,7 +211,7 @@
       </a-layout>
     </a-layout>
   </a-layout>
-  
+
   <!-- 设置抽屉 -->
   <a-drawer
     title="系统设置"
@@ -175,22 +226,31 @@
         <div class="setting-title">主题设置</div>
         <div class="setting-item">
           <span>暗色模式</span>
-          <a-switch :modelValue="layoutStore.siderTheme === 'dark'" @update:modelValue="updateThemeSetting" />
+          <a-switch
+            :modelValue="layoutStore.siderTheme === 'dark'"
+            @update:modelValue="updateThemeSetting"
+          />
         </div>
       </div>
-      
+
       <div class="setting-block">
         <div class="setting-title">布局设置</div>
         <div class="setting-item">
           <span>固定头部</span>
-          <a-switch :modelValue="layoutStore.fixedHeader" @update:modelValue="toggleFixedHeader" />
+          <a-switch
+            :modelValue="layoutStore.fixedHeader"
+            @update:modelValue="toggleFixedHeader"
+          />
         </div>
         <div class="setting-item">
           <span>展开菜单</span>
-          <a-switch :modelValue="!collapsed" @update:modelValue="toggleCollapsed" />
+          <a-switch
+            :modelValue="!collapsed"
+            @update:modelValue="toggleCollapsed"
+          />
         </div>
       </div>
-      
+
       <div class="setting-block">
         <div class="setting-title">系统设置</div>
         <div class="setting-item">
@@ -202,10 +262,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useLayoutStore } from '../../store/layout';
-import { useUserStore } from '../../store/user';
-import config from '../../config';
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import { useLayoutStore } from "../../store/layout";
+import { useUserStore } from "../../store/user";
+import config from "../../config";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -213,9 +273,9 @@ import {
   UserOutlined,
   SettingOutlined,
   LogoutOutlined,
-  SearchOutlined,
-  DownOutlined
-} from '@ant-design/icons-vue';
+  DownOutlined,
+  ReloadOutlined,
+} from "@ant-design/icons-vue";
 
 // 布局状态管理
 const layoutStore = useLayoutStore();
@@ -225,7 +285,7 @@ const userStore = useUserStore();
 const collapsed = ref(layoutStore.collapsed || false);
 
 // 搜索值
-const searchValue = ref('');
+const searchValue = ref("");
 
 // 设置抽屉显示状态
 const showSettingDrawer = ref(false);
@@ -233,7 +293,7 @@ const showSettingDrawer = ref(false);
 // 退出登录
 const handleLogout = () => {
   // 这里可以调用退出登录的方法
-  console.log('用户点击了退出登录');
+  console.log("用户点击了退出登录");
   // userStore.logout();
 };
 
@@ -250,7 +310,7 @@ const handleResize = () => {
 
 // 搜索方法
 const onSearch = (value: string) => {
-  console.log('搜索关键词:', value);
+  console.log("搜索关键词:", value);
   // 实现搜索功能
   if (value && value.trim()) {
     // 实际搜索逻辑将在此实现
@@ -268,9 +328,9 @@ const handleSearch = (e: Event) => {
 // 更新主题设置
 const updateThemeSetting = (checked: boolean) => {
   // 应用暗色或亮色主题
-  const theme = checked ? 'dark' : 'light';
+  const theme = checked ? "dark" : "light";
   layoutStore.siderTheme = theme;
-  console.log('更新主题:', theme);
+  console.log("更新主题:", theme);
 };
 
 // 切换菜单折叠状态
@@ -287,15 +347,15 @@ const toggleFixedHeader = (value: boolean) => {
 // 监听窗口大小变化
 onMounted(() => {
   handleResize();
-  window.addEventListener('resize', handleResize);
+  window.addEventListener("resize", handleResize);
 });
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener("resize", handleResize);
 });
 
 defineExpose({
-  collapsed
+  collapsed,
 });
 </script>
 
@@ -309,14 +369,18 @@ defineExpose({
 
   &-sider {
     position: fixed;
-    top: 60px; /* 放在header下方 */
+    top: 60px;
+    /* 放在header下方 */
     left: 0;
-    height: calc(100vh - 60px); /* 减去header高度 */
-    overflow: hidden; /* 默认隐藏滚动条 */
+    height: calc(100vh - 60px);
+    /* 减去header高度 */
+    overflow: hidden;
+    /* 默认隐藏滚动条 */
     z-index: 10;
     transition: width 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
     box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-    background-color: #001529; /* 更深的深蓝色调 */
+    background-color: #001529;
+    /* 更深的深蓝色调 */
 
     /* 鼠标进入时显示滚动条 */
     &:hover {
@@ -330,15 +394,16 @@ defineExpose({
       position: relative;
       will-change: contents;
       /* 优化性能 */
-      overflow-x: hidden; /* 防止水平滚动 */
-      padding-bottom: 16px; /* 底部留出空间，防止菜单被截断 */
-
-
+      overflow-x: hidden;
+      /* 防止水平滚动 */
+      padding-bottom: 16px;
+      /* 底部留出空间，防止菜单被截断 */
 
       .side-menu {
         position: relative;
         z-index: 1;
-        overflow: hidden; /* 防止一闪而过的滚动条 */
+        overflow: hidden;
+        /* 防止一闪而过的滚动条 */
       }
     }
 
@@ -372,7 +437,8 @@ defineExpose({
     line-height: 60px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
     position: relative;
-    z-index: 11; /* 增大层级，确保始终在最上层 */
+    z-index: 11;
+    /* 增大层级，确保始终在最上层 */
     width: 100%;
     border-bottom: 1px solid #f0f0f0;
 
@@ -387,18 +453,30 @@ defineExpose({
     :deep(.header-content) {
       display: flex;
       align-items: center;
-      justify-content: space-between; /* 添加两端对齐 */
+      justify-content: space-between;
+      /* 添加两端对齐 */
       height: 100%;
       padding: 0 16px;
 
       .header-left {
+        width: 240px;
         display: flex;
         align-items: center;
+        overflow: hidden;
+      }
+
+      // 中间区域
+      .header-middle {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
         flex: 1;
         overflow: hidden;
-        
+        margin-right: 50px;
+
         .trigger-btn {
-          margin-left: 12px;
           font-size: 16px;
           width: 32px;
           height: 32px;
@@ -408,10 +486,25 @@ defineExpose({
           border-radius: 4px;
           background: transparent;
           border: none;
-          
+
           &:hover {
             background-color: rgba(0, 0, 0, 0.06);
             color: #1890ff;
+          }
+        }
+
+        // 搜索框容器
+        .search-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #f5f5f5;
+          border-radius: 6px;
+          transition: all 0.3s;
+          border: 1px solid rgba(0, 0, 0, 0.06);
+          &:hover {
+            background-color: #f0f0f0;
+            border-color: #e8e8e8;
           }
         }
       }
@@ -419,74 +512,9 @@ defineExpose({
       .header-right {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 12px;
-        
-        .search-container {
-          background-color: #f5f5f5;
-          border-radius: 6px;
-          margin-right: 20px;
-          transition: all 0.3s;
-          border: 1px solid rgba(0, 0, 0, 0.06);
-          overflow: hidden;
-          height: 36px;
-          
-          &:hover {
-            background-color: #f0f0f0;
-            border-color: #e8e8e8;
-          }
-          
-          .global-search {
-            .ant-input {
-              background-color: transparent;
-              height: 36px;
-              padding-left: 12px;
-              color: rgba(0, 0, 0, 0.75);
-              
-              &::placeholder {
-                color: #8c8c8c;
-              }
-              
-              &:focus {
-                background-color: rgba(255, 255, 255, 0.8);
-              }
-            }
-            
-            .ant-input-affix-wrapper {
-              height: 36px;
-              padding-top: 0;
-              padding-bottom: 0;
-              display: flex;
-              align-items: center;
-            }
-            
-            .ant-input-group-addon {
-              background-color: transparent;
-              border: none;
-            }
-            
-            .ant-input-search-button {
-              height: 36px;
-              border-radius: 0 4px 4px 0;
-              border: none;
-              background-color: transparent;
-              box-shadow: none;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              
-              &:hover {
-                background-color: rgba(24, 144, 255, 0.1);
-                color: #1890ff;
-              }
-              
-              &:focus, &:active {
-                background-color: transparent;
-                box-shadow: none;
-              }
-            }
-          }
-        }
-        
+
         .username {
           max-width: 100px;
           overflow: hidden;
@@ -495,7 +523,7 @@ defineExpose({
           color: rgba(0, 0, 0, 0.85);
           font-weight: 500;
         }
-        
+
         .ant-badge {
           .ant-badge-count {
             box-shadow: 0 0 0 1px #fff;
@@ -504,11 +532,11 @@ defineExpose({
             padding: 0 4px;
           }
         }
-        
+
         .notification-icon-wrapper {
           position: relative;
           display: inline-block;
-          
+
           .notification-badge {
             position: absolute;
             top: 2px;
@@ -516,38 +544,39 @@ defineExpose({
             z-index: 1;
           }
         }
-        
-        .notification-btn, .setting-btn {
+
+        .notification-btn,
+        .setting-btn {
           height: 40px;
           width: 40px;
           display: flex;
           align-items: center;
           justify-content: center;
-          
+
           &:hover {
             background-color: rgba(0, 0, 0, 0.03);
             color: #1890ff;
           }
         }
-        
+
         .ant-btn {
           display: flex;
           align-items: center;
           padding: 0 8px;
           height: 38px;
-          
+
           &-text {
             color: rgba(0, 0, 0, 0.75);
             transition: all 0.3s;
             border-radius: 4px;
-            
+
             &:hover {
               background-color: rgba(0, 0, 0, 0.03);
               color: rgba(0, 0, 0, 0.95);
             }
           }
         }
-        
+
         .user-dropdown-btn {
           padding: 0 12px;
           border-radius: 4px;
@@ -556,17 +585,17 @@ defineExpose({
           height: 40px;
           cursor: pointer;
           transition: all 0.3s;
-          
+
           .username {
             margin: 0 6px 0 8px;
             font-weight: 500;
           }
-          
+
           &:hover {
             background-color: rgba(0, 0, 0, 0.03);
           }
         }
-        
+
         .ant-avatar {
           background-color: #1890ff;
           color: #fff;
@@ -604,33 +633,39 @@ defineExpose({
     position: sticky;
     top: 60px;
     width: 100%;
-    z-index: 999; /* 最高层级确保标签栏始终在最上层 */
+    z-index: 999;
+    /* 最高层级确保标签栏始终在最上层 */
     transition: all 0.3s;
-    margin-bottom: 0; /* 移除底部间距，由内容区域的padding-top管理 */
+    margin-bottom: 0;
+    /* 移除底部间距，由内容区域的padding-top管理 */
     display: flex;
     align-items: center;
     padding-left: 8px;
   }
 
   .right-content {
-    margin-left: 256px; /* 与侧边栏宽度一致 */
+    margin-left: 256px;
+    /* 与侧边栏宽度一致 */
     transition: margin-left 0.3s;
   }
 
   &.collapsed .right-content {
-    margin-left: 80px; /* 折叠后的侧边栏宽度 */
+    margin-left: 80px;
+    /* 折叠后的侧边栏宽度 */
   }
 
   &-content {
-    margin: 0 20px 20px 20px; /* 增加左右和底部间距 */
-    padding-top: 120px; /* 再次增加顶部与标签栏的间距，完全避免遮挡 */
+    margin: 0 20px 20px 20px;
+    /* 增加左右和底部间距 */
+    padding-top: 120px;
+    /* 再次增加顶部与标签栏的间距，完全避免遮挡 */
     padding-bottom: 0;
     padding-left: 0;
     padding-right: 0;
     background: transparent;
     border-radius: 2px;
     transition: all 0.3s;
-    
+
     /* 内容区域的卡片容器 */
     .dashboard-card {
       background: #fff;
@@ -639,7 +674,7 @@ defineExpose({
       margin-bottom: 16px;
       padding: 24px;
       transition: all 0.3s;
-      
+
       &-header {
         margin-bottom: 16px;
         border-bottom: 1px solid #f0f0f0;
@@ -647,7 +682,7 @@ defineExpose({
         display: flex;
         justify-content: space-between;
         align-items: center;
-        
+
         h2 {
           font-size: 16px;
           font-weight: 500;
@@ -655,7 +690,7 @@ defineExpose({
           color: rgba(0, 0, 0, 0.85);
         }
       }
-      
+
       &:hover {
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
       }
@@ -671,7 +706,8 @@ defineExpose({
   }
 
   .main-content-container {
-    min-height: calc(100vh - 60px - 40px - 60px - 20px); /* 考虑标签栏的高度和底部margin */
+    min-height: calc(100vh - 60px - 40px - 60px - 20px);
+    /* 考虑标签栏的高度和底部margin */
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -679,13 +715,13 @@ defineExpose({
     /* 主面板内容区域样式 */
     .dashboard-container {
       width: 100%;
-      
+
       .card-overview {
         margin-bottom: 24px;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 16px;
-        
+
         .data-card {
           text-align: center;
           padding: 24px 20px;
@@ -695,9 +731,9 @@ defineExpose({
           transition: all 0.3s;
           position: relative;
           overflow: hidden;
-          
+
           &::after {
-            content: '';
+            content: "";
             position: absolute;
             left: 0;
             top: 0;
@@ -706,18 +742,18 @@ defineExpose({
             background: linear-gradient(90deg, #1890ff, #3a77ff);
             opacity: 0.8;
           }
-          
+
           &:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
             transform: translateY(-2px);
           }
-          
+
           .data-title {
             font-size: 14px;
             color: rgba(0, 0, 0, 0.65);
             margin-bottom: 16px;
           }
-          
+
           .data-value {
             font-size: 28px;
             font-weight: 600;
@@ -725,7 +761,7 @@ defineExpose({
             color: #1890ff;
             text-shadow: 0 0 1px rgba(24, 144, 255, 0.1);
           }
-          
+
           .data-trend {
             display: flex;
             align-items: center;
@@ -733,15 +769,15 @@ defineExpose({
             font-size: 13px;
             margin-top: 8px;
             padding: 4px 0;
-            
+
             &.up {
               color: #f5222d;
             }
-            
+
             &.down {
               color: #52c41a;
             }
-            
+
             .trend-icon {
               margin-right: 4px;
               font-size: 12px;
@@ -749,7 +785,7 @@ defineExpose({
           }
         }
       }
-      
+
       /* 库存预警图表区域 */
       .inventory-warning {
         background: #fff;
@@ -757,13 +793,13 @@ defineExpose({
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         padding: 16px;
         margin-bottom: 16px;
-        
+
         &-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 16px;
-          
+
           h3 {
             font-size: 16px;
             font-weight: 500;
@@ -771,23 +807,23 @@ defineExpose({
             color: rgba(0, 0, 0, 0.85);
           }
         }
-        
+
         &-chart {
           margin-top: 16px;
-          
+
           .progress-item {
             margin-bottom: 12px;
-            
+
             .progress-info {
               display: flex;
               justify-content: space-between;
               margin-bottom: 4px;
-              
+
               .progress-title {
                 color: rgba(0, 0, 0, 0.65);
                 font-size: 14px;
               }
-              
+
               .progress-value {
                 font-weight: 500;
               }
@@ -795,7 +831,7 @@ defineExpose({
           }
         }
       }
-      
+
       /* 库存明细表格 */
       .inventory-table {
         background: #fff;
@@ -803,48 +839,48 @@ defineExpose({
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         padding: 0;
         overflow: hidden;
-        
+
         :deep(.ant-table) {
           font-size: 14px;
-          
+
           .ant-table-thead > tr > th {
             background: #fafafa;
             font-weight: 500;
           }
-          
+
           .ant-tag {
             margin-right: 0;
             padding: 2px 8px;
             border-radius: 4px;
             font-size: 12px;
           }
-          
+
           .ant-tag-red {
             background: rgba(245, 34, 45, 0.08);
             border-color: rgba(245, 34, 45, 0.3);
             color: #cf1322;
           }
-          
+
           .ant-tag-green {
             background: rgba(82, 196, 26, 0.08);
             border-color: rgba(82, 196, 26, 0.3);
             color: #52c41a;
           }
-          
+
           .ant-tag-orange {
             background: rgba(250, 173, 20, 0.08);
             border-color: rgba(250, 173, 20, 0.3);
             color: #fa8c16;
           }
-          
+
           .ant-btn-text {
             padding: 0 4px;
             font-size: 14px;
-            
+
             &:not(:last-child) {
               margin-right: 8px;
             }
-            
+
             &:hover {
               background: rgba(0, 0, 0, 0.03);
             }
@@ -889,24 +925,25 @@ defineExpose({
     .main-layout-sider {
       width: 80px !important;
       transition: width 0.15s ease !important;
-      
+
       /* 折叠时的滚动条隐藏 */
       &::-webkit-scrollbar {
         width: 0;
         height: 0;
       }
     }
-    
+
     .right-content {
       margin-left: 80px;
     }
   }
 }
+
 /* 设置抽屉样式 */
 .setting-drawer-content {
   .setting-block {
     margin-bottom: 24px;
-    
+
     .setting-title {
       font-size: 15px;
       font-weight: 500;
@@ -915,13 +952,13 @@ defineExpose({
       border-bottom: 1px solid #f0f0f0;
       padding-bottom: 8px;
     }
-    
+
     .setting-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       margin-bottom: 12px;
-      
+
       span {
         color: rgba(0, 0, 0, 0.65);
       }
