@@ -413,16 +413,13 @@ defineExpose({
     }
 
     .sider-container {
+      height: 100%;
       display: flex;
       flex-direction: column;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-      padding-bottom: 16px;
 
       /* 菜单容器 */
       :deep(.ant-menu) {
-        height: 100%;
+        flex: 1;
         border-right: none;
         
         /* 防止菜单项展开时出现闪烁的滚动条 */
@@ -438,6 +435,14 @@ defineExpose({
         .ant-menu-sub.ant-menu-inline {
           transition: height 0.2s cubic-bezier(0.645, 0.045, 0.355, 1), background 0.3s cubic-bezier(0.645, 0.045, 0.355, 1), opacity 0.2s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
         }
+
+        /* 确保菜单项高度一致 */
+        .ant-menu-item, .ant-menu-submenu-title {
+          height: 40px;
+          line-height: 40px;
+          margin: 0;
+          padding: 0 16px 0 24px !important;
+        }
       }
     }
 
@@ -451,7 +456,6 @@ defineExpose({
     &::-webkit-scrollbar-thumb {
       background: rgba(255, 255, 255, 0.2);
       border-radius: 6px;
-      transition: background-color 0.3s ease;
 
       &:hover {
         background: rgba(255, 255, 255, 0.3);
