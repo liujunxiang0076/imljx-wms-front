@@ -23,7 +23,7 @@
             <a-button
               type="text"
               class="trigger-btn"
-              @click="collapsed = !collapsed"
+              @click="toggleCollapsed"
               size="small"
             >
               <menu-unfold-outlined style="font-size: 18px" v-if="collapsed" />
@@ -220,56 +220,165 @@
 
   <!-- 设置抽屉 -->
   <a-drawer
-    title="系统设置"
+    title="页面配置"
     placement="right"
     :closable="true"
     :visible="showSettingDrawer"
     @close="showSettingDrawer = false"
-    width="300"
+    :width="drawerWidth"
+    class="system-setting-drawer"
+    :bodyStyle="{ padding: '20px', paddingBottom: '70px' }"
+    :headerStyle="{ 
+      background: layoutStore.siderTheme === 'dark' ? '#001529' : '#f0f2f5',
+      color: layoutStore.siderTheme === 'dark' ? 'white' : 'white',
+      borderBottom: layoutStore.siderTheme === 'dark' ? 'none' : '1px solid #f0f0f0',
+      padding: '16px 20px'
+    }"
   >
-    <div class="setting-drawer-content">
-      <div class="setting-block">
-        <div class="setting-title">主题设置</div>
-        <div class="setting-item">
-          <span>暗色模式</span>
-          <a-switch
-            :modelValue="layoutStore.siderTheme === 'dark'"
-            @update:modelValue="updateThemeSetting"
-          />
+    <!-- 主题模式 -->
+    <div class="setting-block">
+      <div class="setting-title">主题模式</div>
+      <div class="setting-content">
+        <div class="theme-cards">
+          <div 
+            class="theme-card" 
+            :class="{ active: layoutStore.siderTheme === 'light' }"
+            @click="updateThemeSetting(false)"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0 c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2 c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1 S11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0 s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06 c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41 c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36 c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z" />
+            </svg>
+            <span>亮色</span>
+          </div>
+          <div 
+            class="theme-card dark-card" 
+            :class="{ active: layoutStore.siderTheme === 'dark' }"
+            @click="updateThemeSetting(true)"
+          >
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12.34,2.02C6.59,1.82,2,6.42,2,12c0,5.52,4.48,10,10,10c3.71,0,6.93-2.02,8.66-5.02C13.15,16.73,8.57,8.55,12.34,2.02z" />
+            </svg>
+            <span>暗色</span>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="setting-block">
-        <div class="setting-title">布局设置</div>
-        <div class="setting-item">
-          <span>固定头部</span>
-          <a-switch
-            :modelValue="layoutStore.fixedHeader"
-            @update:modelValue="toggleFixedHeader"
-          />
-        </div>
-        <div class="setting-item">
-          <span>显示标签页</span>
-          <a-switch
-            :modelValue="layoutStore.showTabs"
-            @update:modelValue="toggleShowTabs"
-          />
-        </div>
-        <div class="setting-item">
-          <span>展开菜单</span>
-          <a-switch
-            :modelValue="!collapsed"
-            @update:modelValue="toggleCollapsed"
-          />
+    <!-- 导航布局 -->
+    <div class="setting-block">
+      <div class="setting-title">导航布局</div>
+      <div class="setting-content">
+        <div class="layout-grid">
+          <div 
+            class="layout-item" 
+            :class="{ active: layoutStore.layoutType === 'sider' }"
+            @click="setLayoutType('sider')"
+          >
+            <div class="layout-preview sider-layout"></div>
+            <div class="layout-name">侧边布局</div>
+          </div>
+          <div 
+            class="layout-item" 
+            :class="{ active: layoutStore.layoutType === 'top' }"
+            @click="setLayoutType('top')"
+          >
+            <div class="layout-preview top-layout"></div>
+            <div class="layout-name">顶部布局</div>
+          </div>
+          <div 
+            class="layout-item" 
+            :class="{ active: layoutStore.layoutType === 'mix' }"
+            @click="setLayoutType('mix')"
+          >
+            <div class="layout-preview mix-layout"></div>
+            <div class="layout-name">混合布局</div>
+          </div>
+          <div 
+            class="layout-item" 
+            :class="{ active: layoutStore.layoutType === 'mix-right' }"
+            @click="setLayoutType('mix-right')"
+          >
+            <div class="layout-preview mix-right-layout"></div>
+            <div class="layout-name">右侧混合</div>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="setting-block">
-        <div class="setting-title">系统设置</div>
-        <div class="setting-item">
-          <a-button type="primary" block>应用设置</a-button>
+    <!-- 主题色 -->
+    <div class="setting-block">
+      <div class="setting-title">主题色</div>
+      <div class="setting-content">
+        <div class="color-grid">
+          <div 
+            v-for="color in colorList" 
+            :key="color"
+            class="color-item" 
+            :style="{ backgroundColor: color }"
+            :class="{ active: layoutStore.primaryColor === color }"
+            @click="setPrimaryColor(color)"
+            @mouseenter="previewPrimaryColor(color)"
+            @mouseleave="resetPreviewColor"
+          ></div>
+          <div class="color-item color-picker">
+            <div class="color-picker-icon">
+              <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor">
+                <path d="M924.8 385.6a446.7 446.7 0 0 0-96-142.4 446.7 446.7 0 0 0-142.4-96C631.1 123.8 572.5 112 512 112s-119.1 11.8-174.4 35.2a446.7 446.7 0 0 0-142.4 96 446.7 446.7 0 0 0-96 142.4C75.8 440.9 64 499.5 64 560c0 132.7 58.3 257.7 159.9 343.1l1.7 1.4c5.8 4.8 13.1 7.5 20.6 7.5h531.7c7.5 0 14.8-2.7 20.6-7.5l1.7-1.4C901.7 817.7 960 692.7 960 560c0-60.5-11.9-119.1-35.2-174.4zM761.4 836H262.6A371.12 371.12 0 0 1 140 560c0-99.4 38.7-192.8 109-263 70.3-70.3 163.7-109 263-109 99.4 0 192.8 38.7 263 109 70.3 70.3 109 163.7 109 263 0 105.6-44.5 205.5-122.6 276zM623.5 421.5a8.03 8.03 0 0 0-11.3 0L527.7 506c-18.7-5-39.4-.2-54.1 14.5a55.95 55.95 0 0 0 0 79.2 55.95 55.95 0 0 0 79.2 0 55.87 55.87 0 0 0 14.5-54.1l84.5-84.5c3.1-3.1 3.1-8.2 0-11.3l-28.3-28.3zM490 320h44c4.4 0 8-3.6 8-8v-80c0-4.4-3.6-8-8-8h-44c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8zm-147.4 64.8l-31.1-31.1a8.03 8.03 0 0 0-11.3 0l-56.6 56.6a8.03 8.03 0 0 0 0 11.3l31.1 31.1c3.1 3.1 8.2 3.1 11.3 0l56.6-56.6c3.1-3.1 3.1-8.2 0-11.3zm291.7-56.6l56.6 56.6c3.1 3.1 8.2 3.1 11.3 0l31.1-31.1c3.1-3.1 3.1-8.2 0-11.3l-56.6-56.6a8.03 8.03 0 0 0-11.3 0l-31.1 31.1a8.03 8.03 0 0 0 0 11.3zM312 490v44c0 4.4 3.6 8 8 8h80c4.4 0 8-3.6 8-8v-44c0-4.4-3.6-8-8-8h-80c-4.4 0-8 3.6-8 8z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="color-preview-tooltip" v-if="previewColor">
+          预览: <span class="color-dot" :style="{backgroundColor: previewColor}"></span>
         </div>
       </div>
+    </div>
+
+    <!-- 界面功能 -->
+    <div class="setting-block">
+      <div class="setting-title">界面功能</div>
+      <div class="setting-content">
+        <div class="switch-list">
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-label">折叠菜单</span>
+              <span class="switch-desc">自动展开/折叠子菜单</span>
+            </div>
+            <a-switch 
+              :model-value="layoutStore.splitMenus"
+              @update:model-value="updateSplitMenus"
+            />
+          </div>
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-label">页面标签栏</span>
+              <span class="switch-desc">显示多标签页导航</span>
+            </div>
+            <a-switch 
+              :model-value="layoutStore.showTabs"
+              @update:model-value="toggleShowTabs"
+            />
+          </div>
+          <div class="switch-item">
+            <div class="switch-info">
+              <span class="switch-label">固定页头</span>
+              <span class="switch-desc">固定顶部导航栏</span>
+            </div>
+            <a-switch 
+              :model-value="layoutStore.fixedHeader"
+              @update:model-value="toggleFixedHeader"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 重置按钮 -->
+    <div class="setting-footer">
+      <a-button type="primary" block @click="resetSettings">
+        <reload-outlined />
+        恢复默认配置
+      </a-button>
     </div>
   </a-drawer>
 </template>
@@ -279,6 +388,7 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import { useLayoutStore } from "../../store/layout";
 import { useUserStore } from "../../store/user";
 import config from "../../config";
+import { Modal, message } from "ant-design-vue";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -340,26 +450,32 @@ const handleSearch = (e: Event) => {
 
 // 更新主题设置
 const updateThemeSetting = (checked: boolean) => {
-  // 应用暗色或亮色主题
-  const theme = checked ? "dark" : "light";
+  const theme = checked ? 'dark' : 'light';
   layoutStore.siderTheme = theme;
-  console.log("更新主题:", theme);
-};
-
-// 切换菜单折叠状态
-const toggleCollapsed = (value: boolean) => {
-  collapsed.value = !value;
-  layoutStore.setCollapsed(collapsed.value);
+  // 保存到本地存储
+  localStorage.setItem('siderTheme', theme);
 };
 
 // 切换固定头部
 const toggleFixedHeader = (value: boolean) => {
   layoutStore.fixedHeader = value;
+  // 保存到本地存储
+  localStorage.setItem('fixedHeader', String(value));
 };
 
 // 切换显示标签页
 const toggleShowTabs = (value: boolean) => {
   layoutStore.showTabs = value;
+  // 保存到本地存储
+  localStorage.setItem('showTabs', String(value));
+};
+
+// 切换菜单折叠状态
+const toggleCollapsed = () => {
+  collapsed.value = !collapsed.value;
+  layoutStore.setCollapsed(collapsed.value);
+  // 保存到本地存储
+  localStorage.setItem('collapsed', String(collapsed.value));
 };
 
 // 处理页面刷新
@@ -373,10 +489,30 @@ const handleRefresh = () => {
   window.location.reload();
 };
 
-// 监听窗口大小变化
+// 在组件挂载时初始化设置
 onMounted(() => {
+  // 从本地存储恢复设置
+  const savedTheme = localStorage.getItem('siderTheme');
+  const savedFixedHeader = localStorage.getItem('fixedHeader');
+  const savedShowTabs = localStorage.getItem('showTabs');
+  const savedCollapsed = localStorage.getItem('collapsed');
+
+  if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
+    layoutStore.siderTheme = savedTheme;
+  }
+  if (savedFixedHeader) {
+    layoutStore.fixedHeader = savedFixedHeader === 'true';
+  }
+  if (savedShowTabs) {
+    layoutStore.showTabs = savedShowTabs === 'true';
+  }
+  if (savedCollapsed) {
+    collapsed.value = savedCollapsed === 'true';
+    layoutStore.setCollapsed(collapsed.value);
+  }
+
   handleResize();
-  window.addEventListener("resize", handleResize);
+  window.addEventListener('resize', handleResize);
 });
 
 onBeforeUnmount(() => {
@@ -386,6 +522,148 @@ onBeforeUnmount(() => {
 defineExpose({
   collapsed,
 });
+
+// 在script部分添加colorList
+const colorList = [
+  '#1890ff',
+  '#25b864',
+  '#ff6f00',
+  '#f5222d',
+  '#fa541c',
+  '#faad14',
+  '#13c2c2',
+  '#722ed1',
+  '#eb2f96',
+  '#52c41a'
+];
+
+// 添加setPrimaryColor方法
+const setPrimaryColor = (color: string) => {
+  layoutStore.setPrimaryColor(color);
+  localStorage.setItem('primaryColor', color);
+  
+  // 确保主题色立即生效
+  const root = document.documentElement;
+  root.style.setProperty('--primary-color', color);
+  root.style.setProperty('--ant-primary-color', color);
+  root.style.setProperty('--ant-primary-color-hover', color);
+  root.style.setProperty('--ant-primary-color-active', color);
+  root.style.setProperty('--ant-primary-color-outline', color.replace(/^#/, '#') + '33');
+  
+  // 显示成功消息
+  message.success('主题色已更新');
+};
+
+// 添加setLayoutType方法
+const setLayoutType = (type: 'sider' | 'top' | 'mix' | 'mix-right') => {
+  layoutStore.setLayoutType(type);
+  localStorage.setItem('layoutType', type);
+};
+
+// 优化updateSplitMenus方法
+const updateSplitMenus = (value: boolean) => {
+  layoutStore.splitMenus = value;
+  localStorage.setItem('splitMenus', String(value));
+};
+
+// 在script部分添加必要的变量和方法
+const drawerWidth = ref(360);
+const previewColor = ref('');
+const originalColor = ref('');
+
+// 预览主题颜色
+const previewPrimaryColor = (color: string) => {
+  if (!originalColor.value) {
+    originalColor.value = layoutStore.primaryColor;
+  }
+  previewColor.value = color;
+  
+  // 临时应用颜色进行预览
+  document.documentElement.style.setProperty('--ant-primary-color', color);
+  document.documentElement.style.setProperty('--ant-primary-color-hover', color);
+  
+  // 添加主要UI元素的颜色更新
+  const root = document.documentElement;
+  root.style.setProperty('--primary-color', color);
+  root.style.setProperty('--ant-primary-color', color);
+  root.style.setProperty('--ant-primary-color-hover', color);
+  root.style.setProperty('--ant-primary-color-active', color);
+  root.style.setProperty('--ant-primary-color-outline', color.replace(/^#/, '#') + '33');
+  
+  // 立即预览一些UI元素的颜色
+  const cssText = `.active-preview {
+    color: ${color} !important;
+    border-color: ${color} !important;
+    background-color: ${color}1a !important;
+  }`;
+  
+  let style = document.getElementById('theme-preview-style');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'theme-preview-style';
+    document.head.appendChild(style);
+  }
+  style.textContent = cssText;
+};
+
+// 重置预览颜色
+const resetPreviewColor = () => {
+  if (originalColor.value) {
+    // 恢复原来的颜色
+    const root = document.documentElement;
+    root.style.setProperty('--primary-color', originalColor.value);
+    root.style.setProperty('--ant-primary-color', originalColor.value);
+    root.style.setProperty('--ant-primary-color-hover', originalColor.value);
+    root.style.setProperty('--ant-primary-color-active', originalColor.value);
+    root.style.setProperty('--ant-primary-color-outline', originalColor.value.replace(/^#/, '#') + '33');
+    
+    previewColor.value = '';
+    originalColor.value = '';
+    
+    // 移除预览样式
+    const style = document.getElementById('theme-preview-style');
+    if (style) {
+      style.textContent = '';
+    }
+  }
+};
+
+// 重置所有配置为默认值
+const resetSettings = () => {
+  Modal.confirm({
+    title: '确认重置',
+    content: '确定要将所有配置重置为默认值吗？',
+    okText: '确定',
+    cancelText: '取消',
+    onOk: () => {
+      // 重置主题为亮色
+      layoutStore.siderTheme = 'light';
+      // 重置布局类型为侧边栏
+      layoutStore.setLayoutType('sider');
+      // 重置主题色为默认蓝色
+      layoutStore.setPrimaryColor('#1890ff');
+      // 重置显示设置
+      layoutStore.fixedHeader = true;
+      layoutStore.showTabs = true;
+      layoutStore.splitMenus = false;
+      // 重置侧边栏折叠状态
+      collapsed.value = false;
+      layoutStore.setCollapsed(false);
+      
+      // 清除localStorage中的设置
+      localStorage.removeItem('siderTheme');
+      localStorage.removeItem('layoutType');
+      localStorage.removeItem('primaryColor');
+      localStorage.removeItem('fixedHeader');
+      localStorage.removeItem('showTabs');
+      localStorage.removeItem('splitMenus');
+      localStorage.removeItem('collapsed');
+      
+      // 提示用户
+      message.success('已重置所有配置');
+    }
+  });
+};
 </script>
 
 <style lang="scss" scoped>
@@ -977,238 +1255,359 @@ defineExpose({
   }
 }
 
-/* 设置抽屉样式 */
-.setting-drawer-content {
+/* 新的设置抽屉样式 */
+.system-setting-drawer {
+  :deep(.ant-drawer-content-wrapper) {
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+  }
+
+  :deep(.ant-drawer-header) {
+    transition: all 0.3s;
+    border-radius: 0;
+    
+    .ant-drawer-title {
+      font-weight: 500;
+      font-size: 16px;
+      color: #fff;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+    
+    .ant-drawer-close {
+      color: #fff;
+      opacity: 0.85;
+      
+      &:hover {
+        opacity: 1;
+        color: #fff;
+      }
+    }
+  }
+
+  :deep(.ant-drawer-body) {
+    padding: 20px;
+  }
+
   .setting-block {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
+    animation: fadeIn 0.3s ease-in-out;
 
     .setting-title {
       font-size: 15px;
       font-weight: 500;
-      margin-bottom: 12px;
+      margin-bottom: 18px;
       color: rgba(0, 0, 0, 0.85);
-      border-bottom: 1px solid #f0f0f0;
-      padding-bottom: 8px;
-    }
-
-    .setting-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-
-      span {
-        color: rgba(0, 0, 0, 0.65);
+      position: relative;
+      
+      &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -8px;
+        width: 24px;
+        height: 2px;
+        background-color: #1890ff;
+        border-radius: 1px;
       }
     }
-  }
-}
 
-.main-content-container {
-  flex: 1;
-  background: #fff;
-  border-radius: 4px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow-y: auto; /* 添加垂直滚动 */
-  height: 100%; /* 确保容器填满父元素高度 */
-  
-  /* 自定义滚动条样式 */
-  &::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 4px;
-  }
-  
-  &::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 4px;
-  }
+    .setting-content {
+      margin-bottom: 12px;
+    }
 
-  /* 主面板内容区域样式 */
-  .dashboard-container {
-    width: 100%;
-
-    .card-overview {
-      margin-bottom: 24px;
+    /* 主题模式卡片 */
+    .theme-cards {
+      display: flex;
+      gap: 12px;
+      
+      .theme-card {
+        flex: 1;
+        height: 40px;
+        border: 1px solid #e8e8e8;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+        gap: 8px;
+        transition: all 0.2s;
+        
+        span {
+          font-size: 13px;
+          color: rgba(0, 0, 0, 0.65);
+        }
+        
+        &:hover {
+          border-color: #40a9ff;
+          box-shadow: 0 2px 6px rgba(24, 144, 255, 0.1);
+        }
+        
+        &.active {
+          border: 1px solid #1890ff;
+          background-color: rgba(24, 144, 255, 0.05);
+          position: relative;
+          
+          &::after {
+            content: '';
+            position: absolute;
+            right: 4px;
+            top: 4px;
+            width: 4px;
+            height: 4px;
+            background-color: #1890ff;
+            border-radius: 50%;
+          }
+        }
+        
+        svg {
+          color: #000;
+        }
+        
+        &.dark-card {
+          background-color: #141414;
+          border-color: #303030;
+          
+          svg, span {
+            color: #fff;
+          }
+          
+          &:hover {
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+          }
+        }
+      }
+    }
+    
+    /* 布局网格 */
+    .layout-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 16px;
-
-      .data-card {
-        text-align: center;
-        padding: 24px 20px;
-        border-radius: 8px;
-        background: #fff;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        transition: all 0.3s;
-        position: relative;
-        overflow: hidden;
-
-        &::after {
-          content: "";
+      
+      .layout-item {
+        cursor: pointer;
+        border-radius: 2px;
+        padding: 6px;
+        border: 1px solid #f0f0f0;
+        transition: all 0.2s;
+        
+        &:hover {
+          border-color: #40a9ff;
+          box-shadow: 0 1px 6px rgba(24, 144, 255, 0.08);
+        }
+        
+        &.active {
+          border: 1px solid #1890ff;
+          background-color: rgba(24, 144, 255, 0.04);
+        }
+        
+        .layout-preview {
+          height: 40px;
+          border-radius: 2px;
+          position: relative;
+          background: #f5f5f5;
+          margin-bottom: 6px;
+        }
+        
+        .layout-name {
+          font-size: 12px;
+          color: rgba(0, 0, 0, 0.65);
+          text-align: center;
+        }
+        
+        .sider-layout::before {
+          content: '';
           position: absolute;
           left: 0;
           top: 0;
-          height: 3px;
+          width: 20%;
+          height: 100%;
+          background: #001529;
+        }
+        
+        .top-layout::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
           width: 100%;
-          background: linear-gradient(90deg, #1890ff, #3a77ff);
-          opacity: 0.8;
+          height: 20%;
+          background: #001529;
         }
-
+        
+        .mix-layout {
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 20%;
+            background: #001529;
+          }
+          
+          &::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20%;
+            width: 20%;
+            height: 80%;
+            background: #fff;
+            border-right: 1px solid #f0f0f0;
+          }
+        }
+        
+        .mix-right-layout::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          width: 100%;
+          height: 20%;
+          background: #001529;
+        }
+      }
+    }
+    
+    /* 颜色网格 */
+    .color-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 8px 0;
+      
+      .color-item {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        position: relative;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
+        
         &:hover {
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.09);
-          transform: translateY(-2px);
+          transform: scale(1.2);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
         }
-
-        .data-title {
-          font-size: 14px;
-          color: rgba(0, 0, 0, 0.65);
-          margin-bottom: 16px;
+        
+        &.active {
+          transform: scale(1.1);
+          
+          &::after {
+            content: '';
+            position: absolute;
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            top: -2px;
+            left: -2px;
+            border: 2px solid currentColor;
+            border-radius: 6px;
+            opacity: 0.6;
+          }
         }
-
-        .data-value {
-          font-size: 28px;
-          font-weight: 600;
-          margin: 8px 0;
-          color: #1890ff;
-          text-shadow: 0 0 1px rgba(24, 144, 255, 0.1);
-        }
-
-        .data-trend {
+        
+        &.color-picker {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 13px;
-          margin-top: 8px;
-          padding: 4px 0;
-
-          &.up {
-            color: #f5222d;
+          background: transparent;
+          border: 1px dashed #d9d9d9;
+          box-shadow: none;
+          
+          &:hover {
+            border-color: #40a9ff;
+            background: rgba(24, 144, 255, 0.02);
           }
-
-          &.down {
-            color: #52c41a;
+          
+          .color-picker-icon {
+            color: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
-
-          .trend-icon {
-            margin-right: 4px;
+        }
+      }
+    }
+    
+    .color-preview-tooltip {
+      font-size: 12px;
+      margin-top: 8px;
+      color: rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      
+      .color-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: inline-block;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+    }
+    
+    /* 开关列表 */
+    .switch-list {
+      .switch-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1px solid #f5f5f5;
+        
+        &:last-child {
+          border-bottom: none;
+        }
+        
+        .switch-info {
+          display: flex;
+          flex-direction: column;
+          
+          .switch-label {
+            color: rgba(0, 0, 0, 0.85);
+            font-size: 14px;
+            margin-bottom: 4px;
+          }
+          
+          .switch-desc {
+            color: rgba(0, 0, 0, 0.45);
             font-size: 12px;
           }
         }
       }
     }
+  }
 
-    /* 库存预警图表区域 */
-    .inventory-warning {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      padding: 16px;
-      margin-bottom: 16px;
-
-      &-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-
-        h3 {
-          font-size: 16px;
-          font-weight: 500;
-          margin: 0;
-          color: rgba(0, 0, 0, 0.85);
-        }
-      }
-
-      &-chart {
-        margin-top: 16px;
-
-        .progress-item {
-          margin-bottom: 12px;
-
-          .progress-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-
-            .progress-title {
-              color: rgba(0, 0, 0, 0.65);
-              font-size: 14px;
-            }
-
-            .progress-value {
-              font-weight: 500;
-            }
-          }
-        }
-      }
+  .setting-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+    text-align: center;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
     }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
 
-    /* 库存明细表格 */
-    .inventory-table {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      padding: 0;
-      overflow: hidden;
-
-      :deep(.ant-table) {
-        font-size: 14px;
-
-        .ant-table-thead > tr > th {
-          background: #fafafa;
-          font-weight: 500;
-        }
-
-        .ant-tag {
-          margin-right: 0;
-          padding: 2px 8px;
-          border-radius: 4px;
-          font-size: 12px;
-        }
-
-        .ant-tag-red {
-          background: rgba(245, 34, 45, 0.08);
-          border-color: rgba(245, 34, 45, 0.3);
-          color: #cf1322;
-        }
-
-        .ant-tag-green {
-          background: rgba(82, 196, 26, 0.08);
-          border-color: rgba(82, 196, 26, 0.3);
-          color: #52c41a;
-        }
-
-        .ant-tag-orange {
-          background: rgba(250, 173, 20, 0.08);
-          border-color: rgba(250, 173, 20, 0.3);
-          color: #fa8c16;
-        }
-
-        .ant-btn-text {
-          padding: 0 4px;
-          font-size: 14px;
-
-          &:not(:last-child) {
-            margin-right: 8px;
-          }
-
-          &:hover {
-            background: rgba(0, 0, 0, 0.03);
-          }
-        }
-      }
+/* 调整响应式 */
+@media (max-width: 576px) {
+  .system-setting-drawer {
+    .layout-grid {
+      grid-template-columns: 1fr;
     }
   }
 }
 </style>
+
