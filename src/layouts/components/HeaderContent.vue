@@ -24,117 +24,12 @@
       <!-- 用户头像 -->
       <UserAvatar />
 
-      <!-- 页面配置按钮 -->
-      <div class="action-item config-btn" @click="drawerVisible = true">
-        <MoreOutlined style="font-size: 20px;"/>
-      </div>
-
+      <!-- 主题模式按钮 -->
+      <a-tooltip :title="isDark ? '切换到亮色模式' : '切换到暗色模式'">
+        <BulbOutlined v-if="!isDark" class="header-action" @click="toggleDark" />
+        <BulbFilled v-else class="header-action" @click="toggleDark" />
+      </a-tooltip>
     </div>
-    
-    <!-- 页面配置抽屉 -->
-    <a-drawer
-      title="页面配置"
-      placement="right"
-      :visible="drawerVisible"
-      @close="drawerVisible = false"
-      width="500"
-    >
-      <!-- 主题模式 -->
-      <div class="setting-block">
-        <div class="setting-title">主题模式</div>
-        <div class="setting-option theme-select">
-          <div 
-            class="theme-item" 
-            :class="{ active: layoutStore.siderTheme === 'light' }"
-            @click="setTheme('light')"
-          >
-            <BgColorsOutlined />
-            <div class="theme-text">亮色</div>
-          </div>
-          <div 
-            class="theme-item" 
-            :class="{ active: layoutStore.siderTheme === 'dark' }"
-            @click="setTheme('dark')"
-          >
-            <BgColorsOutlined />
-            <div class="theme-text">暗色</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 导航布局 -->
-      <div class="setting-block">
-        <div class="setting-title">导航布局</div>
-        <div class="setting-option layout-select">
-          <div 
-            class="layout-item" 
-            :class="{ active: layoutStore.layoutType === 'sider' }"
-            @click="setLayoutType('sider')"
-          >
-            <div class="layout-preview sider-preview"></div>
-            <div class="layout-text">侧边菜单</div>
-          </div>
-          <div 
-            class="layout-item" 
-            :class="{ active: layoutStore.layoutType === 'top' }"
-            @click="setLayoutType('top')"
-          >
-            <div class="layout-preview top-preview"></div>
-            <div class="layout-text">顶部菜单</div>
-          </div>
-          <div 
-            class="layout-item" 
-            :class="{ active: layoutStore.layoutType === 'mix' }"
-            @click="setLayoutType('mix')"
-          >
-            <div class="layout-preview mix-preview"></div>
-            <div class="layout-text">混合菜单</div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- 主题色 -->
-      <div class="setting-block">
-        <div class="setting-title">主题色</div>
-        <div class="setting-option color-select">
-          <div 
-            v-for="color in themeColors" 
-            :key="color.value"
-            class="color-item" 
-            :style="{ backgroundColor: color.value }"
-            :class="{ active: layoutStore.primaryColor === color.value }"
-            @click="setPrimaryColor(color.value)"
-          ></div>
-        </div>
-      </div>
-      
-      <!-- 功能开关 -->
-      <div class="setting-block">
-        <div class="setting-title">界面设置</div>
-        <div class="setting-option">
-          <a-list :split="false">
-            <a-list-item>
-              <template #actions>
-                <a-switch 
-                  :model-value="layoutStore.fixedHeader" 
-                  @update:model-value="(checked) => layoutStore.$patch({ fixedHeader: checked })"
-                />
-              </template>
-              <a-list-item-meta title="固定头部" />
-            </a-list-item>
-            <a-list-item>
-              <template #actions>
-                <a-switch 
-                  :checked="layoutStore.showTabs" 
-                  @click="() => layoutStore.showTabs = !layoutStore.showTabs"
-                />
-              </template>
-              <a-list-item-meta title="显示标签栏" />
-            </a-list-item>
-          </a-list>
-        </div>
-      </div>
-    </a-drawer>
   </div>
 </template>
 
@@ -144,8 +39,8 @@ import {
   MenuFoldOutlined, 
   MenuUnfoldOutlined, 
   BellOutlined,
-  MoreOutlined,
-  BgColorsOutlined
+  BulbOutlined,
+  BulbFilled
 } from '@ant-design/icons-vue';
 import { useLayoutStore } from '../../store/layout';
 
@@ -165,8 +60,7 @@ defineProps({
 const emit = defineEmits(['update:collapsed']);
 
 const layoutStore = useLayoutStore();
-const drawerVisible = ref(false);
-const customColor = ref('#1890ff');
+const isDark = ref(false);
 
 // 全屏事件监听
 const handleFullscreenChange = () => {
@@ -182,22 +76,26 @@ onMounted(() => {
     setPrimaryColor(layoutStore.primaryColor);
     setTheme(layoutStore.siderTheme);
   }, 100);
+
+  // 从本地存储恢复设置
+  const savedTheme = localStorage.getItem('siderTheme');
+  const savedFixedHeader = localStorage.getItem('fixedHeader');
+  const savedShowTabs = localStorage.getItem('showTabs');
+
+  if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
+    layoutStore.siderTheme = savedTheme;
+  }
+  if (savedFixedHeader) {
+    layoutStore.fixedHeader = savedFixedHeader === 'true';
+  }
+  if (savedShowTabs) {
+    layoutStore.showTabs = savedShowTabs === 'true';
+  }
 });
 
 onBeforeUnmount(() => {
   document.removeEventListener('fullscreenchange', handleFullscreenChange);
 });
-
-// 主题颜色列表
-const themeColors = [
-  { name: '拂晓蓝', value: '#1890ff' },
-  { name: '薄暮红', value: '#f5222d' },
-  { name: '火山橙', value: '#fa541c' },
-  { name: '日暮黄', value: '#faad14' },
-  { name: '青柠绿', value: '#52c41a' },
-  { name: '极光绿', value: '#13c2c2' },
-  { name: '酱紫', value: '#722ed1' }
-];
 
 // 设置主题
 const setTheme = (theme: 'light' | 'dark') => {
@@ -216,16 +114,11 @@ const setTheme = (theme: 'light' | 'dark') => {
   setPrimaryColor(layoutStore.primaryColor);
 };
 
-// 设置布局类型
-const setLayoutType = (type: 'sider' | 'top' | 'mix') => {
-  layoutStore.$patch({ layoutType: type });
-};
-
 // 设置主题色
 const setPrimaryColor = (color: string) => {
   // 更新store中的主题色
   layoutStore.primaryColor = color;
-  customColor.value = color;
+  localStorage.setItem('primaryColor', color);
   
   // 创建或更新样式标签
   let styleTag = document.getElementById('theme-color-style');
@@ -480,6 +373,15 @@ function adjustColor(color: string, percent: number): string {
   // 转回十六进制
   return `#${adjustedRgb.map(c => c.toString(16).padStart(2, '0')).join('')}`;
 }
+
+const toggleDark = () => {
+  isDark.value = !isDark.value;
+  if (isDark.value) {
+    layoutStore.siderTheme = 'dark';
+  } else {
+    layoutStore.siderTheme = 'light';
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -589,133 +491,189 @@ function adjustColor(color: string, percent: number): string {
 }
 
 /* 抽屉样式 */
+:deep(.ant-drawer-title) {
+  color: #fff;
+  font-weight: 500;
+}
+
+:deep(.ant-drawer-close) {
+  color: #fff;
+  
+  &:hover {
+    color: rgba(255, 255, 255, 0.85);
+  }
+}
+
 .setting-block {
   margin-bottom: 24px;
   
-  // 设置标题
   .setting-title {
     font-size: 14px;
     color: rgba(0, 0, 0, 0.85);
-    margin-bottom: 12px;
+    margin-bottom: 16px;
     font-weight: 500;
   }
-  // 设置选项
-  .setting-option {
-    margin-bottom: 24px;
-  }
   
+  .setting-option {
+    margin-bottom: 12px;
+  }
+
   /* 主题选择 */
   .theme-select {
-    display: flex;
-    gap: 16px;
-    
-    .theme-item {
-      flex: 1;
-      text-align: center;
-      cursor: pointer;
-      height: 44px;
-      background: #f0f2f5;
-      border-radius: 4px;
+    .theme-cards {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      position: relative;
+      justify-content: space-between;
+      gap: 12px;
       
-      &.active {
-        border: 1px solid #1890ff;
+      .theme-card {
+        flex: 1;
+        height: 50px;
+        border: 1px solid #e8e8e8;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        
+        &.active {
+          border: 2px solid #1890ff;
+        }
+        
+        .theme-icon {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          
+          svg {
+            width: 24px;
+            height: 24px;
+          }
+        }
+        
+        &.light-theme-card {
+          background-color: #f0f2f5;
+          
+          .theme-icon {
+            color: #000;
+          }
+        }
+        
+        &.dark-theme-card {
+          background-color: #1f1f1f;
+          
+          .theme-icon {
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+  
+  /* 开关列表样式 */
+  .switch-list {
+    .switch-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid #f0f0f0;
+      
+      &:last-child {
+        border-bottom: none;
       }
       
-      .theme-text {
-        margin-left: 8px;
+      .switch-label {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.85);
       }
     }
   }
   
   /* 布局选择 */
   .layout-select {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
     
     .layout-item {
-      flex-basis: calc(33% - 11px);
       cursor: pointer;
-      text-align: center;
+      border-radius: 4px;
+      padding: 2px;
+      border: 1px solid #f0f0f0;
       
-      &.active .layout-preview {
-        border: 1px solid #1890ff;
+      &.active {
+        border: 2px solid #1890ff;
+        padding: 1px;
       }
       
-      // 布局预览
       .layout-preview {
-        height: 64px;
-        margin-bottom: 8px;
-        border-radius: 4px;
-        border: 1px solid #f0f0f0;
+        height: 50px;
+        border-radius: 2px;
         position: relative;
-        overflow: hidden;
+        
+        &:hover {
+          opacity: 0.8;
+        }
       }
-      // 布局文本
-      .layout-text {
-        font-size: 14px;
-        color: rgba(0, 0, 0, 0.65);
-      }
-      // 左侧菜单预览
+
       .sider-preview {
+        background: #f0f2f5;
         &::before {
           content: '';
           position: absolute;
-          top: 0;
           left: 0;
+          top: 0;
           width: 30%;
           height: 100%;
           background: #001529;
         }
-        // 左侧菜单预览
-        &::after {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 30%;
-          width: 70%;
-          height: 20%;
-          background: #fff;
-          border-bottom: 1px solid #f0f0f0;
-        }
       }
-      // 顶部菜单预览
+
       .top-preview {
+        background: #f0f2f5;
         &::before {
           content: '';
           position: absolute;
-          top: 0;
           left: 0;
+          top: 0;
           width: 100%;
-          height: 20%;
+          height: 25%;
           background: #001529;
         }
       }
-      // 混合菜单预览
+
       .mix-preview {
+        background: #f0f2f5;
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 25%;
+          background: #001529;
+        }
+        &::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 25%;
+          width: 30%;
+          height: 75%;
+          background: #fff;
+          border-right: 1px solid #f0f0f0;
+        }
+      }
+
+      .mix-preview-2 {
+        background: #f0f2f5;
         &::before {
           content: '';
           position: absolute;
           top: 0;
-          left: 0;
           width: 100%;
-          height: 20%;
+          height: 25%;
           background: #001529;
-        }
-        // 混合菜单预览
-        &::after {
-          content: '';
-          position: absolute;
-          top: 20%;
-          left: 0;
-          width: 30%;
-          height: 80%;
-          background: #f0f2f5;
         }
       }
     }
@@ -723,26 +681,36 @@ function adjustColor(color: string, percent: number): string {
   
   /* 颜色选择 */
   .color-select {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    
-    .color-item {
-      width: 22px;
-      height: 22px;
-      cursor: pointer;
-      border-radius: 4px;
-      border: 2px solid transparent;
-      transition: all 0.3s ease;
+    .theme-colors {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
       
-      &.active {
-        border-color: #fff;
-        box-shadow: 0 0 0 2px currentColor;
-        transform: scale(1.1);
-      }
-      
-      &:hover {
-        transform: scale(1.05);
+      .color-item {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        cursor: pointer;
+        position: relative;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        
+        &.active::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border: 2px solid #fff;
+          border-radius: 50%;
+          box-shadow: 0 0 0 1px currentColor;
+        }
+        
+        &.color-picker {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #fff;
+          border: 1px dashed #d9d9d9;
+        }
       }
     }
   }
