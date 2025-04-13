@@ -1,0 +1,45 @@
+/* 全局主题样式 - 高优先级覆盖 */
+
+/* 暗色主题 */
+body.dark-theme {
+  /* 抽屉组件样式 */
+  .ant-drawer {
+    .ant-drawer-header {
+      background-color: #001529 !important;
+    }
+    
+    .ant-drawer-title {
+      color: white !important;
+    }
+    
+    .ant-drawer-close {
+      color: white !important;
+      
+      &:hover {
+        color: rgba(255, 255, 255, 0.85) !important;
+      }
+    }
+  }
+}
+
+/* 亮色主题 */
+body.light-theme {
+  /* 抽屉组件样式 */
+  .ant-drawer {
+    .ant-drawer-header {
+      background-color: #f0f2f5 !important;
+    }
+    
+    .ant-drawer-title {
+      color: rgba(0, 0, 0, 0.85) !important;
+    }
+    
+    .ant-drawer-close {
+      color: rgba(0, 0, 0, 0.85) !important;
+      
+      &:hover {
+        color: rgba(0, 0, 0, 0.65) !important;
+      }
+    }
+  }
+} 
