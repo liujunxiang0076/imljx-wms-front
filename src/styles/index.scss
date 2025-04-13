@@ -17,6 +17,30 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* 主题变量 */
+:root {
+  --primary-color: #1890ff;
+  --primary-color-hover: #40a9ff;
+  --primary-color-active: #096dd9;
+  --primary-color-outline: rgba(24, 144, 255, 0.2);
+  --text-color: rgba(0, 0, 0, 0.85);
+  --text-color-secondary: rgba(0, 0, 0, 0.45);
+  --heading-color: rgba(0, 0, 0, 0.85);
+  --border-color-base: #d9d9d9;
+  --background-color-light: #f5f5f5;
+  --background-color-base: #fafafa;
+}
+
+/* 暗色主题 */
+body.dark-theme {
+  --text-color: rgba(255, 255, 255, 0.85);
+  --text-color-secondary: rgba(255, 255, 255, 0.45);
+  --heading-color: rgba(255, 255, 255, 0.85);
+  --border-color-base: #434343;
+  --background-color-light: #262626;
+  --background-color-base: #1f1f1f;
+}
+
 * {
   margin: 0;
   padding: 0;
