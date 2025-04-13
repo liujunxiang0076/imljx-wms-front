@@ -471,16 +471,34 @@ const updateThemeSetting = (checked: boolean) => {
 
 // 切换固定头部
 const toggleFixedHeader = (value: boolean) => {
+  // 更新store
   layoutStore.fixedHeader = value;
   // 保存到本地存储
   localStorage.setItem('fixedHeader', String(value));
+  // 应用样式变更
+  if (value) {
+    document.body.classList.add('fixed-header');
+  } else {
+    document.body.classList.remove('fixed-header');
+  }
+  // 显示提示
+  message.success(`已${value ? '开启' : '关闭'}固定页头`);
 };
 
 // 切换显示标签页
 const toggleShowTabs = (value: boolean) => {
+  // 更新store
   layoutStore.showTabs = value;
   // 保存到本地存储
   localStorage.setItem('showTabs', String(value));
+  // 应用样式变更
+  if (value) {
+    document.body.classList.add('show-tabs');
+  } else {
+    document.body.classList.remove('show-tabs');
+  }
+  // 显示提示
+  message.success(`已${value ? '开启' : '关闭'}页面标签栏`);
 };
 
 // 切换菜单折叠状态
@@ -509,7 +527,11 @@ onMounted(() => {
   const savedFixedHeader = localStorage.getItem('fixedHeader');
   const savedShowTabs = localStorage.getItem('showTabs');
   const savedCollapsed = localStorage.getItem('collapsed');
+  const savedPrimaryColor = localStorage.getItem('primaryColor');
+  const savedLayoutType = localStorage.getItem('layoutType');
+  const savedSplitMenus = localStorage.getItem('splitMenus');
 
+  // 应用主题设置
   if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
     layoutStore.siderTheme = savedTheme;
     
@@ -522,17 +544,54 @@ onMounted(() => {
       document.body.classList.remove('dark-theme');
     }
   }
+  
+  // 应用固定头部设置
   if (savedFixedHeader) {
-    layoutStore.fixedHeader = savedFixedHeader === 'true';
+    const fixedHeader = savedFixedHeader === 'true';
+    layoutStore.fixedHeader = fixedHeader;
+    if (fixedHeader) {
+      document.body.classList.add('fixed-header');
+    } else {
+      document.body.classList.remove('fixed-header');
+    }
   }
+  
+  // 应用标签页设置
   if (savedShowTabs) {
-    layoutStore.showTabs = savedShowTabs === 'true';
+    const showTabs = savedShowTabs === 'true';
+    layoutStore.showTabs = showTabs;
+    if (showTabs) {
+      document.body.classList.add('show-tabs');
+    } else {
+      document.body.classList.remove('show-tabs');
+    }
   }
+  
+  // 应用侧边栏折叠状态
   if (savedCollapsed) {
     collapsed.value = savedCollapsed === 'true';
     layoutStore.setCollapsed(collapsed.value);
   }
+  
+  // 应用主题色
+  if (savedPrimaryColor) {
+    setPrimaryColor(savedPrimaryColor);
+  } else {
+    // 应用默认主题色
+    setPrimaryColor(layoutStore.primaryColor);
+  }
+  
+  // 应用布局类型
+  if (savedLayoutType && ['sider', 'top', 'mix', 'mix-right'].includes(savedLayoutType)) {
+    setLayoutType(savedLayoutType as 'sider' | 'top' | 'mix' | 'mix-right');
+  }
+  
+  // 应用菜单设置
+  if (savedSplitMenus) {
+    layoutStore.splitMenus = savedSplitMenus === 'true';
+  }
 
+  // 监听窗口大小变化以响应式调整布局
   handleResize();
   window.addEventListener('resize', handleResize);
 });
@@ -564,16 +623,111 @@ const setPrimaryColor = (color: string) => {
   layoutStore.setPrimaryColor(color);
   localStorage.setItem('primaryColor', color);
   
-  // 确保主题色立即生效
+  // 确保主题色立即生效 - 增强样式应用
   const root = document.documentElement;
   root.style.setProperty('--primary-color', color);
   root.style.setProperty('--ant-primary-color', color);
-  root.style.setProperty('--ant-primary-color-hover', color);
-  root.style.setProperty('--ant-primary-color-active', color);
+  root.style.setProperty('--ant-primary-color-hover', adjustColor(color, 15));
+  root.style.setProperty('--ant-primary-color-active', adjustColor(color, 25));
   root.style.setProperty('--ant-primary-color-outline', color.replace(/^#/, '#') + '33');
+  
+  // 应用额外的Ant Design样式变量
+  root.style.setProperty('--ant-primary-1', adjustColor(color, 80));
+  root.style.setProperty('--ant-primary-2', adjustColor(color, 60));
+  root.style.setProperty('--ant-primary-3', adjustColor(color, 40));
+  root.style.setProperty('--ant-primary-4', adjustColor(color, 20));
+  root.style.setProperty('--ant-primary-5', color);
+  root.style.setProperty('--ant-primary-6', adjustColor(color, -10));
+  root.style.setProperty('--ant-primary-7', adjustColor(color, -20));
+  
+  // 注入全局样式，确保主题色应用到所有相关组件
+  injectGlobalStyle(color);
   
   // 显示成功消息
   message.success('主题色已更新');
+};
+
+// 帮助函数 - 调整颜色亮度
+const adjustColor = (color: string, percent: number): string => {
+  // 解析颜色
+  const hexToRgb = (hex: string): number[] => {
+    const cleanHex = hex.replace('#', '');
+    return [
+      parseInt(cleanHex.substring(0, 2), 16),
+      parseInt(cleanHex.substring(2, 4), 16),
+      parseInt(cleanHex.substring(4, 6), 16)
+    ];
+  };
+  
+  const rgb = hexToRgb(color);
+  let adjustedRgb;
+  
+  if (percent > 0) {
+    // 变亮
+    adjustedRgb = rgb.map(c => Math.min(255, Math.round(c + (255 - c) * (percent / 100))));
+  } else {
+    // 变暗
+    adjustedRgb = rgb.map(c => Math.max(0, Math.round(c + (c * (percent / 100)))));
+  }
+  
+  // 转回十六进制
+  return `#${adjustedRgb.map(c => c.toString(16).padStart(2, '0')).join('')}`;
+};
+
+// 注入全局样式
+const injectGlobalStyle = (color: string) => {
+  const styleId = 'theme-color-style';
+  let styleTag = document.getElementById(styleId);
+  
+  if (!styleTag) {
+    styleTag = document.createElement('style');
+    styleTag.id = styleId;
+    document.head.appendChild(styleTag);
+  }
+  
+  const cssVars = `
+    :root {
+      --ant-primary-color: ${color} !important;
+      --primary-color: ${color} !important;
+    }
+    
+    .ant-btn-primary {
+      background-color: ${color} !important;
+      border-color: ${color} !important;
+    }
+    
+    .ant-checkbox-checked .ant-checkbox-inner {
+      background-color: ${color} !important;
+      border-color: ${color} !important;
+    }
+    
+    .ant-radio-checked .ant-radio-inner {
+      border-color: ${color} !important;
+    }
+    
+    .ant-radio-checked .ant-radio-inner::after {
+      background-color: ${color} !important;
+    }
+    
+    .ant-switch-checked {
+      background-color: ${color} !important;
+    }
+    
+    .ant-menu-light .ant-menu-item-selected, 
+    .ant-menu-light .ant-menu-submenu-selected {
+      color: ${color} !important;
+    }
+    
+    .ant-menu-dark .ant-menu-item-selected {
+      background-color: ${color} !important;
+    }
+    
+    .ant-tabs-ink-bar {
+      background: ${color} !important;
+    }
+  `;
+  
+  styleTag.innerHTML = cssVars;
 };
 
 // 添加setLayoutType方法
@@ -584,8 +738,12 @@ const setLayoutType = (type: 'sider' | 'top' | 'mix' | 'mix-right') => {
 
 // 优化updateSplitMenus方法
 const updateSplitMenus = (value: boolean) => {
+  // 更新store
   layoutStore.splitMenus = value;
+  // 保存到本地存储
   localStorage.setItem('splitMenus', String(value));
+  // 显示提示
+  message.success(`已${value ? '开启' : '关闭'}子菜单自动展开/折叠`);
 };
 
 // 在script部分添加必要的变量和方法
@@ -1490,59 +1648,52 @@ const resetSettings = () => {
     
     /* 颜色网格 */
     .color-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding: 8px 0;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
       
       .color-item {
-        width: 20px;
-        height: 20px;
+        width: 100%;
+        aspect-ratio: 1;
         border-radius: 4px;
         cursor: pointer;
         position: relative;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s;
+        transition: transform 0.2s, box-shadow 0.2s;
         
         &:hover {
-          transform: scale(1.2);
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
         
-        &.active {
-          transform: scale(1.1);
-          
-          &::after {
-            content: '';
-            position: absolute;
-            width: calc(100% + 4px);
-            height: calc(100% + 4px);
-            top: -2px;
-            left: -2px;
-            border: 2px solid currentColor;
-            border-radius: 6px;
-            opacity: 0.6;
-          }
+        &.active::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 10px;
+          height: 10px;
+          border: 2px solid white;
+          border-radius: 50%;
+          background-color: transparent;
+          box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
         }
         
         &.color-picker {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: transparent;
+          background: #f5f5f5;
           border: 1px dashed #d9d9d9;
-          box-shadow: none;
-          
-          &:hover {
-            border-color: #40a9ff;
-            background: rgba(24, 144, 255, 0.02);
-          }
           
           .color-picker-icon {
             color: rgba(0, 0, 0, 0.45);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+          }
+          
+          &:hover .color-picker-icon {
+            color: rgba(0, 0, 0, 0.85);
           }
         }
       }
