@@ -230,7 +230,7 @@
     :bodyStyle="{ padding: '20px', paddingBottom: '70px' }"
     :headerStyle="{ 
       background: layoutStore.siderTheme === 'dark' ? '#001529' : '#f0f2f5',
-      color: layoutStore.siderTheme === 'dark' ? 'white' : 'white',
+      color: layoutStore.siderTheme === 'dark' ? 'white' : 'rgba(0, 0, 0, 0.85)',
       borderBottom: layoutStore.siderTheme === 'dark' ? 'none' : '1px solid #f0f0f0',
       padding: '16px 20px'
     }"
@@ -452,8 +452,21 @@ const handleSearch = (e: Event) => {
 const updateThemeSetting = (checked: boolean) => {
   const theme = checked ? 'dark' : 'light';
   layoutStore.siderTheme = theme;
+  
   // 保存到本地存储
   localStorage.setItem('siderTheme', theme);
+
+  // 确保主题类名正确应用
+  if (theme === 'dark') {
+    document.body.classList.add('dark-theme');
+    document.body.classList.remove('light-theme');
+  } else {
+    document.body.classList.add('light-theme');
+    document.body.classList.remove('dark-theme');
+  }
+  
+  // 显示成功消息
+  message.success(`已切换到${theme === 'dark' ? '暗色' : '亮色'}模式`);
 };
 
 // 切换固定头部
@@ -499,6 +512,15 @@ onMounted(() => {
 
   if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
     layoutStore.siderTheme = savedTheme;
+    
+    // 确保主题类名正确应用
+    if (savedTheme === 'dark') {
+      document.body.classList.add('dark-theme');
+      document.body.classList.remove('light-theme');
+    } else {
+      document.body.classList.add('light-theme');
+      document.body.classList.remove('dark-theme');
+    }
   }
   if (savedFixedHeader) {
     layoutStore.fixedHeader = savedFixedHeader === 'true';
@@ -1268,17 +1290,14 @@ const resetSettings = () => {
     .ant-drawer-title {
       font-weight: 500;
       font-size: 16px;
-      color: #fff;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      color: v-bind('layoutStore.siderTheme === "dark" ? "white" : "rgba(0, 0, 0, 0.85)"');
     }
     
     .ant-drawer-close {
-      color: #fff;
-      opacity: 0.85;
+      color: v-bind('layoutStore.siderTheme === "dark" ? "white" : "rgba(0, 0, 0, 0.85)"');
       
       &:hover {
-        opacity: 1;
-        color: #fff;
+        color: v-bind('layoutStore.siderTheme === "dark" ? "white" : "rgba(0, 0, 0, 0.85)"');
       }
     }
   }
@@ -1601,11 +1620,89 @@ const resetSettings = () => {
   }
 }
 
+/* 暗色主题全局覆盖 */
+:global(.dark-theme) {
+  .ant-drawer-header {
+    background-color: #001529 !important;
+    
+    .ant-drawer-title {
+      color: white !important;
+    }
+    
+    .ant-drawer-close {
+      color: white !important;
+      
+      &:hover {
+        color: rgba(255, 255, 255, 0.85) !important;
+      }
+    }
+  }
+}
+
+:global(.light-theme) {
+  .ant-drawer-header {
+    background-color: #f0f2f5 !important;
+    
+    .ant-drawer-title {
+      color: rgba(0, 0, 0, 0.85) !important;
+    }
+    
+    .ant-drawer-close {
+      color: rgba(0, 0, 0, 0.85) !important;
+      
+      &:hover {
+        color: rgba(0, 0, 0, 0.65) !important;
+      }
+    }
+  }
+}
+
 /* 调整响应式 */
 @media (max-width: 576px) {
   .system-setting-drawer {
     .layout-grid {
       grid-template-columns: 1fr;
+    }
+  }
+}
+</style>
+
+<!-- 全局样式，不使用scoped -->
+<style lang="scss">
+/* 暗色主题下抽屉强制白色文字 */
+body.dark-theme {
+  .ant-drawer .ant-drawer-header {
+    background-color: #001529 !important;
+  }
+  
+  .ant-drawer .ant-drawer-title {
+    color: white !important;
+  }
+  
+  .ant-drawer .ant-drawer-close {
+    color: white !important;
+    
+    &:hover {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+  }
+}
+
+/* 亮色主题下抽屉文字颜色 */
+body.light-theme {
+  .ant-drawer .ant-drawer-header {
+    background-color: #f0f2f5 !important;
+  }
+  
+  .ant-drawer .ant-drawer-title {
+    color: rgba(0, 0, 0, 0.85) !important;
+  }
+  
+  .ant-drawer .ant-drawer-close {
+    color: rgba(0, 0, 0, 0.85) !important;
+    
+    &:hover {
+      color: rgba(0, 0, 0, 0.65) !important;
     }
   }
 }
