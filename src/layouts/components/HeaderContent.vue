@@ -43,6 +43,7 @@ import {
   BulbFilled
 } from '@ant-design/icons-vue';
 import { useLayoutStore } from '../../store/layout';
+import { message } from 'ant-design-vue';
 
 // Props 定义
 defineProps({
@@ -69,6 +70,18 @@ const handleFullscreenChange = () => {
 
 onMounted(() => {
   document.addEventListener('fullscreenchange', handleFullscreenChange);
+  
+  // 初始化isDark状态
+  isDark.value = layoutStore.siderTheme === 'dark';
+  
+  // 立即应用主题类名
+  if(isDark.value) {
+    document.body.classList.add('dark-theme');
+    document.body.classList.remove('light-theme');
+  } else {
+    document.body.classList.add('light-theme');
+    document.body.classList.remove('dark-theme');
+  }
   
   // 初始化主题
   setTimeout(() => {
@@ -374,13 +387,28 @@ function adjustColor(color: string, percent: number): string {
   return `#${adjustedRgb.map(c => c.toString(16).padStart(2, '0')).join('')}`;
 }
 
+// 切换暗黑模式
 const toggleDark = () => {
   isDark.value = !isDark.value;
-  if (isDark.value) {
-    layoutStore.siderTheme = 'dark';
+  const newTheme = isDark.value ? 'dark' : 'light';
+  
+  // 立即更新文档类名
+  if(isDark.value) {
+    document.body.classList.add('dark-theme');
+    document.body.classList.remove('light-theme');
   } else {
-    layoutStore.siderTheme = 'light';
+    document.body.classList.add('light-theme');
+    document.body.classList.remove('dark-theme');
   }
+  
+  // 更新主题
+  setTheme(newTheme);
+  
+  // 将主题设置保存到localStorage
+  localStorage.setItem('siderTheme', newTheme);
+  
+  // 显示切换成功的消息
+  message.success(`已切换到${isDark.value ? '暗色' : '亮色'}模式`);
 };
 </script>
 
@@ -491,16 +519,22 @@ const toggleDark = () => {
 }
 
 /* 抽屉样式 */
+:deep(.ant-drawer-header) {
+  background: v-bind('layoutStore.siderTheme === "dark" ? "#001529" : "#f0f2f5"');
+  transition: all 0.3s;
+  border-radius: 0;
+}
+
 :deep(.ant-drawer-title) {
-  color: #fff;
+  color: v-bind('layoutStore.siderTheme === "dark" ? "white" : "rgba(0, 0, 0, 0.85)"');
   font-weight: 500;
 }
 
 :deep(.ant-drawer-close) {
-  color: #fff;
+  color: v-bind('layoutStore.siderTheme === "dark" ? "white" : "rgba(0, 0, 0, 0.85)"');
   
   &:hover {
-    color: rgba(255, 255, 255, 0.85);
+    color: v-bind('layoutStore.siderTheme === "dark" ? "rgba(255, 255, 255, 0.85)" : "rgba(0, 0, 0, 0.65)"');
   }
 }
 
