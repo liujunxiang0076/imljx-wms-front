@@ -1,5 +1,27 @@
 <script setup lang="ts">
 // 主应用入口
+import { onMounted } from 'vue';
+import { useLayoutStore } from './store/layout';
+
+// 初始化主题设置
+onMounted(() => {
+  // 获取本地存储的主题设置
+  const savedTheme = localStorage.getItem('siderTheme');
+  const theme = savedTheme === 'dark' ? 'dark' : 'light';
+  
+  // 初始化布局存储
+  const layoutStore = useLayoutStore();
+  layoutStore.siderTheme = theme;
+  
+  // 设置body主题类
+  if (theme === 'dark') {
+    document.body.classList.add('dark-theme');
+    document.body.classList.remove('light-theme');
+  } else {
+    document.body.classList.add('light-theme');
+    document.body.classList.remove('dark-theme');
+  }
+});
 </script>
 
 <template>
