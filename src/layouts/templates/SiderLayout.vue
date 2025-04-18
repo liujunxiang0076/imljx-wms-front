@@ -308,28 +308,30 @@
     <!-- 主题色 -->
     <div class="setting-block">
       <div class="setting-title">主题色</div>
-      <div class="setting-content">
-        <div class="color-grid">
-          <div 
-            v-for="color in colorList" 
-            :key="color"
-            class="color-item" 
-            :style="{ backgroundColor: color }"
-            :class="{ active: layoutStore.primaryColor === color }"
-            @click="setPrimaryColor(color)"
-            @mouseenter="previewPrimaryColor(color)"
-            @mouseleave="resetPreviewColor"
-          ></div>
-          <div class="color-item color-picker">
-            <div class="color-picker-icon">
-              <svg viewBox="64 64 896 896" width="1em" height="1em" fill="currentColor">
-                <path d="M924.8 385.6a446.7 446.7 0 0 0-96-142.4 446.7 446.7 0 0 0-142.4-96C631.1 123.8 572.5 112 512 112s-119.1 11.8-174.4 35.2a446.7 446.7 0 0 0-142.4 96 446.7 446.7 0 0 0-96 142.4C75.8 440.9 64 499.5 64 560c0 132.7 58.3 257.7 159.9 343.1l1.7 1.4c5.8 4.8 13.1 7.5 20.6 7.5h531.7c7.5 0 14.8-2.7 20.6-7.5l1.7-1.4C901.7 817.7 960 692.7 960 560c0-60.5-11.9-119.1-35.2-174.4zM761.4 836H262.6A371.12 371.12 0 0 1 140 560c0-99.4 38.7-192.8 109-263 70.3-70.3 163.7-109 263-109 99.4 0 192.8 38.7 263 109 70.3 70.3 109 163.7 109 263 0 105.6-44.5 205.5-122.6 276zM623.5 421.5a8.03 8.03 0 0 0-11.3 0L527.7 506c-18.7-5-39.4-.2-54.1 14.5a55.95 55.95 0 0 0 0 79.2 55.95 55.95 0 0 0 79.2 0 55.87 55.87 0 0 0 14.5-54.1l84.5-84.5c3.1-3.1 3.1-8.2 0-11.3l-28.3-28.3zM490 320h44c4.4 0 8-3.6 8-8v-80c0-4.4-3.6-8-8-8h-44c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8zm-147.4 64.8l-31.1-31.1a8.03 8.03 0 0 0-11.3 0l-56.6 56.6a8.03 8.03 0 0 0 0 11.3l31.1 31.1c3.1 3.1 8.2 3.1 11.3 0l56.6-56.6c3.1-3.1 3.1-8.2 0-11.3zm291.7-56.6l56.6 56.6c3.1 3.1 8.2 3.1 11.3 0l31.1-31.1c3.1-3.1 3.1-8.2 0-11.3l-56.6-56.6a8.03 8.03 0 0 0-11.3 0l-31.1 31.1a8.03 8.03 0 0 0 0 11.3zM312 490v44c0 4.4 3.6 8 8 8h80c4.4 0 8-3.6 8-8v-44c0-4.4-3.6-8-8-8h-80c-4.4 0-8 3.6-8 8z" />
-              </svg>
+      <div class="setting-content theme-color-content">
+        <div class="theme-color-grid-container">
+          <div class="color-grid">
+            <div 
+              v-for="color in colorList" 
+              :key="color"
+              class="color-item" 
+              :style="{ backgroundColor: color }"
+              :class="{ active: layoutStore.primaryColor === color }"
+              @click="setPrimaryColor(color)"
+              @mouseenter="previewPrimaryColor(color)"
+              @mouseleave="resetPreviewColor"
+            ></div>
+            <div class="color-item color-picker" @click="showColorPicker = true">
+              <div class="color-picker-icon">
+                <svg viewBox="64 64 896 896" width="0.9em" height="0.9em" fill="currentColor">
+                  <path d="M924.8 385.6a446.7 446.7 0 0 0-96-142.4 446.7 446.7 0 0 0-142.4-96C631.1 123.8 572.5 112 512 112s-119.1 11.8-174.4 35.2a446.7 446.7 0 0 0-142.4 96 446.7 446.7 0 0 0-96 142.4C75.8 440.9 64 499.5 64 560c0 132.7 58.3 257.7 159.9 343.1l1.7 1.4c5.8 4.8 13.1 7.5 20.6 7.5h531.7c7.5 0 14.8-2.7 20.6-7.5l1.7-1.4C901.7 817.7 960 692.7 960 560c0-60.5-11.9-119.1-35.2-174.4zM761.4 836H262.6A371.12 371.12 0 0 1 140 560c0-99.4 38.7-192.8 109-263 70.3-70.3 163.7-109 263-109 99.4 0 192.8 38.7 263 109 70.3 70.3 109 163.7 109 263 0 105.6-44.5 205.5-122.6 276zM623.5 421.5a8.03 8.03 0 0 0-11.3 0L527.7 506c-18.7-5-39.4-.2-54.1 14.5a55.95 55.95 0 0 0 0 79.2 55.95 55.95 0 0 0 79.2 0 55.87 55.87 0 0 0 14.5-54.1l84.5-84.5c3.1-3.1 3.1-8.2 0-11.3l-28.3-28.3zM490 320h44c4.4 0 8-3.6 8-8v-80c0-4.4-3.6-8-8-8h-44c-4.4 0-8 3.6-8 8v80c0 4.4 3.6 8 8 8zm-147.4 64.8l-31.1-31.1a8.03 8.03 0 0 0-11.3 0l-56.6 56.6a8.03 8.03 0 0 0 0 11.3l31.1 31.1c3.1 3.1 8.2 3.1 11.3 0l56.6-56.6c3.1-3.1 3.1-8.2 0-11.3zm291.7-56.6l56.6 56.6c3.1 3.1 8.2 3.1 11.3 0l31.1-31.1c3.1-3.1 3.1-8.2 0-11.3l-56.6-56.6a8.03 8.03 0 0 0-11.3 0l-31.1 31.1a8.03 8.03 0 0 0 0 11.3zM312 490v44c0 4.4 3.6 8 8 8h80c4.4 0 8-3.6 8-8v-44c0-4.4-3.6-8-8-8h-80c-4.4 0-8 3.6-8 8z" />
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="color-preview-tooltip" v-if="previewColor">
-          预览: <span class="color-dot" :style="{backgroundColor: previewColor}"></span>
+          <div class="color-preview-tooltip" v-if="previewColor">
+            预览: <span class="color-dot" :style="{backgroundColor: previewColor}"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -381,6 +383,58 @@
       </a-button>
     </div>
   </a-drawer>
+
+  <!-- 添加颜色选择器弹窗 -->
+  <a-modal 
+    v-model:visible="showColorPicker" 
+    title="自定义主题色" 
+    width="300px" 
+    :footer="null"
+    @cancel="cancelColorSelection"
+  >
+    <div class="custom-color-picker">
+      <div class="color-input-row">
+        <span>颜色值：</span>
+        <a-input 
+          v-model:value="customColor" 
+          placeholder="#1890ff" 
+          :maxlength="7"
+          @change="validateColor"
+        />
+      </div>
+      
+      <div class="color-preview-row">
+        <span>预览：</span>
+        <div class="color-preview-box" :style="{ backgroundColor: isValidColor ? customColor : '#e0e0e0' }"></div>
+      </div>
+      
+      <div v-if="!isValidColor && customColor" class="color-error">
+        请输入有效的十六进制颜色值 (例如: #1890ff)
+      </div>
+      
+      <div class="suggested-colors">
+        <div class="suggested-title">推荐颜色</div>
+        <div class="suggested-grid">
+          <div 
+            v-for="(color, index) in suggestedColors" 
+            :key="index"
+            class="suggested-item"
+            :style="{ backgroundColor: color }"
+            @click="selectSuggestedColor(color)"
+          ></div>
+        </div>
+      </div>
+      
+      <div class="action-buttons">
+        <a-button @click="cancelColorSelection">取消</a-button>
+        <a-button 
+          type="primary" 
+          :disabled="!isValidColor" 
+          @click="confirmCustomColor"
+        >确定</a-button>
+      </div>
+    </div>
+  </a-modal>
 </template>
 
 <script setup lang="ts">
@@ -606,16 +660,16 @@ defineExpose({
 
 // 在script部分添加colorList
 const colorList = [
-  '#1890ff',
-  '#25b864',
-  '#ff6f00',
-  '#f5222d',
-  '#fa541c',
-  '#faad14',
-  '#13c2c2',
-  '#722ed1',
-  '#eb2f96',
-  '#52c41a'
+  '#1890ff', // 蓝色
+  '#52c41a', // 绿色
+  '#faad14', // 黄色
+  '#f5222d', // 红色
+  '#722ed1', // 紫色
+  '#13c2c2', // 青色
+  '#fa541c', // 橙色
+  '#eb2f96', // 粉色
+  '#2f54eb', // 深蓝色
+  '#fadb14'  // 明黄色
 ];
 
 // 添加setPrimaryColor方法
@@ -746,10 +800,62 @@ const updateSplitMenus = (value: boolean) => {
   message.success(`已${value ? '开启' : '关闭'}子菜单自动展开/折叠`);
 };
 
-// 在script部分添加必要的变量和方法
-const drawerWidth = ref(360);
+// 预览相关变量和颜色选择器变量
 const previewColor = ref('');
 const originalColor = ref('');
+const showColorPicker = ref(false);
+const customColor = ref('');
+const isValidColor = ref(false);
+
+// 推荐颜色
+const suggestedColors = [
+  '#f5222d', // 红色
+  '#fa541c', // 橙红色
+  '#fa8c16', // 橙色
+  '#faad14', // 金色
+  '#fadb14', // 黄色
+  '#a0d911', // 青柠色
+  '#52c41a', // 绿色
+  '#13c2c2', // 青色
+  '#1890ff', // 蓝色
+  '#2f54eb', // 深蓝色
+  '#722ed1', // 紫色
+  '#eb2f96'  // 粉色
+];
+
+// 验证颜色是否合法
+const validateColor = () => {
+  const colorRegex = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+  isValidColor.value = colorRegex.test(customColor.value);
+  
+  // 自动添加#前缀
+  if (customColor.value && !customColor.value.startsWith('#')) {
+    customColor.value = '#' + customColor.value;
+    validateColor();
+  }
+};
+
+// 选择推荐颜色
+const selectSuggestedColor = (color: string) => {
+  customColor.value = color;
+  isValidColor.value = true;
+};
+
+// 确认自定义颜色
+const confirmCustomColor = () => {
+  if (isValidColor.value) {
+    setPrimaryColor(customColor.value);
+    showColorPicker.value = false;
+    customColor.value = '';
+  }
+};
+
+// 取消颜色选择
+const cancelColorSelection = () => {
+  showColorPicker.value = false;
+  customColor.value = '';
+  isValidColor.value = false;
+};
 
 // 预览主题颜色
 const previewPrimaryColor = (color: string) => {
@@ -844,6 +950,9 @@ const resetSettings = () => {
     }
   });
 };
+
+// 颜色选择器状态和设置抽屉宽度
+const drawerWidth = ref(360);
 </script>
 
 <style lang="scss" scoped>
@@ -1489,6 +1598,18 @@ const resetSettings = () => {
 
     .setting-content {
       margin-bottom: 12px;
+      
+      &.theme-color-content {
+        padding: 0 8px;
+      }
+    }
+
+    /* 主题色容器 */
+    .theme-color-grid-container {
+      background-color: #fafafa;
+      border-radius: 4px;
+      padding: 8px 10px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
     /* 主题模式卡片 */
@@ -1650,12 +1771,16 @@ const resetSettings = () => {
     .color-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-      margin-bottom: 8px;
+      gap: 6px;
+      margin-bottom: 6px;
+      padding: 4px 0;
       
       .color-item {
         width: 100%;
         aspect-ratio: 1;
+        max-width: 26px;
+        max-height: 26px;
+        margin: 0 auto;
         border-radius: 4px;
         cursor: pointer;
         position: relative;
@@ -1673,12 +1798,12 @@ const resetSettings = () => {
           top: 50%;
           left: 50%;
           transform: translate(-50%, -50%);
-          width: 10px;
-          height: 10px;
-          border: 2px solid white;
+          width: 6px;
+          height: 6px;
+          border: 1.5px solid white;
           border-radius: 50%;
           background-color: transparent;
-          box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
         }
         
         &.color-picker {
@@ -1690,6 +1815,7 @@ const resetSettings = () => {
           
           .color-picker-icon {
             color: rgba(0, 0, 0, 0.45);
+            font-size: 12px;
           }
           
           &:hover .color-picker-icon {
@@ -1701,18 +1827,18 @@ const resetSettings = () => {
     
     .color-preview-tooltip {
       font-size: 12px;
-      margin-top: 8px;
+      margin-top: 4px;
       color: rgba(0, 0, 0, 0.65);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       
       .color-dot {
-        width: 14px;
-        height: 14px;
+        width: 12px;
+        height: 12px;
         border-radius: 50%;
         display: inline-block;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
       }
     }
     
@@ -1814,6 +1940,79 @@ const resetSettings = () => {
     .layout-grid {
       grid-template-columns: 1fr;
     }
+  }
+}
+
+/* 自定义颜色选择器样式 */
+.custom-color-picker {
+  padding: 8px 0;
+  
+  .color-input-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    
+    span {
+      margin-right: 8px;
+      white-space: nowrap;
+    }
+  }
+  
+  .color-preview-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    
+    span {
+      margin-right: 8px;
+    }
+    
+    .color-preview-box {
+      width: 36px;
+      height: 36px;
+      border-radius: 4px;
+      border: 1px solid #d9d9d9;
+    }
+  }
+  
+  .color-error {
+    color: #f5222d;
+    font-size: 12px;
+    margin-bottom: 16px;
+  }
+  
+  .suggested-colors {
+    margin-bottom: 20px;
+    
+    .suggested-title {
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: rgba(0, 0, 0, 0.85);
+    }
+    
+    .suggested-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      
+      .suggested-item {
+        aspect-ratio: 1;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: transform 0.2s;
+        
+        &:hover {
+          transform: scale(1.1);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+      }
+    }
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
   }
 }
 </style>
