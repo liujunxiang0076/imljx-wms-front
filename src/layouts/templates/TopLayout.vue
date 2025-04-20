@@ -18,127 +18,60 @@
             :openKeys="openKeys"
             class="top-menu"
           >
-            <!-- 仪表盘 -->
-            <a-menu-item key="dashboard">
-              <router-link to="/dashboard">
-                <DashboardOutlined />
-                <span>仪表盘</span>
-              </router-link>
-            </a-menu-item>
+            <!-- 显示前4个一级菜单 -->
+            <template v-for="menu in visibleMenuItems" :key="menu.key">
+              <!-- 无子菜单的一级菜单 -->
+              <a-menu-item v-if="!menu.children || menu.children.length === 0" :key="`item-${menu.key}`">
+                <router-link :to="menu.path">
+                  <component :is="getIcon(menu.icon)" v-if="menu.icon" />
+                  <span>{{ menu.title }}</span>
+                </router-link>
+              </a-menu-item>
+              
+              <!-- 有子菜单的一级菜单 -->
+              <a-sub-menu v-else :key="`sub-${menu.key}`">
+                <template #title>
+                  <component :is="getIcon(menu.icon)" v-if="menu.icon" />
+                  <span>{{ menu.title }}</span>
+                </template>
+                <a-menu-item v-for="subMenu in menu.children" :key="subMenu.key">
+                  <router-link :to="subMenu.path">
+                    <span>{{ subMenu.title }}</span>
+                  </router-link>
+                </a-menu-item>
+              </a-sub-menu>
+            </template>
             
-            <!-- 库存管理 -->
-            <a-sub-menu key="inventory">
+            <!-- "更多"下拉菜单，当菜单项超过4个时显示 -->
+            <a-sub-menu v-if="hiddenMenuItems.length > 0" key="more-menu">
               <template #title>
-                <AppstoreOutlined />
-                <span>库存管理</span>
+                <EllipsisOutlined />
+                <span>更多</span>
               </template>
-              <a-menu-item key="inventory-overview">
-                <router-link to="/inventory/overview">
-                  <span>库存总览</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="inventory-detail">
-                <router-link to="/inventory/detail">
-                  <span>库存明细</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="inventory-check">
-                <router-link to="/inventory/check">
-                  <span>库存盘点</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="inventory-location">
-                <router-link to="/inventory/location">
-                  <span>库位管理</span>
-                </router-link>
-              </a-menu-item>
-            </a-sub-menu>
-            
-            <!-- 入库管理 -->
-            <a-sub-menu key="inbound">
-              <template #title>
-                <InboxOutlined />
-                <span>入库管理</span>
+              
+              <!-- 遍历隐藏的一级菜单 -->
+              <template v-for="menu in hiddenMenuItems" :key="menu.key">
+                <!-- 无子菜单的一级菜单 -->
+                <a-menu-item v-if="!menu.children || menu.children.length === 0" :key="`more-item-${menu.key}`">
+                  <router-link :to="menu.path">
+                    <component :is="getIcon(menu.icon)" v-if="menu.icon" />
+                    <span>{{ menu.title }}</span>
+                  </router-link>
+                </a-menu-item>
+                
+                <!-- 有子菜单的一级菜单，转为分组 -->
+                <a-sub-menu v-else :key="`more-sub-${menu.key}`">
+                  <template #title>
+                    <component :is="getIcon(menu.icon)" v-if="menu.icon" />
+                    <span>{{ menu.title }}</span>
+                  </template>
+                  <a-menu-item v-for="subMenu in menu.children" :key="subMenu.key">
+                    <router-link :to="subMenu.path">
+                      <span>{{ subMenu.title }}</span>
+                    </router-link>
+                  </a-menu-item>
+                </a-sub-menu>
               </template>
-              <a-menu-item key="inbound-receipt">
-                <router-link to="/inbound/receipt">
-                  <span>入库单管理</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="inbound-plan">
-                <router-link to="/inbound/plan">
-                  <span>入库计划</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="inbound-verify">
-                <router-link to="/inbound/verify">
-                  <span>入库验收</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="inbound-return">
-                <router-link to="/inbound/return">
-                  <span>退货入库</span>
-                </router-link>
-              </a-menu-item>
-            </a-sub-menu>
-            
-            <!-- 出库管理 -->
-            <a-sub-menu key="outbound">
-              <template #title>
-                <ExportOutlined />
-                <span>出库管理</span>
-              </template>
-              <a-menu-item key="outbound-order">
-                <router-link to="/outbound/order">
-                  <span>出库单管理</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="outbound-plan">
-                <router-link to="/outbound/plan">
-                  <span>出库计划</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="outbound-picking">
-                <router-link to="/outbound/picking">
-                  <span>拣货管理</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="outbound-delivery">
-                <router-link to="/outbound/delivery">
-                  <span>发运管理</span>
-                </router-link>
-              </a-menu-item>
-            </a-sub-menu>
-            
-            <!-- 报表分析 -->
-            <a-menu-item key="reports">
-              <router-link to="/reports">
-                <BarChartOutlined />
-                <span>报表分析</span>
-              </router-link>
-            </a-menu-item>
-            
-            <!-- 系统设置 -->
-            <a-sub-menu key="system">
-              <template #title>
-                <SettingOutlined />
-                <span>系统设置</span>
-              </template>
-              <a-menu-item key="system-users">
-                <router-link to="/system/users">
-                  <span>用户管理</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="system-roles">
-                <router-link to="/system/roles">
-                  <span>角色管理</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item key="system-permissions">
-                <router-link to="/system/permissions">
-                  <span>权限管理</span>
-                </router-link>
-              </a-menu-item>
             </a-sub-menu>
           </a-menu>
         </div>
@@ -146,62 +79,103 @@
         <!-- 右侧操作区 -->
         <div class="header-right">
           <!-- 搜索框 -->
-          <a-input-search
-            placeholder="搜索..."
-            style="width: 200px;"
-            @search="onSearch"
-            class="ant-input-search"
-          >
-            <template #prefix>
-              <SearchOutlined />
-            </template>
-          </a-input-search>
-          
-          <!-- 通知图标 -->
-          <a-tooltip title="消息通知">
-            <div class="notification-icon-wrapper">
-              <a-badge count="5" class="notification-badge">
-                <a-button type="text" class="notification-btn">
-                  <BellOutlined style="font-size: 16px" />
+          <div class="custom-search-wrapper">
+            <a-input
+              v-model:value="searchValue"
+              class="custom-search-input"
+              placeholder="搜索功能、命令或文档..."
+              @pressEnter="handleSearch"
+              :bordered="false"
+            >
+              <template #suffix>
+                <a-button type="text" class="custom-search-button" @click="handleSearch">
+                  <template #icon>
+                    <SearchOutlined />
+                  </template>
                 </a-button>
-              </a-badge>
-            </div>
-          </a-tooltip>
+              </template>
+            </a-input>
+          </div>
           
-          <!-- 用户头像下拉菜单 -->
-          <a-dropdown>
-            <div class="user-dropdown-btn">
-              <a-avatar class="avatar" src="https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png" size="small" />
-              <span class="username">{{ userStore.name || '管理员' }}</span>
-              <DownOutlined style="font-size: 12px" />
-            </div>
-            <template #overlay>
-              <a-menu>
-                <a-menu-item key="0">
-                  <UserOutlined />
-                  个人中心
-                </a-menu-item>
-                <a-menu-item key="1">
-                  <SettingOutlined />
-                  账户设置
-                </a-menu-item>
-                <a-menu-divider />
-                <a-menu-item key="3" @click="handleLogout">
-                  <LogoutOutlined />
-                  退出登录
-                </a-menu-item>
-              </a-menu>
-            </template>
-          </a-dropdown>
-          
-          <!-- 设置按钮 -->
-          <a-button
-            type="text"
-            class="setting-btn"
-            @click="showSettingDrawer = true"
-          >
-            <SettingOutlined style="font-size: 16px" />
-          </a-button>
+          <a-space size="middle">
+            <!-- 通知器 -->
+            <a-dropdown placement="bottomRight">
+              <div class="notification-icon-wrapper">
+                <a-badge count="5" class="notification-badge">
+                  <BellOutlined style="font-size: 16px" />
+                </a-badge>
+              </div>
+              <template #overlay>
+                <a-menu style="width: 240px">
+                  <a-menu-item
+                    key="notification-title"
+                    style="text-align: center; cursor: default; font-weight: 500;"
+                  >
+                    通知信息 (5条未读)
+                  </a-menu-item>
+                  <a-menu-divider />
+                  <a-menu-item key="notification-1">
+                    <div style="display: flex; align-items: flex-start">
+                      <a-tag color="blue">入库</a-tag>
+                      <div style="margin-left: 8px; flex: 1">
+                        <div style="font-weight: 500">新的入库订单已创建</div>
+                        <div style="font-size: 12px; color: rgba(0, 0, 0, 0.45)">刚刚</div>
+                      </div>
+                    </div>
+                  </a-menu-item>
+                  <a-menu-item key="notification-2">
+                    <div style="display: flex; align-items: flex-start">
+                      <a-tag color="red">警告</a-tag>
+                      <div style="margin-left: 8px; flex: 1">
+                        <div style="font-weight: 500">产品B2库存低于安全库存</div>
+                        <div style="font-size: 12px; color: rgba(0, 0, 0, 0.45)">10分钟前</div>
+                      </div>
+                    </div>
+                  </a-menu-item>
+                  <a-menu-divider />
+                  <a-menu-item key="see-all" style="text-align: center">
+                    <router-link to="/notifications">查看所有通知</router-link>
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+
+            <!-- 设置按钮 -->
+            <a-button
+              type="text"
+              shape="circle"
+              class="setting-btn"
+              @click="showSettingDrawer = true"
+            >
+              <template #icon><SettingOutlined style="font-size: 16px" /></template>
+            </a-button>
+
+            <!-- 用户个人信息 -->
+            <a-dropdown placement="bottomRight">
+              <div class="user-dropdown-btn">
+                <a-avatar>{{ userData.username?.substring(0, 1) || '用' }}</a-avatar>
+                <span class="username">{{ userData.username || '用户名' }}</span>
+                <DownOutlined style="font-size: 12px; color: rgba(0, 0, 0, 0.45)" />
+              </div>
+              <template #overlay>
+                <a-menu>
+                  <a-menu-item key="profile">
+                    <UserOutlined />
+                    个人信息
+                  </a-menu-item>
+                  <a-menu-item key="settings">
+                    <SettingOutlined />
+                    个人设置
+                  </a-menu-item>
+                  <a-menu-divider />
+                  <a-menu-item key="logout" @click="handleLogout">
+                    <LogoutOutlined />
+                    退出登录
+                  </a-menu-item>
+                </a-menu>
+              </template>
+            </a-dropdown>
+          </a-space>
         </div>
       </div>
     </a-layout-header>
@@ -289,32 +263,36 @@
               :class="{ active: layoutStore.layoutType === 'sider' }"
               @click="setLayoutType('sider')"
             >
-              <div class="layout-preview sider-layout"></div>
-              <div class="layout-name">侧边布局</div>
+              <div class="layout-preview sider-layout">
+                <div class="layout-name">侧边布局</div>
+              </div>
             </div>
             <div 
               class="layout-item" 
               :class="{ active: layoutStore.layoutType === 'top' }"
               @click="setLayoutType('top')"
             >
-              <div class="layout-preview top-layout"></div>
-              <div class="layout-name">顶部布局</div>
+              <div class="layout-preview top-layout">
+                <div class="layout-name">顶部布局</div>
+              </div>
             </div>
             <div 
               class="layout-item" 
               :class="{ active: layoutStore.layoutType === 'mix' }"
               @click="setLayoutType('mix')"
             >
-              <div class="layout-preview mix-layout"></div>
-              <div class="layout-name">混合布局</div>
+              <div class="layout-preview mix-layout">
+                <div class="layout-name">混合布局</div>
+              </div>
             </div>
             <div 
               class="layout-item" 
               :class="{ active: layoutStore.layoutType === 'mix-right' }"
               @click="setLayoutType('mix-right')"
             >
-              <div class="layout-preview mix-right-layout"></div>
-              <div class="layout-name">右侧混合</div>
+              <div class="layout-preview mix-right-layout">
+                <div class="layout-name">右侧混合</div>
+              </div>
             </div>
           </div>
         </div>
@@ -469,6 +447,9 @@ import {
   DownOutlined,
   UserOutlined,
   LogoutOutlined,
+  EllipsisOutlined,
+  ShopOutlined,
+  TeamOutlined,
   SearchOutlined
 } from '@ant-design/icons-vue';
 import { Modal, message } from 'ant-design-vue';
@@ -482,6 +463,113 @@ const layoutStore = useLayoutStore();
 const route = useRoute();
 const userStore = useUserStore();
 const router = useRouter();
+
+// 菜单配置 - 这里模拟菜单数据，实际应从配置或接口获取
+const allMenuItems = [
+  {
+    key: 'dashboard',
+    title: '仪表盘',
+    path: '/dashboard',
+    icon: 'DashboardOutlined',
+    children: []
+  },
+  {
+    key: 'inventory',
+    title: '库存管理',
+    path: '/inventory',
+    icon: 'AppstoreOutlined',
+    children: [
+      { key: 'inventory-overview', title: '库存总览', path: '/inventory/overview' },
+      { key: 'inventory-detail', title: '库存明细', path: '/inventory/detail' },
+      { key: 'inventory-check', title: '库存盘点', path: '/inventory/check' },
+      { key: 'inventory-location', title: '库位管理', path: '/inventory/location' }
+    ]
+  },
+  {
+    key: 'inbound',
+    title: '入库管理',
+    path: '/inbound',
+    icon: 'InboxOutlined',
+    children: [
+      { key: 'inbound-receipt', title: '入库单管理', path: '/inbound/receipt' },
+      { key: 'inbound-plan', title: '入库计划', path: '/inbound/plan' },
+      { key: 'inbound-verify', title: '入库验收', path: '/inbound/verify' },
+      { key: 'inbound-return', title: '退货入库', path: '/inbound/return' }
+    ]
+  },
+  {
+    key: 'outbound',
+    title: '出库管理',
+    path: '/outbound',
+    icon: 'ExportOutlined',
+    children: [
+      { key: 'outbound-order', title: '出库单管理', path: '/outbound/order' },
+      { key: 'outbound-plan', title: '出库计划', path: '/outbound/plan' },
+      { key: 'outbound-picking', title: '拣货管理', path: '/outbound/picking' },
+      { key: 'outbound-delivery', title: '发运管理', path: '/outbound/delivery' }
+    ]
+  },
+  {
+    key: 'reports',
+    title: '报表分析',
+    path: '/reports',
+    icon: 'BarChartOutlined',
+    children: []
+  },
+  {
+    key: 'system',
+    title: '系统设置',
+    path: '/system',
+    icon: 'SettingOutlined',
+    children: [
+      { key: 'system-users', title: '用户管理', path: '/system/users' },
+      { key: 'system-roles', title: '角色管理', path: '/system/roles' },
+      { key: 'system-permissions', title: '权限管理', path: '/system/permissions' }
+    ]
+  },
+  {
+    key: 'suppliers',
+    title: '供应商管理',
+    path: '/suppliers',
+    icon: 'ShopOutlined',
+    children: []
+  },
+  {
+    key: 'customers',
+    title: '客户管理',
+    path: '/customers',
+    icon: 'TeamOutlined',
+    children: []
+  }
+];
+
+// 图标处理函数，用于根据图标名称返回对应的组件
+const getIcon = (iconName: string) => {
+  const iconMap = {
+    DashboardOutlined,
+    AppstoreOutlined,
+    InboxOutlined,
+    ExportOutlined,
+    BarChartOutlined,
+    SettingOutlined,
+    ShopOutlined,
+    TeamOutlined
+  };
+  
+  return iconMap[iconName as keyof typeof iconMap];
+};
+
+// 最大显示的顶部菜单数量
+const MAX_VISIBLE_MENUS = 4;
+
+// 计算可见菜单项和隐藏菜单项
+const visibleMenuItems = computed(() => {
+  return allMenuItems.slice(0, MAX_VISIBLE_MENUS);
+});
+
+const hiddenMenuItems = computed(() => {
+  return allMenuItems.slice(MAX_VISIBLE_MENUS);
+});
 
 // 当前打开的子菜单
 const openKeys = ref<string[]>([]);
@@ -863,9 +951,9 @@ const resetSettings = () => {
 };
 
 // 搜索功能
-const onSearch = (value: string) => {
-  if (!value.trim()) return;
-  message.info(`搜索: ${value}`);
+const handleSearch = () => {
+  if (!searchValue.value.trim()) return;
+  message.info(`搜索: ${searchValue.value}`);
   // TODO: 实现搜索功能
 };
 
@@ -887,6 +975,9 @@ const handleLogout = async () => {
     message.error('操作失败，请重试');
   }
 };
+
+const userData = computed(() => userStore.userInfo || { username: '管理员' });
+const searchValue = ref('');
 </script>
 
 <style lang="scss" scoped>
@@ -901,7 +992,7 @@ const handleLogout = async () => {
     padding: 0 !important;
     height: 64px;
     line-height: 64px;
-    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 21, 41, 0.08);
     position: relative;
     z-index: 9;
     
@@ -915,7 +1006,7 @@ const handleLogout = async () => {
     .header-container {
       display: flex;
       align-items: center;
-      padding: 0 0 0 24px;
+      padding: 0 16px;
       height: 100%;
     }
     // 头部logo
@@ -935,6 +1026,10 @@ const handleLogout = async () => {
         font-weight: 600;
         font-size: 18px;
         white-space: nowrap;
+        background-image: linear-gradient(90deg, #1890ff, #3a77ff);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
       }
     }
     // 顶部菜单
@@ -952,21 +1047,40 @@ const handleLogout = async () => {
         // 顶部菜单项
         :deep(.ant-menu-item) {
           padding: 0 16px;
+          transition: all 0.3s;
+          
+          &:hover {
+            color: #1890ff;
+          }
+          
           // 顶部菜单项下划线
           &::after {
             left: 16px;
             right: 16px;
           }
+          
+          &.ant-menu-item-selected {
+            font-weight: 500;
+          }
         }
         // 顶部菜单子菜单
         :deep(.ant-menu-submenu-title) {
           padding: 0 16px;
+          transition: all 0.3s;
+          
+          &:hover {
+            color: #1890ff;
+          }
         }
         // 顶部菜单子菜单下划线
         :deep(.ant-menu-submenu) {
           &::after {
             left: 16px;
             right: 16px;
+          }
+          
+          &.ant-menu-submenu-selected {
+            font-weight: 500;
           }
         }
       }
@@ -975,108 +1089,42 @@ const handleLogout = async () => {
     .header-right {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-left: auto;
-
-      .username {
-        max-width: 100px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        color: rgba(0, 0, 0, 0.85);
-        font-weight: 500;
-      }
-
-      .ant-badge {
-        .ant-badge-count {
-          box-shadow: 0 0 0 1px #fff;
-          font-weight: 500;
-          font-size: 12px;
-          padding: 0 4px;
-        }
-      }
-
+      height: 100%;
+      
       .notification-icon-wrapper {
         position: relative;
-        display: inline-block;
-
-        .notification-badge {
-          position: absolute;
-          top: 2px;
-          right: 2px;
-          z-index: 1;
-        }
-      }
-
-      .notification-btn,
-      .setting-btn {
-        height: 40px;
-        width: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        &:hover {
-          background-color: rgba(0, 0, 0, 0.03);
-          color: #1890ff;
-        }
-      }
-
-      .ant-btn {
-        display: flex;
-        align-items: center;
-        padding: 0 8px;
-        height: 38px;
-
-        &-text {
-          color: rgba(0, 0, 0, 0.75);
-          transition: all 0.3s;
-          border-radius: 4px;
-
-          &:hover {
-            background-color: rgba(0, 0, 0, 0.03);
-            color: rgba(0, 0, 0, 0.95);
-          }
-        }
-      }
-
-      .user-dropdown-btn {
-        padding: 0 12px;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-        height: 40px;
         cursor: pointer;
-        transition: all 0.3s;
-
-        .username {
-          margin: 0 6px 0 8px;
-          font-weight: 500;
-        }
-
+        display: flex;
+        align-items: center;
+        padding: 0 4px;
+      }
+      
+      .notification-badge {
+        cursor: pointer;
+      }
+      
+      .user-dropdown-btn {
+        display: flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        
         &:hover {
-          background-color: rgba(0, 0, 0, 0.03);
+          background-color: rgba(0, 0, 0, 0.025);
         }
-      }
-
-      .ant-avatar {
-        background-color: #1890ff;
-        color: #fff;
-        box-shadow: 0 2px 8px rgba(24, 144, 255, 0.2);
-      }
-
-      .ant-input-search {
-        margin-right: 8px;
-        .ant-input {
-          border-radius: 4px;
-          &:hover {
-            border-color: #40a9ff;
-          }
-          &:focus {
-            border-color: #1890ff;
-            box-shadow: 0 0 0 2px rgba(24,144,255,.2);
-          }
+        
+        .ant-avatar {
+          margin-right: 8px;
+        }
+        
+        .username {
+          margin-right: 4px;
+          max-width: 90px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
         }
       }
     }
@@ -1121,6 +1169,59 @@ const handleLogout = async () => {
     text-align: center;
     padding: 14px 50px;
     background: #f0f2f5;
+  }
+}
+
+// 自定义搜索框样式
+.custom-search-wrapper {
+  position: relative;
+  width: 180px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 16px;
+  transition: all 0.3s;
+  margin-right: 16px;
+  
+  &:hover {
+    background-color: #e8e8e8;
+  }
+  
+  .custom-search-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    outline: none;
+    background-color: transparent;
+    padding: 0 40px 0 16px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.65);
+    
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.45);
+    }
+  }
+  
+  .custom-search-button {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.45);
+    transition: color 0.3s;
+    padding: 0;
+    outline: none;
+    
+    &:hover {
+      color: var(--primary-color);
+    }
   }
 }
 
@@ -1258,6 +1359,7 @@ const handleLogout = async () => {
     
     /* 布局网格 */
     .layout-grid {
+      margin-top: 16px;
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 16px;
@@ -1336,13 +1438,27 @@ const handleLogout = async () => {
           }
         }
         
-        .mix-right-layout::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          width: 100%;
-          height: 20%;
-          background: #001529;
+        .mix-right-layout {
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 20%;
+            background: #001529;
+          }
+          
+          &::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            width: 20%;
+            height: 80%;
+            background: #fff;
+            border-left: 1px solid #f0f0f0;
+          }
         }
       }
     }
@@ -1549,6 +1665,47 @@ const handleLogout = async () => {
     gap: 8px;
   }
 }
+
+/* 调整响应式 */
+@media (max-width: 576px) {
+  .system-setting-drawer {
+    .layout-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  
+  .top-layout {
+    &-header {
+      .header-container {
+        padding: 0 8px;
+      }
+      
+      .logo-title {
+        display: none;
+      }
+      
+      .header-right {
+        .username {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .top-layout {
+    &-header {
+      .top-menu-container {
+        .top-menu {
+          .ant-menu-item, .ant-menu-submenu-title {
+            padding: 0 10px;
+          }
+        }
+      }
+    }
+  }
+}
 </style>
 
 <!-- 全局样式，不使用scoped -->
@@ -1591,6 +1748,24 @@ body.light-theme {
   }
 }
 
+/* 设置顶部布局图标样式 */
+.top-layout {
+  .header-right {
+    .ant-badge {
+      display: flex;
+      
+      .ant-badge-count {
+        box-shadow: 0 0 0 1px #fff;
+        font-size: 12px;
+        height: 16px;
+        line-height: 16px;
+        padding: 0 4px;
+        min-width: 16px;
+      }
+    }
+  }
+}
+
 /* 调整响应式 */
 @media (max-width: 576px) {
   .system-setting-drawer {
@@ -1598,5 +1773,37 @@ body.light-theme {
       grid-template-columns: 1fr;
     }
   }
+  
+  .top-layout {
+    &-header {
+      .header-container {
+        padding: 0 8px;
+      }
+      
+      .logo-title {
+        display: none;
+      }
+      
+      .header-right {
+        .username {
+          display: none;
+        }
+      }
+    }
+  }
 }
-</style> 
+
+@media (max-width: 768px) {
+  .top-layout {
+    &-header {
+      .top-menu-container {
+        .top-menu {
+          .ant-menu-item, .ant-menu-submenu-title {
+            padding: 0 10px;
+          }
+        }
+      }
+    }
+  }
+}
+</style>
