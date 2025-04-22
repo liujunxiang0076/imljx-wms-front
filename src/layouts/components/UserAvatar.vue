@@ -21,6 +21,12 @@
             账户设置
           </a-menu-item>
           <a-menu-divider />
+          <a-menu-item key="2" @click="handleClearCache">
+            <template #icon>
+              <ClearOutlined />
+            </template>
+            清除缓存
+          </a-menu-item>
           <a-menu-item key="3" @click="handleLogout">
             <template #icon>
               <LogoutOutlined />
@@ -35,10 +41,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { UserOutlined, SettingOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons-vue';
+import { UserOutlined, SettingOutlined, LogoutOutlined, DownOutlined, ClearOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '../../store/user';
+import { clearCacheAndLogout } from '../../utils/cache';
 
 // Props定义
 defineProps({
@@ -58,6 +65,11 @@ const userStore = useUserStore();
 // 用户信息
 const name = computed(() => userStore.name || '用户');
 const avatar = computed(() => userStore.avatar || 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png');
+
+// 清除缓存
+const handleClearCache = () => {
+  clearCacheAndLogout(router);
+};
 
 // 退出登录
 const handleLogout = async () => {
