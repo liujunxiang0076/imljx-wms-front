@@ -221,9 +221,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, onMounted } from 'vue';
-import { useThemeSettings } from '../hooks/useThemeSettings';
+import { onMounted } from 'vue';
 import { ReloadOutlined } from "@ant-design/icons-vue";
+import { useThemeSettings } from '@/hooks/useThemeSettings';
 
 // 使用主题设置hooks
 const themeSettings = useThemeSettings();
