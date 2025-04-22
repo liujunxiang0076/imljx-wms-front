@@ -132,36 +132,7 @@
             </a-button>
 
             <!-- 用户个人信息 -->
-            <a-dropdown placement="bottomRight">
-              <div class="user-dropdown-btn">
-                <a-avatar>{{
-                  userStore?.userInfo?.username?.substring(0, 1) || "用户"
-                }}</a-avatar>
-                <span class="username">{{
-                  userStore?.userInfo?.username || "用户名"
-                }}</span>
-                <down-outlined
-                  style="font-size: 12px; color: rgba(0, 0, 0, 0.45)"
-                />
-              </div>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item key="profile">
-                    <user-outlined />
-                    个人信息
-                  </a-menu-item>
-                  <a-menu-item key="settings">
-                    <setting-outlined />
-                    个人设置
-                  </a-menu-item>
-                  <a-menu-divider />
-                  <a-menu-item key="logout" @click="handleLogout">
-                    <logout-outlined />
-                    退出登录
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
+            <UserAvatar />
           </a-space>
         </div>
       </div>
@@ -224,38 +195,31 @@
 
 <script setup lang="ts">
 import { ref, watch, onBeforeUnmount, onMounted, defineAsyncComponent } from 'vue';
+import type { Ref } from 'vue';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined, 
-  UserOutlined,
   SettingOutlined,
-  LogoutOutlined,
   BellOutlined,
-  DownOutlined,
   ReloadOutlined
 } from '@ant-design/icons-vue';
-import { Modal, message } from 'ant-design-vue';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '../../store/user';
-import { useLayoutStore } from '../../store/layout';
-import config from "../../config";
-import TabsNav from "../components/TabsNav.vue";
-import SideMenu from "../components/SideMenu.vue";
+import { message } from 'ant-design-vue';
+import { useLayoutStore } from '@/store/layout';
+import config from '@/config';
+import TabsNav from '@/layouts/components/TabsNav.vue';
+import SideMenu from '@/layouts/components/SideMenu.vue';
+import UserAvatar from '@/layouts/components/UserAvatar.vue';
 
 // 动态导入SettingDrawer组件
-const SettingDrawer = defineAsyncComponent(() => 
-  import('../../components/SettingDrawer.vue')
-);
+const SettingDrawer = defineAsyncComponent(() => import('@/components/SettingDrawer.vue'));
 
 // 状态管理
-const router = useRouter();
-const userStore = useUserStore();
 const layoutStore = useLayoutStore();
 
 // 响应式变量
-const collapsed = ref(false);
-const searchText = ref('');
-const showSettingDrawer = ref(false);
+const collapsed: Ref<boolean> = ref(false);
+const searchText: Ref<string> = ref('');
+const showSettingDrawer: Ref<boolean> = ref(false);
 
 // 监听布局store中的菜单折叠状态变化
 watch(() => layoutStore.collapsed, (newVal) => {
@@ -264,64 +228,37 @@ watch(() => layoutStore.collapsed, (newVal) => {
 
 // 初始化从localStorage获取折叠状态
 onMounted(() => {
-  // 从localStorage获取折叠状态
-  const savedCollapsed = localStorage.getItem('collapsed');
-  if (savedCollapsed !== null) {
-    const isCollapsed = savedCollapsed === 'true';
-    collapsed.value = isCollapsed;
-    layoutStore.setCollapsed(isCollapsed);
-  }
-
-  // 监听窗口大小变化
-  window.addEventListener('resize', handleWindowResize);
-  
-  // 初始检查窗口大小
-  handleWindowResize();
+  const savedCollapsed = localStorage.getItem('sider-collapsed');
+  collapsed.value = savedCollapsed === 'true';
+  window.addEventListener('resize', handleResize);
 });
 
 // 组件卸载前移除事件监听
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', handleWindowResize);
+  window.removeEventListener('resize', handleResize);
 });
 
 // 切换侧边栏折叠状态
 const toggleCollapsed = () => {
   collapsed.value = !collapsed.value;
   layoutStore.setCollapsed(collapsed.value);
-  localStorage.setItem('collapsed', String(collapsed.value));
+  localStorage.setItem('sider-collapsed', String(collapsed.value));
 };
 
-// 处理窗口大小变化
-const handleWindowResize = () => {
+// 监听窗口大小变化
+const handleResize = () => {
   if (window.innerWidth < 992 && !collapsed.value) {
     collapsed.value = true;
-    layoutStore.setCollapsed(true);
   }
 };
 
 // 处理搜索
 const handleSearch = () => {
-  if (!searchText.value.trim()) return;
-  
-  message.info(`正在搜索: ${searchText.value}`);
-  // 这里可以实现搜索功能
-  searchText.value = '';
-};
-
-// 退出登录
-const handleLogout = () => {
-  Modal.confirm({
-    title: '确认退出',
-    content: '确定要退出登录吗？',
-    okText: '确定',
-    cancelText: '取消',
-    onOk: () => {
-      userStore.logout().then(() => {
-        message.success('已安全退出登录');
-        router.push('/login');
-      });
-    }
-  });
+  if (!searchText.value) {
+    message.warning('请输入搜索内容');
+    return;
+  }
+  message.info('功能开发中...');
 };
 
 // 刷新页面
