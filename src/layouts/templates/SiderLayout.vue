@@ -211,7 +211,7 @@ import SideMenu from '@/layouts/components/SideMenu.vue';
 import UserAvatar from '@/layouts/components/UserAvatar.vue';
 
 // 动态导入SettingDrawer组件
-const SettingDrawer = defineAsyncComponent(() => import('@/components/SettingDrawer.vue'));
+const SettingDrawer = defineAsyncComponent(() => import("../components/SettingDrawer.vue"));
 
 // 状态管理
 const layoutStore = useLayoutStore();
