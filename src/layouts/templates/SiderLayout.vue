@@ -224,10 +224,10 @@
 
 <script setup lang="ts">
 import { ref, watch, onBeforeUnmount, onMounted, defineAsyncComponent } from 'vue';
-import { 
-  MenuUnfoldOutlined, 
+import {
+  MenuUnfoldOutlined,
   MenuFoldOutlined, 
-  UserOutlined, 
+  UserOutlined,
   SettingOutlined,
   LogoutOutlined,
   BellOutlined,
