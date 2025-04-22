@@ -172,7 +172,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, defineAsyncComponent } from 'vue';
+import { ref, computed, onMounted, defineAsyncComponent } from 'vue';
 import { useLayoutStore } from '../../store/layout';
 import { useRoute } from 'vue-router';
 import {
@@ -186,11 +186,10 @@ import {
   EllipsisOutlined,
   ShopOutlined,
   TeamOutlined,
-  SearchOutlined,
-  ImportOutlined
+  SearchOutlined
 } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import UserAvatar from '@/layouts/components/UserAvatar.vue';
+import { UserAvatar } from '@/layouts/components/UserAvatar.vue';
 
 // 引入TabsNav组件
 const TabsNav = defineAsyncComponent(() => import('../components/TabsNav.vue'));
