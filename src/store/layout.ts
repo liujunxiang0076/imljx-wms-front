@@ -172,6 +172,26 @@ export const useLayoutStore = defineStore('layout', {
      */
     updateTheme(payload: Partial<LayoutState>): void {
       Object.assign(this, payload);
+    },
+    
+    /**
+     * 清除布局相关的本地存储缓存
+     */
+    clearCache(): void {
+      // 清除布局相关的本地存储
+      localStorage.removeItem('layout-type');
+      localStorage.removeItem('sider-collapsed');
+      localStorage.removeItem('sider-theme');
+      localStorage.removeItem('header-theme');
+      localStorage.removeItem('fixed-header');
+      localStorage.removeItem('fixed-sider');
+      localStorage.removeItem('primary-color');
+      localStorage.removeItem('show-tabs');
+      localStorage.removeItem('content-width');
+      localStorage.removeItem('split-menus');
+      
+      // 重置布局设置到默认值
+      this.resetSettings();
     }
   }
 }); 
