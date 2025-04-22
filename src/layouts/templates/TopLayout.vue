@@ -38,14 +38,14 @@
             </template>
 
             <!-- "更多"下拉菜单，当菜单项超过4个时显示 -->
-            <a-sub-menu v-if="hiddenMenuItems.length > 0" key="more-menu">
+            <a-sub-menu v-if="moreMenuItems.length > 0" key="more-menu">
               <template #title>
                 <EllipsisOutlined />
                 <span>更多</span>
               </template>
 
-              <!-- 遍历隐藏的一级菜单 -->
-              <template v-for="menu in hiddenMenuItems" :key="menu.key">
+              <!-- 遍历更多的一级菜单 -->
+              <template v-for="menu in moreMenuItems" :key="menu.key">
                 <!-- 无子菜单的一级菜单 -->
                 <a-menu-item v-if="!menu.children || menu.children.length === 0" :key="`more-item-${menu.key}`">
                   <router-link :to="menu.path">
@@ -135,30 +135,7 @@
             </a-button>
 
             <!-- 用户个人信息 -->
-            <a-dropdown placement="bottomRight">
-              <div class="user-dropdown-btn">
-                <a-avatar>{{ userData.username?.substring(0, 1) || '用' }}</a-avatar>
-                <span class="username">{{ userData.username || '用户名' }}</span>
-                <DownOutlined style="font-size: 12px; color: rgba(0, 0, 0, 0.45)" />
-              </div>
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item key="profile">
-                    <UserOutlined />
-                    个人信息
-                  </a-menu-item>
-                  <a-menu-item key="settings">
-                    <SettingOutlined />
-                    个人设置
-                  </a-menu-item>
-                  <a-menu-divider />
-                  <a-menu-item key="logout" @click="handleLogout">
-                    <LogoutOutlined />
-                    退出登录
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
+            <UserAvatar />
           </a-space>
         </div>
       </div>
@@ -197,7 +174,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, defineAsyncComponent } from 'vue';
 import { useLayoutStore } from '../../store/layout';
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import {
   DashboardOutlined,
   AppstoreOutlined,
@@ -206,16 +183,14 @@ import {
   BarChartOutlined,
   SettingOutlined,
   BellOutlined,
-  DownOutlined,
-  UserOutlined,
-  LogoutOutlined,
   EllipsisOutlined,
   ShopOutlined,
   TeamOutlined,
-  SearchOutlined
+  SearchOutlined,
+  ImportOutlined
 } from '@ant-design/icons-vue';
-import { Modal, message } from 'ant-design-vue';
-import { useUserStore } from '../../store/user';
+import { message } from 'ant-design-vue';
+import UserAvatar from '@/layouts/components/UserAvatar.vue';
 
 // 引入TabsNav组件
 const TabsNav = defineAsyncComponent(() => import('../components/TabsNav.vue'));
@@ -228,99 +203,57 @@ const SettingDrawer = defineAsyncComponent(() =>
 // 布局状态管理
 const layoutStore = useLayoutStore();
 const route = useRoute();
-const userStore = useUserStore();
-const router = useRouter();
 
 // 定义searchValue变量
 const searchValue = ref('');
 
-// 使用userStore替代userData
-const userData = computed(() => {
-  return userStore.userInfo || { username: '' };
-});
-
 // 菜单配置 - 这里模拟菜单数据，实际应从配置或接口获取
-const allMenuItems = [
+const menuItems = [
   {
     key: 'dashboard',
     title: '仪表盘',
-    path: '/dashboard',
     icon: 'DashboardOutlined',
-    children: []
+    path: '/dashboard'
   },
   {
     key: 'inventory',
     title: '库存管理',
-    path: '/inventory',
-    icon: 'AppstoreOutlined',
-    children: [
-      { key: 'inventory-overview', title: '库存总览', path: '/inventory/overview' },
-      { key: 'inventory-detail', title: '库存明细', path: '/inventory/detail' },
-      { key: 'inventory-check', title: '库存盘点', path: '/inventory/check' },
-      { key: 'inventory-location', title: '库位管理', path: '/inventory/location' }
-    ]
-  },
-  {
-    key: 'inbound',
-    title: '入库管理',
-    path: '/inbound',
     icon: 'InboxOutlined',
+    path: '/inventory',
     children: [
-      { key: 'inbound-receipt', title: '入库单管理', path: '/inbound/receipt' },
-      { key: 'inbound-plan', title: '入库计划', path: '/inbound/plan' },
-      { key: 'inbound-verify', title: '入库验收', path: '/inbound/verify' },
-      { key: 'inbound-return', title: '退货入库', path: '/inbound/return' }
+      {
+        key: 'inventory-list',
+        title: '库存列表',
+        path: '/inventory/list'
+      },
+      {
+        key: 'inventory-check',
+        title: '库存盘点',
+        path: '/inventory/check'
+      }
     ]
   },
-  {
-    key: 'outbound',
-    title: '出库管理',
-    path: '/outbound',
-    icon: 'ExportOutlined',
-    children: [
-      { key: 'outbound-order', title: '出库单管理', path: '/outbound/order' },
-      { key: 'outbound-plan', title: '出库计划', path: '/outbound/plan' },
-      { key: 'outbound-picking', title: '拣货管理', path: '/outbound/picking' },
-      { key: 'outbound-delivery', title: '发运管理', path: '/outbound/delivery' }
-    ]
-  },
-  {
-    key: 'reports',
-    title: '报表分析',
-    path: '/reports',
-    icon: 'BarChartOutlined',
-    children: []
-  },
-  {
-    key: 'system',
-    title: '系统设置',
-    path: '/system',
-    icon: 'SettingOutlined',
-    children: [
-      { key: 'system-users', title: '用户管理', path: '/system/users' },
-      { key: 'system-roles', title: '角色管理', path: '/system/roles' },
-      { key: 'system-permissions', title: '权限管理', path: '/system/permissions' }
-    ]
-  },
-  {
-    key: 'suppliers',
-    title: '供应商管理',
-    path: '/suppliers',
-    icon: 'ShopOutlined',
-    children: []
-  },
-  {
-    key: 'customers',
-    title: '客户管理',
-    path: '/customers',
-    icon: 'TeamOutlined',
-    children: []
-  }
+  // ... 其他菜单项
 ];
 
-// 图标处理函数，用于根据图标名称返回对应的组件
+// 显示的菜单项（前4个）
+const visibleMenuItems = computed(() => menuItems.slice(0, 4));
+
+// 更多菜单项
+const moreMenuItems = computed(() => menuItems.slice(4));
+
+// 当前选中的菜单项
+const selectedKeys = computed(() => {
+  const path = route.path;
+  return [path];
+});
+
+// 展开的子菜单
+const openKeys = ref<string[]>([]);
+
+// 获取图标组件
 const getIcon = (iconName: string) => {
-  const iconMap = {
+  const icons: { [key: string]: any } = {
     DashboardOutlined,
     AppstoreOutlined,
     InboxOutlined,
@@ -330,49 +263,8 @@ const getIcon = (iconName: string) => {
     ShopOutlined,
     TeamOutlined
   };
-
-  return iconMap[iconName as keyof typeof iconMap];
+  return icons[iconName];
 };
-
-// 最大显示的顶部菜单数量
-const MAX_VISIBLE_MENUS = 4;
-
-// 计算可见菜单项和隐藏菜单项
-const visibleMenuItems = computed(() => {
-  return allMenuItems.slice(0, MAX_VISIBLE_MENUS);
-});
-
-const hiddenMenuItems = computed(() => {
-  return allMenuItems.slice(MAX_VISIBLE_MENUS);
-});
-
-// 当前打开的子菜单
-const openKeys = ref<string[]>([]);
-
-// 设置抽屉显示状态
-const showSettingDrawer = ref(false);
-
-// 当前选中的菜单
-const selectedKeys = computed(() => {
-  const path = route.path;
-  const paths = path.split('/').filter(Boolean);
-
-  if (paths.length > 1) {
-    // 如果路径有多级，选中具体的子菜单项
-    return [`${paths[0]}-${paths[1]}`];
-  } else {
-    // 一级路径，选中主菜单
-    return [paths[0] || 'dashboard'];
-  }
-});
-
-// 监听路由变化，更新打开的子菜单
-watch(() => route.path, (path) => {
-  const paths = path.split('/').filter(Boolean);
-  if (paths.length > 0) {
-    openKeys.value = [paths[0]];
-  }
-}, { immediate: true });
 
 onMounted(() => {
   // 在移动设备上调整布局
@@ -388,24 +280,12 @@ const handleSearch = () => {
   // TODO: 实现搜索功能
 };
 
-// 退出登录
-const handleLogout = () => {
-  Modal.confirm({
-    title: '确认退出',
-    content: '确定要退出登录吗？',
-    okText: '确定',
-    cancelText: '取消',
-    onOk: async () => {
-      try {
-        await userStore.logout();
-        message.success('退出登录成功');
-        router.push('/login');
-      } catch (error) {
-        message.error('操作失败，请重试');
-      }
-    }
-  });
-};
+// 设置抽屉显示状态
+const showSettingDrawer = ref(false);
+
+defineExpose({
+  showSettingDrawer: ref(false)
+});
 </script>
 
 <style lang="scss" scoped>
