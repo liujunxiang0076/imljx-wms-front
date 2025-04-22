@@ -196,7 +196,7 @@ const TabsNav = defineAsyncComponent(() => import('@/layouts/components/TabsNav.
 
 // 动态导入SettingDrawer组件
 const SettingDrawer = defineAsyncComponent(() =>
-  import('@/components/SettingDrawer.vue')
+  import('@/layouts/components/SettingDrawer.vue')
 );
 
 // 布局状态管理
