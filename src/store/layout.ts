@@ -6,7 +6,7 @@ import { defineStore } from 'pinia';
 export type LayoutType = 'sider' | 'top' | 'mix' | 'mix-right';
 export type ThemeType = 'light' | 'dark';
 
-interface LayoutState {
+export interface LayoutState {
   /** 布局类型：侧边菜单、顶部菜单、混合菜单 */
   layoutType: LayoutType;
   
