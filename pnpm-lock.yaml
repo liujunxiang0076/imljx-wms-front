@@ -60,6 +60,9 @@ importers:
       unplugin-vue-components:
         specifier: ^28.4.1
         version: 28.4.1(@babel/parser@7.27.0)(vue@3.5.13(typescript@5.7.3))
+      unplugin-vue-define-options:
+        specifier: 3.0.0-beta.8
+        version: 3.0.0-beta.8(vue@3.5.13(typescript@5.7.3))
       vite:
         specifier: ^6.2.0
         version: 6.2.4(@types/node@22.13.17)(sass@1.86.1)(terser@5.39.0)
@@ -511,6 +514,15 @@ packages:
   '@volar/typescript@2.4.12':
     resolution: {integrity: sha512-HJB73OTJDgPc80K30wxi3if4fSsZZAOScbj2fcicMuOPoOkcf9NNAINb33o+DzhBdF9xTKC1gnPmIRDous5S0g==}
 
+  '@vue-macros/common@3.0.0-beta.8':
+    resolution: {integrity: sha512-fPb66TmAs7vVmz9qaW/d6bFbBNk/vsOx1o4EaurYmMwysubfWwh9Lgp4BPQzz5Dw8f8Yh9HfhmGbt6TYkb8qXg==}
+    engines: {node: '>=20.18.0'}
+    peerDependencies:
+      vue: ^2.7.0 || ^3.2.25
+    peerDependenciesMeta:
+      vue:
+        optional: true
+
   '@vue/compiler-core@3.5.13':
     resolution: {integrity: sha512-oOdAkwqUfW1WqpwSYJce06wvt6HljgY3fGeM9NcVA1HaYOij3mZG9Rkysn0OHuyUAGMbEbARIpsG+LPVlBJ5/Q==}
 
@@ -661,6 +673,14 @@ packages:
 
   array-tree-filter@2.1.0:
     resolution: {integrity: sha512-4ROwICNlNw/Hqa9v+rk5h22KjmzB1JGTMVKP2AKJBOCgb0yL0ASf0+YvCcLNNwquOHNX48jkeZIJ3a+oOQqKcw==}
+
+  ast-kit@1.4.2:
+    resolution: {integrity: sha512-lvGehj1XsrIoQrD5CfPduIzQbcpuX2EPjlk/vDMDQF9U9HLRB6WwMTdighj5n52hdhh8xg9VgPTU7Q25MuJ/rw==}
+    engines: {node: '>=16.14.0'}
+
+  ast-walker-scope@0.7.1:
+    resolution: {integrity: sha512-zTOcMXHkj0ZsNrOzkrpblALruIynlNJuDtdRHxDkO/SnR2WvQxbuZP6J2iTGB8h2DzfeUOGh6wWZUDhKwMK7uw==}
+    engines: {node: '>=18.12.0'}
 
   async-validator@4.2.5:
     resolution: {integrity: sha512-7HhHjtERjqlNbZtqNqy2rckN/SpOOlmDliet+lP7k+eKZEjPk3DgyeU9lIXLdeLz0uBbbVp+9Qdow9wJWgwwfg==}
@@ -992,6 +1012,10 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
+  magic-string-ast@0.9.1:
+    resolution: {integrity: sha512-18dv2ZlSSgJ/jDWlZGKfnDJx56ilNlYq9F7NnwuWTErsmYmqJ2TWE4l1o2zlUHBYUGBy3tIhPCC1gxq8M5HkMA==}
+    engines: {node: '>=20.18.0'}
+
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
 
@@ -1258,6 +1282,10 @@ packages:
         optional: true
       '@nuxt/kit':
         optional: true
+
+  unplugin-vue-define-options@3.0.0-beta.8:
+    resolution: {integrity: sha512-LG3lBkMxLjkYCH5VD+O2YVHWCikxycv+yMNkKAt5Nv2CbwhGB3+UEN5glI6h5529MB45iy6WLqXBRBjJyyiO/A==}
+    engines: {node: '>=20.18.0'}
 
   unplugin@2.2.2:
     resolution: {integrity: sha512-Qp+iiD+qCRnUek+nDoYvtWX7tfnYyXsrOnJ452FRTgOyKmTM7TUJ3l+PLPJOOWPTUyKISKp4isC5JJPSXUjGgw==}
@@ -1677,6 +1705,16 @@ snapshots:
       path-browserify: 1.0.1
       vscode-uri: 3.1.0
 
+  '@vue-macros/common@3.0.0-beta.8(vue@3.5.13(typescript@5.7.3))':
+    dependencies:
+      '@vue/compiler-sfc': 3.5.13
+      ast-kit: 1.4.2
+      local-pkg: 1.1.1
+      magic-string-ast: 0.9.1
+      unplugin-utils: 0.2.4
+    optionalDependencies:
+      vue: 3.5.13(typescript@5.7.3)
+
   '@vue/compiler-core@3.5.13':
     dependencies:
       '@babel/parser': 7.27.0
@@ -1906,6 +1944,16 @@ snapshots:
       picomatch: 2.3.1
 
   array-tree-filter@2.1.0: {}
+
+  ast-kit@1.4.2:
+    dependencies:
+      '@babel/parser': 7.27.0
+      pathe: 2.0.3
+
+  ast-walker-scope@0.7.1:
+    dependencies:
+      '@babel/parser': 7.27.0
+      ast-kit: 1.4.2
 
   async-validator@4.2.5: {}
 
@@ -2209,6 +2257,10 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
+  magic-string-ast@0.9.1:
+    dependencies:
+      magic-string: 0.30.17
+
   magic-string@0.30.17:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.0
@@ -2479,6 +2531,14 @@ snapshots:
       '@babel/parser': 7.27.0
     transitivePeerDependencies:
       - supports-color
+
+  unplugin-vue-define-options@3.0.0-beta.8(vue@3.5.13(typescript@5.7.3)):
+    dependencies:
+      '@vue-macros/common': 3.0.0-beta.8(vue@3.5.13(typescript@5.7.3))
+      ast-walker-scope: 0.7.1
+      unplugin: 2.2.2
+    transitivePeerDependencies:
+      - vue
 
   unplugin@2.2.2:
     dependencies:
