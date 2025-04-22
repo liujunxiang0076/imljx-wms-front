@@ -45,6 +45,7 @@ declare module 'vue' {
     MixLayout: typeof import('./layouts/templates/MixLayout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SettingDrawer: typeof import('./components/SettingDrawer.vue')['default']
     SideMenu: typeof import('./layouts/components/SideMenu.vue')['default']
     SiderLayout: typeof import('./layouts/templates/SiderLayout.vue')['default']
     TabsNav: typeof import('./layouts/components/TabsNav.vue')['default']
