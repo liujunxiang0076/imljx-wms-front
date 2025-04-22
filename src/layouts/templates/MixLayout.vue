@@ -365,6 +365,9 @@ const getComponentIcon = (iconName: string | undefined) => {
 const layoutStore = useLayoutStore();
 const route = useRoute();
 
+// 设置抽屉显示状态
+const showSettingDrawer = ref(false);
+
 // 当前顶部菜单选中项
 const selectedTopMenu = computed(() => {
   const path = route.path;
