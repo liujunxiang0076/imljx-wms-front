@@ -1,12 +1,11 @@
 /**
  * 主题设置相关的组合式API
  */
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useLayoutStore } from '../store/layout';
 import type { LayoutState } from '../store/layout';
 import { message, Modal } from 'ant-design-vue';
 import type { Ref } from 'vue';
-import type { LayoutSettings } from '../types/layout';
 
 /**
  * 使用主题设置
