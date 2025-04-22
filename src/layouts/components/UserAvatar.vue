@@ -39,6 +39,12 @@
   </div>
 </template>
 
+<script lang="ts">
+export default {
+  name: 'UserAvatar'
+};
+</script>
+
 <script setup lang="ts">
 import { computed } from 'vue';
 import { UserOutlined, SettingOutlined, LogoutOutlined, DownOutlined, ClearOutlined } from '@ant-design/icons-vue';

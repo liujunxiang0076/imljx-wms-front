@@ -173,7 +173,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, defineAsyncComponent } from 'vue';
-import { useLayoutStore } from '../../store/layout';
+import { useLayoutStore } from '@/store/layout';
 import { useRoute } from 'vue-router';
 import {
   DashboardOutlined,
@@ -189,14 +189,14 @@ import {
   SearchOutlined
 } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { UserAvatar } from '@/layouts/components/UserAvatar.vue';
+import UserAvatar from '@/layouts/components/UserAvatar.vue';
 
 // 引入TabsNav组件
-const TabsNav = defineAsyncComponent(() => import('../components/TabsNav.vue'));
+const TabsNav = defineAsyncComponent(() => import('@/layouts/components/TabsNav.vue'));
 
 // 动态导入SettingDrawer组件
 const SettingDrawer = defineAsyncComponent(() =>
-  import('../../components/SettingDrawer.vue')
+  import('@/components/SettingDrawer.vue')
 );
 
 // 布局状态管理
