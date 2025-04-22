@@ -296,6 +296,12 @@ onBeforeUnmount(() => {
 });
 </script>
 
+<script lang="ts">
+export default {
+  name: 'TabsNav'
+};
+</script>
+
 <style lang="scss" scoped>
 .tabs-wrapper {
   width: 100%;
