@@ -4,6 +4,7 @@ import Components from 'unplugin-vue-components/vite';
 import AutoImport from 'unplugin-auto-import/vite';
 import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
 import { resolve } from 'path';
+import DefineOptions from 'unplugin-vue-define-options/vite';
 // https://vite.dev/config/
 export default defineConfig({
     // 别名
@@ -38,6 +39,8 @@ export default defineConfig({
     plugins: [
         // Vue插件
         vue(),
+        // defineOptions 支持
+        DefineOptions(),
         // 自动导入
         AutoImport({
             resolvers: [AntDesignVueResolver()],
