@@ -334,6 +334,12 @@ onBeforeUnmount(() => {
 });
 </script>
 
+<script lang="ts">
+export default {
+  name: 'SideMenu'
+};
+</script>
+
 <style lang="scss" scoped>
 /**
  * 侧边菜单样式
