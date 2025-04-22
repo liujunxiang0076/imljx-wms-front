@@ -3,12 +3,40 @@
  */
 import { ref, watch } from 'vue';
 import { useLayoutStore } from '../store/layout';
+import type { LayoutState } from '../store/layout';
 import { message, Modal } from 'ant-design-vue';
+import type { Ref } from 'vue';
+import type { LayoutSettings } from '../types/layout';
 
 /**
  * 使用主题设置
  */
-export function useThemeSettings() {
+export function useThemeSettings(): {
+  layoutStore: LayoutState;
+  colorList: string[];
+  suggestedColors: string[];
+  drawerWidth: Ref<number>;
+  previewColor: Ref<string>;
+  originalColor: Ref<string>;
+  showColorPicker: Ref<boolean>;
+  customColor: Ref<string>;
+  isValidColor: Ref<boolean>;
+  showSettingDrawer: Ref<boolean>;
+  updateThemeSetting: (checked: boolean) => void;
+  toggleFixedHeader: (value: boolean) => void;
+  toggleShowTabs: (value: boolean) => void;
+  setLayoutType: (type: 'sider' | 'top' | 'mix' | 'mix-right') => void;
+  updateSplitMenus: (value: boolean) => void;
+  setPrimaryColor: (color: string, showMessage?: boolean) => void;
+  validateColor: () => void;
+  selectSuggestedColor: (color: string) => void;
+  confirmCustomColor: () => void;
+  cancelColorSelection: () => void;
+  previewPrimaryColor: (color: string) => void;
+  resetPreviewColor: () => void;
+  resetSettings: () => void;
+  initThemeSettings: () => void;
+} {
   // 获取布局状态
   const layoutStore = useLayoutStore();
   
@@ -224,7 +252,7 @@ export function useThemeSettings() {
   /**
    * 设置主题色
    */
-  const setPrimaryColor = (color: string) => {
+  const setPrimaryColor = (color: string, showMessage = true) => {
     layoutStore.setPrimaryColor(color);
     localStorage.setItem('primaryColor', color);
     
@@ -249,7 +277,9 @@ export function useThemeSettings() {
     injectGlobalStyle(color);
     
     // 显示成功消息
-    message.success('主题色已更新');
+    if (showMessage) {
+      message.success('主题色已更新');
+    }
   };
 
   /**
@@ -441,10 +471,10 @@ export function useThemeSettings() {
     
     // 应用主题色
     if (savedPrimaryColor) {
-      setPrimaryColor(savedPrimaryColor);
+      setPrimaryColor(savedPrimaryColor, false);
     } else {
       // 应用默认主题色
-      setPrimaryColor(layoutStore.primaryColor);
+      setPrimaryColor(layoutStore.primaryColor, false);
     }
     
     // 应用布局类型
