@@ -39,6 +39,7 @@ declare module 'vue' {
     ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     HeaderContent: typeof import('./layouts/components/HeaderContent.vue')['default']
     MixLayout: typeof import('./layouts/templates/MixLayout.vue')['default']
+    NotificationDropdown: typeof import('./layouts/components/NotificationDropdown.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SettingDrawer: typeof import('./layouts/components/SettingDrawer.vue')['default']
