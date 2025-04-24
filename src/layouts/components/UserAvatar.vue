@@ -1,33 +1,35 @@
 <template>
   <div class="user-avatar">
-    <a-dropdown>
+    <a-dropdown :trigger="['click']">
       <div class="user-avatar-content">
-        <a-avatar class="avatar" :src="avatar" :size="32" />
-        <span v-if="showName" class="username">{{ name }}</span>
-        <down-outlined v-if="showIcon" class="avatar-icon" />
+        <a-avatar class="avatar" :src="avatar" :size="32">
+          <template #icon><UserOutlined /></template>
+        </a-avatar>
+        <span v-if="shouldShowUsername" class="username">{{ username }}</span>
+        <DownOutlined v-if="shouldShowIcon" class="avatar-icon" />
       </div>
       <template #overlay>
-        <a-menu>
-          <a-menu-item key="0">
+        <a-menu @click="handleMenuClick">
+          <a-menu-item key="user-center">
             <template #icon>
               <UserOutlined />
             </template>
             个人中心
           </a-menu-item>
-          <a-menu-item key="1">
+          <a-menu-item key="settings">
             <template #icon>
               <SettingOutlined />
             </template>
             账户设置
           </a-menu-item>
           <a-menu-divider />
-          <a-menu-item key="2" @click="handleClearCache">
+          <a-menu-item key="clear-cache">
             <template #icon>
               <ClearOutlined />
             </template>
             清除缓存
           </a-menu-item>
-          <a-menu-item key="3" @click="handleLogout">
+          <a-menu-item key="logout">
             <template #icon>
               <LogoutOutlined />
             </template>
@@ -46,16 +48,17 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { UserOutlined, SettingOutlined, LogoutOutlined, DownOutlined, ClearOutlined } from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
-import { useRouter } from 'vue-router';
-import { useUserStore } from '../../store/user';
-import { clearCacheAndLogout } from '../../utils/cache';
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/store/user'
+import { useLayoutStore } from '@/store/layout'
+import { Modal, message } from 'ant-design-vue'
+import { UserOutlined, SettingOutlined, ClearOutlined, LogoutOutlined, DownOutlined } from '@ant-design/icons-vue'
+import type { MenuProps } from 'ant-design-vue'
 
-// Props定义
-defineProps({
-  showName: {
+// 定义组件属性
+const props = defineProps({
+  showUsername: {
     type: Boolean,
     default: true
   },
@@ -63,30 +66,66 @@ defineProps({
     type: Boolean,
     default: true
   }
-});
-
-const router = useRouter();
-const userStore = useUserStore();
+})
 
 // 用户信息
-const name = computed(() => userStore.name || '用户');
-const avatar = computed(() => userStore.avatar || 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png');
+const userStore = useUserStore()
+const layoutStore = useLayoutStore()
+const router = useRouter()
+
+// 用户头像
+const avatar = computed(() => userStore.userInfo?.avatar || '')
+
+// 用户名
+const username = computed(() => userStore.userInfo?.username || '未登录')
+
+// 显示用户名和图标的计算属性
+const shouldShowUsername = computed(() => props.showUsername)
+const shouldShowIcon = computed(() => props.showIcon)
+
+// 退出登录
+const handleLogout = () => {
+  Modal.confirm({
+    title: '确认退出',
+    content: '您确定要退出登录吗？',
+    okText: '确认',
+    cancelText: '取消',
+    onOk: async () => {
+      try {
+        await userStore.logout()
+        message.success('退出登录成功')
+        // 清除缓存
+        handleClearCache()
+        // 跳转到登录页
+        router.push('/login')
+      } catch (error) {
+        console.error('退出登录失败:', error)
+        message.error('退出登录失败')
+      }
+    }
+  })
+}
 
 // 清除缓存
 const handleClearCache = () => {
-  clearCacheAndLogout(router);
-};
+  layoutStore.clearCache()
+  message.success('清除缓存成功')
+}
 
-// 退出登录
-const handleLogout = async () => {
-  try {
-    await userStore.logout();
-    message.success('退出登录成功');
-    router.push('/login');
-  } catch (error) {
-    message.error('退出失败，请重试');
+// 处理菜单点击事件
+const handleMenuClick: MenuProps['onClick'] = ({ key }) => {
+  if (key === 'logout') {
+    handleLogout()
+  } else if (key === 'clear-cache') {
+    handleClearCache()
+  } else if (key === 'user-center') {
+    // 跳转到个人中心（如果有此页面）
+    // router.push('/user/center')
+  } else if (key === 'settings') {
+    // 跳转到账户设置（如果有此页面）
+    // router.push('/user/settings')
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -135,3 +174,4 @@ const handleLogout = async () => {
   }
 }
 </style> 
+
