@@ -42,4 +42,96 @@ body.light-theme {
       }
     }
   }
+}
+
+// 定义实际颜色值
+$primary-color: #1677ff;  // Ant Design V4 默认主题色
+
+// 使用实际颜色值生成变量
+:root {
+  --ant-primary-color: #{$primary-color};
+  --primary-color: #{$primary-color};
+  --ant-primary-color-hover: #{lighten($primary-color, 15%)};
+  --ant-primary-color-active: #{lighten($primary-color, 25%)};
+  --ant-primary-color-outline: #{rgba($primary-color, 0.2)};
+  --ant-primary-1: #{lighten($primary-color, 80%)};
+  --ant-primary-2: #{lighten($primary-color, 60%)};
+  --ant-primary-3: #{lighten($primary-color, 40%)};
+  --ant-primary-4: #{lighten($primary-color, 20%)};
+  --ant-primary-5: #{$primary-color};
+  --ant-primary-6: #{darken($primary-color, 10%)};
+  --ant-primary-7: #{darken($primary-color, 20%)};
+}
+
+// 主题组件样式
+@mixin theme-components($color) {
+  // 进度条和滑块
+  .ant-progress-bg {
+    background-color: $color;
+  }
+  
+  .ant-slider {
+    &-track {
+      background-color: $color;
+    }
+    &-handle {
+      border-color: $color;
+      &:focus {
+        box-shadow: 0 0 0 5px rgba($color, 0.2);
+      }
+    }
+  }
+
+  // 按钮相关
+  .ant-btn {
+    &-primary {
+      background-color: $color;
+      border-color: $color;
+      &:hover,
+      &:focus {
+        background-color: lighten($color, 15%);
+        border-color: lighten($color, 15%);
+      }
+    }
+    &-link {
+      color: $color;
+      &:hover {
+        color: lighten($color, 15%);
+      }
+    }
+  }
+
+  // 表单控件
+  .ant-checkbox-checked,
+  .ant-checkbox-indeterminate {
+    .ant-checkbox-inner {
+      background-color: $color;
+      border-color: $color;
+    }
+  }
+
+  .ant-radio {
+    &-checked .ant-radio-inner {
+      border-color: $color;
+      &::after {
+        background-color: $color;
+      }
+    }
+    &-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+      color: $color;
+      border-color: $color;
+    }
+  }
+
+  // 其他组件样式...（根据需要添加）
+}
+
+// 暗色主题
+.dark-theme {
+  @include theme-components($primary-color);
+}
+
+// 亮色主题
+.light-theme {
+  @include theme-components($primary-color);
 } 
