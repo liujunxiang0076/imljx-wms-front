@@ -771,28 +771,7 @@ defineExpose({
           }
         }
 
-        .mix-right-layout {
-          &::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 20%;
-            background: #001529;
-          }
-
-          &::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: 20%;
-            width: 20%;
-            height: 80%;
-            background: #fff;
-            border-left: 1px solid #f0f0f0;
-          }
-        }
+        
       }
     }
 

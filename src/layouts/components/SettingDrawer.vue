@@ -74,14 +74,7 @@
             <div class="layout-preview mix-layout"></div>
             <div class="layout-name">混合布局</div>
           </div>
-          <div 
-            class="layout-item" 
-            :class="{ active: themeSettings.layoutStore.layoutType === 'mix-right' }"
-            @click="themeSettings.setLayoutType('mix-right')"
-          >
-            <div class="layout-preview mix-right-layout"></div>
-            <div class="layout-name">右侧混合</div>
-          </div>
+          
         </div>
       </div>
     </div>
@@ -471,14 +464,7 @@ export default {
           }
         }
         
-        .mix-right-layout::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          width: 100%;
-          height: 20%;
-          background: #001529;
-        }
+        
       }
     }
     

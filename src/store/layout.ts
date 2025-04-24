@@ -3,7 +3,7 @@
  */
 import { defineStore } from 'pinia';
 
-export type LayoutType = 'sider' | 'top' | 'mix' | 'mix-right';
+export type LayoutType = 'sider' | 'top' | 'mix';
 export type ThemeType = 'light' | 'dark';
 
 export interface LayoutState {

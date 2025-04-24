@@ -24,7 +24,7 @@ export function useThemeSettings(): {
   updateThemeSetting: (checked: boolean) => void;
   toggleFixedHeader: (value: boolean) => void;
   toggleShowTabs: (value: boolean) => void;
-  setLayoutType: (type: 'sider' | 'top' | 'mix' | 'mix-right') => void;
+  setLayoutType: (type: 'sider' | 'top' | 'mix' ) => void;
   updateSplitMenus: (value: boolean) => void;
   setPrimaryColor: (color: string, showMessage?: boolean) => void;
   validateColor: () => void;
@@ -144,7 +144,7 @@ export function useThemeSettings(): {
   /**
    * 设置布局类型
    */
-  const setLayoutType = (type: 'sider' | 'top' | 'mix' | 'mix-right') => {
+  const setLayoutType = (type: 'sider' | 'top' | 'mix' ) => {
     layoutStore.setLayoutType(type);
     localStorage.setItem('layoutType', type);
   };
@@ -477,8 +477,8 @@ export function useThemeSettings(): {
     }
     
     // 应用布局类型
-    if (savedLayoutType && ['sider', 'top', 'mix', 'mix-right'].includes(savedLayoutType)) {
-      setLayoutType(savedLayoutType as 'sider' | 'top' | 'mix' | 'mix-right');
+    if (savedLayoutType && ['sider', 'top', 'mix'].includes(savedLayoutType)) {
+      setLayoutType(savedLayoutType as 'sider' | 'top' | 'mix');
     }
     
     // 应用菜单设置
