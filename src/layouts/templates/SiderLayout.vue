@@ -132,7 +132,7 @@
             </a-button>
 
             <!-- 用户个人信息 -->
-            <UserAvatar />
+            <UserAvatar class="header-avatar" />
           </a-space>
         </div>
       </div>
@@ -857,6 +857,13 @@ defineExpose({
         }
       }
     }
+  }
+
+  // 头部用户头像
+  :deep(.header-avatar) {
+    display: flex;
+    align-items: center;
+    height: 40px;
   }
 }
 </style>

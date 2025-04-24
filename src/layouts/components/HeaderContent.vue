@@ -507,10 +507,10 @@ const toggleDark = () => {
     100% { transform: scale(0.95); }
   }
   
+  // 统一处理头像样式
+  :deep(.header-action),
   :deep(.ant-avatar) {
-    margin-left: 12px;
     cursor: pointer;
-    background: #1890ff;
     
     &:hover {
       opacity: 0.85;
