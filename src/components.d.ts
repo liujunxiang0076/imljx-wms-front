@@ -36,6 +36,7 @@ declare module 'vue' {
     ATabPane: typeof import('ant-design-vue/es')['TabPane']
     ATabs: typeof import('ant-design-vue/es')['Tabs']
     ATag: typeof import('ant-design-vue/es')['Tag']
+    ATooltip: typeof import('ant-design-vue/es')['Tooltip']
     HeaderContent: typeof import('./layouts/components/HeaderContent.vue')['default']
     MixLayout: typeof import('./layouts/templates/MixLayout.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
