@@ -74,17 +74,21 @@
         <!-- 右侧操作区 -->
         <div class="header-right">
           <!-- 搜索框 -->
-          <div class="custom-search-wrapper">
-            <a-input v-model:value="searchValue" class="custom-search-input" placeholder="搜索功能、命令或文档..."
-              @pressEnter="handleSearch" :bordered="false">
-              <template #suffix>
-                <a-button type="text" class="custom-search-button" @click="handleSearch">
-                  <template #icon>
-                    <SearchOutlined />
-                  </template>
-                </a-button>
-              </template>
-            </a-input>
+          <div class="search-container">
+            <div class="custom-search-wrapper">
+              <input 
+                type="text" 
+                class="custom-search-input" 
+                placeholder="搜索功能、命令或文档..." 
+                v-model="searchValue"
+                @keyup.enter="handleSearch"
+              />
+              <button class="custom-search-button" @click="handleSearch">
+                <svg viewBox="64 64 896 896" data-icon="search" width="1em" height="1em" fill="currentColor" aria-hidden="true" focusable="false" class="">
+                  <path d="M909.6 854.5L649.9 594.8C690.2 542.7 712 479 712 412c0-80.2-31.3-155.4-87.9-212.1-56.6-56.7-132-87.9-212.1-87.9s-155.5 31.3-212.1 87.9C143.2 256.5 112 331.8 112 412c0 80.1 31.3 155.5 87.9 212.1C256.5 680.8 331.8 712 412 712c67 0 130.6-21.8 182.7-62l259.7 259.6a8.2 8.2 0 0011.6 0l43.6-43.5a8.2 8.2 0 000-11.6zM570.4 570.4C528 612.7 471.8 636 412 636s-116-23.3-158.4-65.6C211.3 528 188 471.8 188 412s23.3-116.1 65.6-158.4C296 211.3 352.2 188 412 188s116.1 23.2 158.4 65.6S636 352.2 636 412s-23.3 116.1-65.6 158.4z"></path>
+                </svg>
+              </button>
+            </div>
           </div>
 
           <a-space size="middle">
@@ -185,8 +189,7 @@ import {
   BellOutlined,
   EllipsisOutlined,
   ShopOutlined,
-  TeamOutlined,
-  SearchOutlined
+  TeamOutlined
 } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import UserAvatar from '@/layouts/components/UserAvatar.vue';
@@ -317,6 +320,7 @@ defineExpose({
       align-items: center;
       padding: 0 16px;
       height: 100%;
+      justify-content: space-between; /* 确保左中右三部分均匀分布 */
     }
 
     // 头部logo
@@ -409,6 +413,7 @@ defineExpose({
       display: flex;
       align-items: center;
       height: 100%;
+      gap: 20px;
 
       .notification-icon-wrapper {
         position: relative;
@@ -504,55 +509,69 @@ defineExpose({
   }
 }
 
-// 自定义搜索框样式
-.custom-search-wrapper {
-  position: relative;
-  width: 180px;
-  height: 32px;
+// 搜索框容器
+.search-container {
   display: flex;
   align-items: center;
-  background-color: #f5f5f5;
-  border-radius: 16px;
-  transition: all 0.3s;
-  margin-right: 16px;
+  margin: 0;  /* 移除左侧边距，使用header-right的gap来控制间距 */
 
-  &:hover {
-    background-color: #e8e8e8;
-  }
-
-  .custom-search-input {
-    width: 100%;
-    height: 100%;
-    border: none;
-    outline: none;
-    background-color: transparent;
-    padding: 0 40px 0 16px;
-    font-size: 14px;
-    color: rgba(0, 0, 0, 0.65);
-
-    &::placeholder {
-      color: rgba(0, 0, 0, 0.45);
-    }
-  }
-
-  .custom-search-button {
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
+  .custom-search-wrapper {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: rgba(0, 0, 0, 0.45);
-    transition: color 0.3s;
-    padding: 0;
-    outline: none;
+    width: 240px; /* 稍微减小宽度，使其更协调 */
+    height: 32px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s;
 
-    &:hover {
-      color: var(--primary-color);
+    &:hover, &:focus-within {
+      border-color: #40a9ff;
+      box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.08);
+    }
+
+    .custom-search-input {
+      flex: 1;
+      height: 100%;
+      padding: 0 11px;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      background: #fff;
+      color: rgba(0, 0, 0, 0.85);
+      line-height: 32px; /* 确保高度一致 */
+      display: block;
+      box-sizing: border-box;
+
+      &::placeholder {
+        color: rgba(0, 0, 0, 0.35);
+        line-height: 32px; /* 确保文字居中 */
+      }
+    }
+
+    .custom-search-button {
+      width: 36px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fafafa;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      color: rgba(0, 0, 0, 0.45);
+      transition: all 0.3s;
+      border-left: 1px solid #f0f0f0;
+
+      &:hover {
+        background: #e6f7ff;
+        color: #40a9ff;
+      }
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
     }
   }
 }
