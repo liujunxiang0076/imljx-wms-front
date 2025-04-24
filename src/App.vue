@@ -1,7 +1,15 @@
 <script setup lang="ts">
 // 主应用入口
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useLayoutStore } from './store/layout';
+import { ConfigProvider } from 'ant-design-vue';
+
+// 主题配置
+const themeConfig = ref({
+  token: {
+    colorPrimary: '#1677ff'
+  }
+});
 
 // 初始化主题设置
 onMounted(() => {
@@ -25,7 +33,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <router-view />
+  <config-provider :theme="themeConfig">
+    <router-view />
+  </config-provider>
 </template>
 
 <style lang="scss" scoped>
