@@ -105,7 +105,7 @@ const handleLogout = async () => {
     padding: 0 4px;
     cursor: pointer;
     transition: all 0.3s;
-    border-radius: 50%;
+    border-radius: 4px;
     
     // 头像样式
     .avatar {
@@ -115,7 +115,8 @@ const handleLogout = async () => {
     
     // 鼠标悬停效果
     &:hover {
-      background: rgba(0, 0, 0, 0.025);
+      background: rgba(0, 0, 0, 0.03);
+      color: #1890ff;
     }
     
     // 用户名
