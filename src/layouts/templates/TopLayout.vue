@@ -135,7 +135,7 @@
             </a-button>
 
             <!-- 用户个人信息 -->
-            <UserAvatar />
+            <UserAvatar class="header-avatar" />
           </a-space>
         </div>
       </div>
@@ -420,6 +420,13 @@ defineExpose({
 
       .notification-badge {
         cursor: pointer;
+      }
+
+      // 设置头像组件样式
+      :deep(.header-avatar) {
+        display: flex;
+        align-items: center;
+        height: 40px;
       }
 
       .user-dropdown-btn {
