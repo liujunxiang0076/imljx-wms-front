@@ -61,63 +61,12 @@
         <div class="header-right">
           <a-space size="middle">
             <!-- 通知器 -->
-            <a-dropdown placement="bottomRight">
-              <div class="notification-icon-wrapper">
-                <a-button type="text" shape="circle" class="notification-btn">
-                  <template #icon
-                    ><bell-outlined style="font-size: 16px"
-                  /></template>
-                </a-button>
-                <a-badge count="5" class="notification-badge" size="small" />
-              </div>
-              <template #overlay>
-                <a-menu style="width: 200px">
-                  <a-menu-item
-                    key="notification-title"
-                    style="
-                      text-align: center;
-                      cursor: default;
-                      font-weight: 500;
-                    "
-                  >
-                    通知信息 (5条未读)
-                  </a-menu-item>
-                  <a-menu-divider />
-                  <a-menu-item key="notification-1">
-                    <div style="display: flex; align-items: flex-start">
-                      <a-tag color="blue">入库</a-tag>
-                      <div style="margin-left: 8px; flex: 1">
-                        <div style="font-weight: 500">新的入库订单已创建</div>
-                        <div
-                          style="font-size: 12px; color: rgba(0, 0, 0, 0.45)"
-                        >
-                          刚刚
-                        </div>
-                      </div>
-                    </div>
-                  </a-menu-item>
-                  <a-menu-item key="notification-2">
-                    <div style="display: flex; align-items: flex-start">
-                      <a-tag color="red">警告</a-tag>
-                      <div style="margin-left: 8px; flex: 1">
-                        <div style="font-weight: 500">
-                          产品B2库存低于安全库存
-                        </div>
-                        <div
-                          style="font-size: 12px; color: rgba(0, 0, 0, 0.45)"
-                        >
-                          10分钟前
-                        </div>
-                      </div>
-                    </div>
-                  </a-menu-item>
-                  <a-menu-divider />
-                  <a-menu-item key="see-all" style="text-align: center">
-                    <router-link to="/notifications">查看所有通知</router-link>
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
+            <NotificationDropdown 
+              useButton
+              badgeSize="small"
+              :count="5"
+              menuWidth="200px"
+            />
 
             <!-- 设置按钮 - 打开抽屉 -->
             <a-button
@@ -200,7 +149,6 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined, 
   SettingOutlined,
-  BellOutlined,
   ReloadOutlined
 } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
@@ -209,6 +157,7 @@ import config from '@/config';
 import TabsNav from '@/layouts/components/TabsNav.vue';
 import SideMenu from '@/layouts/components/SideMenu.vue';
 import UserAvatar from '@/layouts/components/UserAvatar.vue';
+import NotificationDropdown from '@/layouts/components/NotificationDropdown.vue';
 
 // 动态导入SettingDrawer组件
 const SettingDrawer = defineAsyncComponent(() => import("../components/SettingDrawer.vue"));
