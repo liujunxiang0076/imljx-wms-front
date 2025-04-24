@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 /* 全局主题样式 - 高优先级覆盖 */
 
 /* 暗色主题 */
@@ -51,16 +53,16 @@ $primary-color: #1677ff;  // Ant Design V4 默认主题色
 :root {
   --ant-primary-color: #{$primary-color};
   --primary-color: #{$primary-color};
-  --ant-primary-color-hover: #{lighten($primary-color, 15%)};
-  --ant-primary-color-active: #{lighten($primary-color, 25%)};
+  --ant-primary-color-hover: #{color.adjust($primary-color, $lightness: 15%)};
+  --ant-primary-color-active: #{color.adjust($primary-color, $lightness: 25%)};
   --ant-primary-color-outline: #{rgba($primary-color, 0.2)};
-  --ant-primary-1: #{lighten($primary-color, 80%)};
-  --ant-primary-2: #{lighten($primary-color, 60%)};
-  --ant-primary-3: #{lighten($primary-color, 40%)};
-  --ant-primary-4: #{lighten($primary-color, 20%)};
+  --ant-primary-1: #{color.adjust($primary-color, $lightness: 80%)};
+  --ant-primary-2: #{color.adjust($primary-color, $lightness: 60%)};
+  --ant-primary-3: #{color.adjust($primary-color, $lightness: 40%)};
+  --ant-primary-4: #{color.adjust($primary-color, $lightness: 20%)};
   --ant-primary-5: #{$primary-color};
-  --ant-primary-6: #{darken($primary-color, 10%)};
-  --ant-primary-7: #{darken($primary-color, 20%)};
+  --ant-primary-6: #{color.adjust($primary-color, $lightness: -10%)};
+  --ant-primary-7: #{color.adjust($primary-color, $lightness: -20%)};
 }
 
 // 主题组件样式
@@ -89,14 +91,14 @@ $primary-color: #1677ff;  // Ant Design V4 默认主题色
       border-color: $color;
       &:hover,
       &:focus {
-        background-color: lighten($color, 15%);
-        border-color: lighten($color, 15%);
+        background-color: color.adjust($color, $lightness: 15%);
+        border-color: color.adjust($color, $lightness: 15%);
       }
     }
     &-link {
       color: $color;
       &:hover {
-        color: lighten($color, 15%);
+        color: color.adjust($color, $lightness: 15%);
       }
     }
   }
