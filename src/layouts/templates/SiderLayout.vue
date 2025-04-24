@@ -46,7 +46,7 @@
                 type="text" 
                 class="custom-search-input" 
                 placeholder="搜索功能、命令或文档..." 
-                v-model="searchText"
+                v-model="searchValue"
                 @keyup.enter="handleSearch"
               />
               <button class="custom-search-button" @click="handleSearch">
@@ -167,7 +167,7 @@ const layoutStore = useLayoutStore();
 
 // 响应式变量
 const collapsed: Ref<boolean> = ref(false);
-const searchText: Ref<string> = ref('');
+const searchValue: Ref<string> = ref('');
 const showSettingDrawer: Ref<boolean> = ref(false);
 
 // 监听布局store中的菜单折叠状态变化
@@ -203,7 +203,7 @@ const handleResize = () => {
 
 // 处理搜索
 const handleSearch = () => {
-  if (!searchText.value) {
+  if (!searchValue.value) {
     message.warning('请输入搜索内容');
     return;
   }
