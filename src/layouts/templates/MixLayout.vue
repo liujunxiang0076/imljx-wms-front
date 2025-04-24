@@ -63,10 +63,9 @@
             <!-- 通知器 -->
             <a-dropdown placement="bottomRight">
               <div class="notification-icon-wrapper">
-                <a-button type="text" shape="circle" class="notification-btn">
-                  <template #icon><bell-outlined style="font-size: 16px" /></template>
-                </a-button>
-                <a-badge count="5" class="notification-badge" size="small" />
+                <a-badge count="5" class="notification-badge">
+                  <BellOutlined style="font-size: 16px" />
+                </a-badge>
               </div>
               <template #overlay>
                 <a-menu style="width: 200px">
@@ -100,7 +99,7 @@
               </template>
             </a-dropdown>
 
-            <!-- 设置按钮 -->
+            <!-- 设置按钮 - 改为打开设置抽屉 -->
             <a-button type="text" shape="circle" class="setting-btn" @click="showSettingDrawer = true">
               <template #icon>
                 <SettingOutlined style="font-size: 16px" />
@@ -108,7 +107,7 @@
             </a-button>
 
             <!-- 用户个人信息 -->
-            <UserAvatar />
+            <UserAvatar class="header-avatar" />
           </a-space>
         </div>
       </div>
@@ -193,12 +192,17 @@
       </a-layout>
     </a-layout>
   </a-layout>
+
+  <!-- 添加设置抽屉组件 -->
+  <SettingDrawer v-model:visible="showSettingDrawer" />
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, defineAsyncComponent } from 'vue';
 import { useRoute } from 'vue-router';
 import { useLayoutStore } from '../../store/layout';
+import TabsNav from '@/layouts/components/TabsNav.vue';
+import UserAvatar from '@/layouts/components/UserAvatar.vue';
 // 图标
 import { 
   DashboardOutlined, 
@@ -277,6 +281,9 @@ import {
 } from '@ant-design/icons-vue';
 
 import menuConfig from '../../config/menu';
+
+// 动态导入SettingDrawer组件
+const SettingDrawer = defineAsyncComponent(() => import('@/layouts/components/SettingDrawer.vue'));
 
 // 创建图标映射对象
 const iconComponents = {
@@ -533,9 +540,36 @@ watch(selectedTopMenu, (newVal) => {
             }
           }
         }
+        
+        // 通知图标相关样式
+        .notification-icon-wrapper {
+          position: relative;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          padding: 0 4px;
+        }
+        
+        .notification-badge {
+          cursor: pointer;
+        }
+        
+        .setting-btn {
+          height: 40px;
+          width: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+            color: #1890ff;
+          }
+        }
       }
     }
   }
+  
   // 容器
   &-container {
     flex: 1;
