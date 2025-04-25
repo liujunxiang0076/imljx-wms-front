@@ -27,7 +27,7 @@
             <template #icon>
               <ClearOutlined />
             </template>
-            清除本地缓存
+            清除缓存
           </a-menu-item>
           <a-menu-item key="logout" danger>
             <template #icon>
