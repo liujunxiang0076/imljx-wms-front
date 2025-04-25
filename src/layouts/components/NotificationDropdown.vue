@@ -1,5 +1,5 @@
 <template>
-  <a-dropdown placement="bottomRight">
+  <a-dropdown placement="bottomRight" :trigger="['click']">
     <div class="notification-icon-wrapper">
       <!-- 使用按钮包裹图标 -->
       <template v-if="useButton">
@@ -195,6 +195,10 @@ const computedNotifications = computed<INotificationItem[]>(() => {
 
 // 通知菜单样式
 :deep(.ant-dropdown-menu) {
+  // 通知菜单弹出时添加一点顶部边距和阴影
+  margin-top: 14px !important;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05) !important;
+  
   // 通知标题
   .notification-title {
     text-align: center;
