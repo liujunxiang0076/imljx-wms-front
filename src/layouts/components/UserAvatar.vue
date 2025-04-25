@@ -23,13 +23,13 @@
             账户设置
           </a-menu-item>
           <a-menu-divider />
-          <a-menu-item key="clear-cache">
+          <a-menu-item key="clear-cache" danger>
             <template #icon>
               <ClearOutlined />
             </template>
-            清除缓存
+            清除本地缓存
           </a-menu-item>
-          <a-menu-item key="logout">
+          <a-menu-item key="logout" danger>
             <template #icon>
               <LogoutOutlined />
             </template>
@@ -49,7 +49,6 @@ export default {
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store/user'
 import { useLayoutStore } from '@/store/layout'
 import { Modal, message } from 'ant-design-vue'
@@ -71,7 +70,6 @@ const props = defineProps({
 // 用户信息
 const userStore = useUserStore()
 const layoutStore = useLayoutStore()
-const router = useRouter()
 
 // 用户头像
 const avatar = computed(() => userStore.userInfo?.avatar || '')
@@ -87,17 +85,20 @@ const shouldShowIcon = computed(() => props.showIcon)
 const handleLogout = () => {
   Modal.confirm({
     title: '确认退出',
-    content: '您确定要退出登录吗？',
-    okText: '确认',
+    content: '您确定要退出当前账号吗？退出后需要重新登录。',
+    okText: '确认退出',
+    okType: 'danger',
     cancelText: '取消',
     onOk: async () => {
       try {
         await userStore.logout()
-        message.success('退出登录成功')
+        message.success('已安全退出系统')
         // 清除缓存
-        handleClearCache()
+        // 不在退出登录时自动清除缓存，改为单独操作
         // 跳转到登录页
-        router.push('/login')
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 300)
       } catch (error) {
         console.error('退出登录失败:', error)
         message.error('退出登录失败')
@@ -108,8 +109,47 @@ const handleLogout = () => {
 
 // 清除缓存
 const handleClearCache = () => {
-  layoutStore.clearCache()
-  message.success('清除缓存成功')
+  Modal.confirm({
+    title: '确认清除本地缓存',
+    content: '清除本地缓存将重置界面设置、菜单状态等偏好，并退出到登录页面。您的账号数据不会受到影响。确定要继续吗？',
+    okText: '确认清除',
+    okType: 'danger',
+    cancelText: '取消',
+    onOk: () => {
+      // 清除布局配置缓存
+      layoutStore.clearCache();
+      
+      // 清除其他可能的本地存储缓存（保留登录信息）
+      const token = localStorage.getItem('token');
+      const tokenExpireTime = localStorage.getItem('tokenExpireTime');
+      
+      // 保留登录相关信息
+      
+      // 清除所有localStorage
+      localStorage.clear();
+      
+      // 恢复登录信息
+      if (token) localStorage.setItem('token', token);
+      if (tokenExpireTime) localStorage.setItem('tokenExpireTime', tokenExpireTime);
+      
+      // 清除sessionStorage
+      sessionStorage.clear();
+      
+      message.success('本地缓存已清除，即将退出到登录页面');
+      
+      // 延迟一下再退出，让用户看到提示信息
+      setTimeout(() => {
+        // 清除token和用户信息
+        userStore.token = '';
+        userStore.userInfo = null;
+        // 移除token相关存储
+        localStorage.removeItem('token');
+        localStorage.removeItem('tokenExpireTime');
+        // 跳转到登录页
+        window.location.href = '/login';
+      }, 1000);
+    }
+  });
 }
 
 // 处理菜单点击事件
