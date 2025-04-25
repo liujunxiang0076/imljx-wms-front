@@ -93,43 +93,12 @@
 
           <a-space size="middle">
             <!-- 通知器 -->
-            <a-dropdown placement="bottomRight">
-              <div class="notification-icon-wrapper">
-                <a-badge count="5" class="notification-badge">
-                  <BellOutlined style="font-size: 16px" />
-                </a-badge>
-              </div>
-              <template #overlay>
-                <a-menu style="width: 240px">
-                  <a-menu-item key="notification-title" style="text-align: center; cursor: default; font-weight: 500;">
-                    通知信息 (5条未读)
-                  </a-menu-item>
-                  <a-menu-divider />
-                  <a-menu-item key="notification-1">
-                    <div style="display: flex; align-items: flex-start">
-                      <a-tag color="blue">入库</a-tag>
-                      <div style="margin-left: 8px; flex: 1">
-                        <div style="font-weight: 500">新的入库订单已创建</div>
-                        <div style="font-size: 12px; color: rgba(0, 0, 0, 0.45)">刚刚</div>
-                      </div>
-                    </div>
-                  </a-menu-item>
-                  <a-menu-item key="notification-2">
-                    <div style="display: flex; align-items: flex-start">
-                      <a-tag color="red">警告</a-tag>
-                      <div style="margin-left: 8px; flex: 1">
-                        <div style="font-weight: 500">产品B2库存低于安全库存</div>
-                        <div style="font-size: 12px; color: rgba(0, 0, 0, 0.45)">10分钟前</div>
-                      </div>
-                    </div>
-                  </a-menu-item>
-                  <a-menu-divider />
-                  <a-menu-item key="see-all" style="text-align: center">
-                    <router-link to="/notifications">查看所有通知</router-link>
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
+            <NotificationDropdown 
+              useButton
+              badgeSize="small"
+              :count="5"
+              menuWidth="280px"
+            />
 
             <!-- 设置按钮 -->
             <a-button type="text" shape="circle" class="setting-btn" @click="showSettingDrawer = true">
@@ -186,13 +155,13 @@ import {
   ExportOutlined,
   BarChartOutlined,
   SettingOutlined,
-  BellOutlined,
   EllipsisOutlined,
   ShopOutlined,
   TeamOutlined
 } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import UserAvatar from '@/layouts/components/UserAvatar.vue';
+import NotificationDropdown from '@/layouts/components/NotificationDropdown.vue';
 
 // 引入TabsNav组件
 const TabsNav = defineAsyncComponent(() => import('@/layouts/components/TabsNav.vue'));
