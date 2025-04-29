@@ -62,14 +62,9 @@
   </a-dropdown>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue';
+<script lang="ts">
+import { defineComponent, computed } from 'vue';
 import { BellOutlined } from '@ant-design/icons-vue';
-
-// 使用defineOptions定义组件名称
-defineOptions({
-  name: 'NotificationDropdown'
-});
 
 type NotificationType = 'info' | 'warning' | 'success';
 type BadgeSize = 'default' | 'small' | undefined;
@@ -84,75 +79,89 @@ interface INotificationItem {
   read: boolean;
 }
 
-// 组件属性
-const props = defineProps({
-  // 是否使用按钮包裹图标
-  useButton: {
-    type: Boolean,
-    default: false
-  },
-  // 下拉菜单宽度
-  menuWidth: {
-    type: String,
-    default: '220px'
-  },
-  // 通知数量
-  count: {
-    type: Number,
-    default: 5
-  },
-  // 徽章大小
-  badgeSize: {
-    type: String as unknown as () => BadgeSize,
-    default: undefined
-  },
-  // 通知数据
-  notifications: {
-    type: Array as () => INotificationItem[],
-    default: () => []
-  }
-});
-
-// 事件
-const emit = defineEmits(['viewAll', 'itemClick']);
-
-// 处理查看所有通知点击
-const handleViewAll = () => {
-  emit('viewAll');
-};
-
-// 处理通知项点击
-const handleItemClick = (notification: INotificationItem) => {
-  emit('itemClick', notification);
-};
-
-// 默认通知数据
-const defaultNotifications: INotificationItem[] = [
-  {
-    id: 1,
-    title: '新的入库订单已创建',
-    time: '刚刚',
-    tag: '入库',
-    type: 'info',
-    read: false
-  },
-  {
-    id: 2,
-    title: '产品B2库存低于安全库存',
-    time: '10分钟前',
-    tag: '警告',
-    type: 'warning',
-    read: false
-  }
-];
-
-// 如果没有传入通知数据，使用默认数据
-const computedNotifications = computed<INotificationItem[]>(() => {
-  if (props.notifications && props.notifications.length > 0) {
-    return props.notifications;
-  }
+export default defineComponent({
+  name: 'NotificationDropdown',
   
-  return defaultNotifications;
+  components: {
+    BellOutlined
+  },
+  
+  props: {
+    // 是否使用按钮包裹图标
+    useButton: {
+      type: Boolean,
+      default: false
+    },
+    // 下拉菜单宽度
+    menuWidth: {
+      type: String,
+      default: '220px'
+    },
+    // 通知数量
+    count: {
+      type: Number,
+      default: 5
+    },
+    // 徽章大小
+    badgeSize: {
+      type: String as unknown as () => BadgeSize,
+      default: undefined
+    },
+    // 通知数据
+    notifications: {
+      type: Array as () => INotificationItem[],
+      default: () => []
+    }
+  },
+  
+  emits: ['viewAll', 'itemClick'],
+  
+  setup(props, { emit }) {
+    // 处理查看所有通知点击
+    const handleViewAll = () => {
+      emit('viewAll');
+    };
+
+    // 处理通知项点击
+    const handleItemClick = (notification: INotificationItem) => {
+      emit('itemClick', notification);
+    };
+
+    // 默认通知数据
+    const defaultNotifications: INotificationItem[] = [
+      {
+        id: 1,
+        title: '新的入库订单已创建',
+        time: '刚刚',
+        tag: '入库',
+        type: 'info',
+        read: false
+      },
+      {
+        id: 2,
+        title: '产品B2库存低于安全库存',
+        time: '10分钟前',
+        tag: '警告',
+        type: 'warning',
+        read: false
+      }
+    ];
+
+    // 如果没有传入通知数据，使用默认数据
+    const computedNotifications = computed<INotificationItem[]>(() => {
+      if (props.notifications && props.notifications.length > 0) {
+        return props.notifications;
+      }
+      
+      return defaultNotifications;
+    });
+    
+    return {
+      handleViewAll,
+      handleItemClick,
+      computedNotifications
+    };
+  }
 });
 </script>
 
